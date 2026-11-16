@@ -1351,6 +1351,10 @@ function give_inited_task(actor, obj, p)
 --		target_obj = sim_board.get_sim_board().squads[target_name]
 	end
 
+	if task_type == "storyline" and task_manager.is_freeplay() then -- storyline tasks are not issued in freeplay
+		return
+	end
+
 	local task = task_manager.get_task_manager():select_task(task_type, target_obj, faction_name)
 	task:give_task(faction_name)
 end
