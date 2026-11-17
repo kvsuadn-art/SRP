@@ -2,15 +2,6 @@
 
 local random_task = nil
 
--- Freeplay: while this info portion is set, storyline tasks are not issued.
--- The storyline sections stay in task_manager.ltx and the logic that tries to issue them stays untouched;
--- the issuing is simply blocked in CRandomTask:select_task().
-local FREEPLAY_INFO = "srp_freeplay"
-
-function is_freeplay()
-	return has_alife_info(FREEPLAY_INFO)
-end
-
 class "CRandomTask"
 
 function CRandomTask:__init()
@@ -394,7 +385,7 @@ end
 function CRandomTask:select_task(type, obj, faction)
 
 	-- Freeplay: do not issue storyline tasks. Callers must handle a nil result.
-	if type == "storyline" and is_freeplay() then
+	if type == "storyline" and freeplay_mode.is_freeplay() then
 		return nil
 	end
 

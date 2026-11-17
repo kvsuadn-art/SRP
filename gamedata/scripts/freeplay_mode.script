@@ -1,0 +1,28 @@
+-- Freeplay mode: the single source of truth for "is Freeplay active".
+--
+-- The mode is stored as the info portion below, NOT as a Lua variable:
+-- info portions are written to savegames, Lua variables are not.
+--
+-- Until the main menu gets a Freeplay entry, the mode is switched on at the start
+-- of a new game by [freeplay] enabled = true in misc\freeplay.ltx.
+-- The future menu entry should simply call freeplay_mode.enable() instead.
+
+local INFO = "srp_freeplay"
+
+function is_freeplay()
+	return has_alife_info(INFO)
+end
+
+function enable()
+	if not has_alife_info(INFO) then
+		db.actor:give_info_portion(INFO)
+	end
+end
+
+-- Called once per new game from bind_stalker (first update, same place as the "global_dialogs" init).
+function on_new_game()
+	local ini = ini_file("misc\\freeplay.ltx")
+	if utils.cfg_get_bool(ini, "freeplay", "enabled", nil, false, false) then
+		enable()
+	end
+end

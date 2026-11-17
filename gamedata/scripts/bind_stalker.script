@@ -380,6 +380,7 @@ function actor_binder:update(delta)
 
 		if not has_alife_info("global_dialogs") then
 			actor:give_info_portion("global_dialogs")
+			freeplay_mode.on_new_game() -- Freeplay: runs once per new game
 		end
 
 		if treasure_manager.enable_stash_filler == true then

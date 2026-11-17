@@ -8,6 +8,12 @@
 
 <!--	Decane end	-->
 
+<!--	Freeplay start	-->
+
+	<info_portion id="srp_freeplay"/>
+
+<!--	Freeplay end	-->
+
 	<info_portion id="global_dialogs">
 		<dialog>actor_break_dialog</dialog>
 	</info_portion>

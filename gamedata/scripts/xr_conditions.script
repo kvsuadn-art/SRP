@@ -16,6 +16,11 @@ local sim = _G.sim
 --' Enemy functions (for use with combat_ignore_cond)
 --'------------------------------------------------------
 
+-- Freeplay: usable in condlists as {=is_freeplay} / {!is_freeplay}
+function is_freeplay(actor, npc, p)
+	return freeplay_mode.is_freeplay()
+end
+
 function is_enemy_actor(enemy)
 	return enemy:id() == 0 -- actor ID
 end
