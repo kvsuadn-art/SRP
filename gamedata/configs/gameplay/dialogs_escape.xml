@@ -764,11 +764,20 @@
 				<next>111</next>
 				<next>1111</next>
 				<next>11111</next>
+				<next>12</next>
 			</phrase>
 			<phrase id="1">
 				<text>esc_wolf_other_works_1</text>
 				<dont_has_info>esc_wolf_brother_1</dont_has_info>
 				<has_info>esc_bring_habar_complete</has_info>
+				<has_info>esc_wolf_novice_3</has_info>
+				<next>2</next>
+				<next>3</next>
+			</phrase>
+			<phrase id="12">
+				<text>esc_wolf_other_works_1</text>
+				<dont_has_info>esc_wolf_brother_1</dont_has_info>
+				<has_info>srp_freeplay</has_info>
 				<has_info>esc_wolf_novice_3</has_info>
 				<next>2</next>
 				<next>3</next>
@@ -1198,6 +1207,7 @@
 				<next>11</next>
 			</phrase>
 			<phrase id="2">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<precondition>dialogs_escape.actor_has_habar</precondition>
 				<dont_has_info>esc_bring_habar_complete</dont_has_info>
@@ -1282,6 +1292,7 @@
 <!--	<precondition>dialog_manager.precondition_is_phrase_disabled</precondition> -->
 		<precondition>dialogs.actor_not_in_stalker</precondition>
 		<dont_has_info>esc_first_join_stalker</dont_has_info>
+		<dont_has_info>srp_freeplay</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>esc_leader_first_join_0</text>
