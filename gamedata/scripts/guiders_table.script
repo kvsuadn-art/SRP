@@ -54,7 +54,7 @@ teleport_points = {
 
 	esc_smart_terrain_2_12 =	{
 					level = "escape",
-					condlist = "{+mar_story_go_to_escape_done} true",
+					condlist = "{+mar_story_go_to_escape_done} true, {+srp_freeplay} true",
 					point = "esc_smart_terrain_2_12_teleport_walk",
 					look = "esc_smart_terrain_2_12_teleport_look"
 					},
@@ -68,7 +68,7 @@ teleport_points = {
 
 	esc_smart_terrain_7_11 =	{
 					level = "escape",
-					condlist = "{+mar_story_go_to_escape_done} true",
+					condlist = "{+mar_story_go_to_escape_done} true, {+srp_freeplay} true",
 					point = "esc_smart_terrain_7_11_teleport_walk",
 					look = "esc_smart_terrain_7_11_teleport_look"
 					},
