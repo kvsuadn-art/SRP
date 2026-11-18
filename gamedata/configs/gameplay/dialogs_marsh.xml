@@ -913,6 +913,7 @@
 				<next>3</next>
 				<next>4</next>
 				<next>5</next>
+				<next>94</next>
 				<next>99</next>
 			</phrase>
 			<phrase id="1">
@@ -944,9 +945,16 @@
 				<has_info>mar_story_go_to_marsh_done</has_info>
 				<next>51</next>
 			</phrase>
+			<phrase id="94">
+				<text/>
+				<has_info>srp_freeplay</has_info>
+				<dont_has_info>mar_story_go_to_marsh_done</dont_has_info>
+				<next>41</next>
+			</phrase>
 			<phrase id="99">
 				<text/>
 				<has_info>srp_freeplay</has_info>
+				<has_info>mar_story_go_to_marsh_done</has_info>
 				<next>51</next>
 			</phrase>
 			<phrase id="11">
