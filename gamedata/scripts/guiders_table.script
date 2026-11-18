@@ -10,42 +10,42 @@ teleport_points = {
 
 	mar_smart_terrain_4_5 =		{
 					level = "marsh",
-					condlist = "{+mar_tutorial_return_to_base_reversed} true",
+					condlist = "{+mar_tutorial_return_to_base_reversed} true, {+srp_freeplay} true",
 					point = "mar_smart_terrain_4_5_teleport_walk",
 					look = "mar_smart_terrain_4_5_teleport_look"
 					},
 
 	mar_smart_terrain_5_12 =	{
 					level = "marsh",
-					condlist = "{+mar_tutorial_return_to_base_reversed} true",
+					condlist = "{+mar_tutorial_return_to_base_reversed} true, {+srp_freeplay} true",
 					point = "mar_smart_terrain_5_12_teleport_walk",
 					look = "mar_smart_terrain_5_12_teleport_look"
 					},
 
 	mar_smart_terrain_8_8 =		{
 					level = "marsh",
-					condlist = "{+mar_tutorial_return_to_base_reversed} true",
+					condlist = "{+mar_tutorial_return_to_base_reversed} true, {+srp_freeplay} true",
 					point = "mar_smart_terrain_8_8_teleport_walk",
 					look = "mar_smart_terrain_8_8_teleport_look"
 					},
 
 	mar_smart_terrain_11_11 =	{
 					level = "marsh",
-					condlist = "{+mar_tutorial_return_to_base_reversed} true",
+					condlist = "{+mar_tutorial_return_to_base_reversed} true, {+srp_freeplay} true",
 					point = "mar_smart_terrain_11_11_teleport_walk",
 					look = "mar_smart_terrain_11_11_teleport_look"
 					},
 
 	mar_smart_terrain_10_5 =	{
 					level = "marsh",
-					condlist = "{+mar_tutorial_return_to_base_reversed} true",
+					condlist = "{+mar_tutorial_return_to_base_reversed} true, {+srp_freeplay} true",
 					point = "mar_smart_terrain_10_5_teleport_walk",
 					look = "mar_smart_terrain_10_5_teleport_look"
 					},
 
 	mar_smart_terrain_csky_base =	{
 					level = "marsh",
-					condlist = "{+mar_tutorial_return_to_base_reversed} true",
+					condlist = "{+mar_tutorial_return_to_base_reversed} true, {+srp_freeplay} true",
 					point = "mar_smart_terrain_csky_base_teleport_walk",
 					look = "mar_smart_terrain_csky_base_teleport_look"
 					},

@@ -19,7 +19,9 @@ function enable()
 	end
 end
 
--- Called once per new game from bind_stalker (first update, same place as the "global_dialogs" init).
+-- Called once per new game from bind_stalker, in actor_binder:net_spawn, i.e. before any object's logic is
+-- initialized: restrictors and NPCs initialize their logic on their own first update and must already see
+-- the mode flag, otherwise they would start in their story sections.
 function on_new_game()
 	local ini = ini_file("misc\\freeplay.ltx")
 	if utils.cfg_get_bool(ini, "freeplay", "enabled", nil, false, false) then

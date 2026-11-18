@@ -1,5 +1,5 @@
 [logic]
-active = remark@scene_2_window_idle_2
+active = {+srp_freeplay} remark@fp_scene_2_skip_talk, remark@scene_2_window_idle_2
 
 [remark@scene_2_window_idle_2]
 anim = mar_intro_2_window_idle
@@ -42,3 +42,19 @@ precond = usability
 meet_only_at_path = false
 trade_enable = false
 allow_break = false
+;=======================================================================
+; FREEPLAY BLOCK (srp_freeplay). Entered from [logic] active; the story sections above are untouched.
+; Lebedev does not wait for the player to talk to him: +mar_intro_scene_2_end is given at once (the zone
+; needs it, together with the camera effector end, to hand control to the player), and he walks out and
+; disappears on his own.
+;=======================================================================
+
+[remark@fp_scene_2_skip_talk]
+anim = mar_intro_2_window_idle
+on_timer = 1 | remark@fp_scene_2_finish %+mar_intro_scene_2_end%
+meet = no_meet
+
+[remark@fp_scene_2_finish]
+anim = mar_intro_2_walk_out
+meet = no_meet
+on_timer = 9500 | nil %=destroy_object%

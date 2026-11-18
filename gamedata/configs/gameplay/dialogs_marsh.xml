@@ -32,8 +32,10 @@
 				<next>3</next>
 				<next>4</next>
 				<next>9</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>mar_intro_talk_with_barman_done</dont_has_info>
 				<next>11</next>
@@ -59,6 +61,11 @@
 			<phrase id="9">
 				<text/>
 				<has_info>mar_intro_talk_with_commander_2_done</has_info>
+				<next>91</next>
+			</phrase>
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
 				<next>91</next>
 			</phrase>
 			<phrase id="11">
@@ -534,8 +541,13 @@
 				<next>6</next>
 				<next>7</next>
 				<next>8</next>
+				<next>94</next>
+				<next>95</next>
+				<next>96</next>
+				<next>97</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>mar_intro_talk_with_tactic_told</dont_has_info>
 				<dont_has_info>mar_intro_talk_with_commander_3_control</dont_has_info>
@@ -585,6 +597,30 @@
 				<text/>
 				<has_info>mar_story_go_to_escape_done</has_info>
 				<next>81</next>
+			</phrase>
+			<phrase id="94">
+				<precondition>dialogs.is_csky_at_expansion_0</precondition>
+				<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
+				<has_info>srp_freeplay</has_info>
+				<next>41</next>
+			</phrase>
+			<phrase id="95">
+				<precondition>dialogs.is_csky_at_expansion_1</precondition>
+				<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
+				<has_info>srp_freeplay</has_info>
+				<next>51</next>
+			</phrase>
+			<phrase id="96">
+				<precondition>dialogs.is_csky_at_expansion_2</precondition>
+				<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
+				<has_info>srp_freeplay</has_info>
+				<next>61</next>
+			</phrase>
+			<phrase id="97">
+				<precondition>dialogs.is_csky_at_expansion_3_or_higher</precondition>
+				<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
+				<has_info>srp_freeplay</has_info>
+				<next>71</next>
 			</phrase>
 			<phrase id="11">
 				<text>mar_csky_tactic_hello_dialog_11</text>
@@ -680,8 +716,10 @@
 				<next>3</next>
 				<next>4</next>
 				<next>9</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>mar_intro_talk_with_barman_done</dont_has_info>
 				<next>11</next>
@@ -707,6 +745,11 @@
 			<phrase id="9">
 				<text/>
 				<has_info>mar_intro_talk_with_commander_2_done</has_info>
+				<next>91</next>
+			</phrase>
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
 				<next>91</next>
 			</phrase>
 			<phrase id="11">
@@ -788,8 +831,10 @@
 				<next>3</next>
 				<next>4</next>
 				<next>9</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>mar_intro_talk_with_barman_done</dont_has_info>
 				<next>11</next>
@@ -815,6 +860,11 @@
 			<phrase id="9">
 				<text/>
 				<has_info>mar_intro_talk_with_commander_3_done</has_info>
+				<next>91</next>
+			</phrase>
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
 				<next>91</next>
 			</phrase>
 			<phrase id="11">
@@ -863,8 +913,10 @@
 				<next>3</next>
 				<next>4</next>
 				<next>5</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>mar_intro_talk_with_guide_started</dont_has_info>
 				<next>11</next>
@@ -890,6 +942,11 @@
 			<phrase id="5">
 				<text/>
 				<has_info>mar_story_go_to_marsh_done</has_info>
+				<next>51</next>
+			</phrase>
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
 				<next>51</next>
 			</phrase>
 			<phrase id="11">
@@ -1029,8 +1086,10 @@
 				<next>2</next>
 				<next>3</next>
 				<next>4</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>mar_intro_talk_with_commander_1_done</dont_has_info>
 				<next>11</next>
@@ -1050,6 +1109,11 @@
 			<phrase id="4">
 				<text/>
 				<has_info>mar_intro_talk_with_commander_2_done</has_info>
+				<next>41</next>
+			</phrase>
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
 				<next>41</next>
 			</phrase>
 			<phrase id="11">

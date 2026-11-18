@@ -9,6 +9,7 @@ cover_name         = mar_smart_cover_csky_barman_lead_stand_lean_on_bar
 loophole_name      = lead_stand_lean_on_bar
 cover_state        = idle_target
 on_info            = {+mar_intro_talk_with_commander_1_done} smartcover@main_idle, {+mar_intro_talk_with_barman_done} smartcover@intro_3_no_meet %=play_sound(mar_csky_barman_reply_0:csky:mar_csky_barman_name)%
+on_info2           = {+srp_freeplay} smartcover@main_idle ; Freeplay: skip the intro chain
 combat_ignore_cond = true
 meet               = meet@no_break
 def_state_moving   = walk

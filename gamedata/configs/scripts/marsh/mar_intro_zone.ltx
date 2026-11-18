@@ -1,5 +1,5 @@
 [logic]
-active = sr_idle@scene_1_spawn
+active = {+srp_freeplay} sr_idle@fp_scene_1_spawn, sr_idle@scene_1_spawn
 
 [sr_idle@scene_1_spawn]
 on_info = {+mar_intro_start} sr_idle@scene_1_time %=disable_ui =spawn_object(mar_intro_lebedev_1:mar_intro_scene_1_lebedev:0:249.3) =spawn_object(mar_intro_kalancha:mar_intro_scene_1_kalancha:0:163.0) =spawn_object(mar_intro_actor:mar_intro_scene_1_actor:0:0.0) =disable_level_changer(311:mar_disabled_level_changer) =disable_level_changer(312:mar_disabled_level_changer) =disable_level_changer(313:mar_disabled_level_changer)%
@@ -137,3 +137,26 @@ on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_3_or_higher} %+mar_
 on_info = {+agr_actor_on_agroprom} sr_idle@end_section %=enable_level_changer(313)%
 
 [sr_idle@end_section]
+
+;=======================================================================
+; FREEPLAY BLOCK (srp_freeplay). Entered from [logic] active; the story sections above are untouched.
+; Kept: the first cutscene and the wake-up (scenes 1 and 2), copied verbatim from the story sections.
+; Dropped: the quest chain (barman, commander, trader, guide, tutorial, surge, boars).
+; The Clear Sky faction war is world simulation and must run without the player: it is started here
+; (=start_sim) and the expansion loop below is shared with the story path.
+; Do NOT use =set_actor_faction(csky) here: it makes the player a Clear Sky member.
+; The level changers stay disabled as in the story intro (the story re-enables them later);
+; the way out of the Marsh in Freeplay is the guide (teleport dialogs).
+;=======================================================================
+
+[sr_idle@fp_scene_1_spawn]
+on_info = {+mar_intro_start} sr_idle@fp_scene_1_time %=disable_ui =spawn_object(mar_intro_lebedev_1:mar_intro_scene_1_lebedev:0:249.3) =spawn_object(mar_intro_kalancha:mar_intro_scene_1_kalancha:0:163.0) =spawn_object(mar_intro_actor:mar_intro_scene_1_actor:0:0.0) =disable_level_changer(311:mar_disabled_level_changer) =disable_level_changer(312:mar_disabled_level_changer) =disable_level_changer(313:mar_disabled_level_changer)%
+
+[sr_idle@fp_scene_1_time]
+on_timer = 40000 | sr_idle@fp_scene_2_spawn %=run_postprocess(mar_fade)%
+
+[sr_idle@fp_scene_2_spawn]
+on_timer = 2500 | sr_idle@fp_scene_2_end %+mar_intro_scene_1_end =spawn_object(mar_intro_lebedev_2:mar_intro_scene_2_lebedev:0:270.0) =update_weather(true) =play_sound(mar_intro_getting_up)%
+
+[sr_idle@fp_scene_2_end]
+on_info = {+mar_intro_scene_2_end +mar_intro_scene_2_cameff_end} sr_idle@expansion_0_main %=enable_ui =start_sim%
