@@ -1943,3 +1943,8 @@ end
 function freeplay()
 	ogsm_freeplay.armagezdec()
 end
+
+-- Freeplay: starting kit, usable as %=freeplay_give_start_equipment%
+function freeplay_give_start_equipment(actor, npc, p)
+	freeplay_mode.give_start_equipment()
+end

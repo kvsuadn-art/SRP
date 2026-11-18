@@ -21,6 +21,12 @@ function is_freeplay(actor, npc, p)
 	return freeplay_mode.is_freeplay()
 end
 
+-- Freeplay: actor rank gate, {=actor_rank_ge(300)}. Rank is the engine's character rank
+-- (stories use 0 novice / 300 experienced / 600 veteran / 900 master as the usual class borders).
+function actor_rank_ge(actor, npc, p)
+	return db.actor:character_rank() >= (tonumber(p and p[1]) or 0)
+end
+
 function is_enemy_actor(enemy)
 	return enemy:id() == 0 -- actor ID
 end

@@ -1,8 +1,8 @@
 #include "trade_template.ltx"
 
 [trader]
-buy_condition = {+gar_quest_liberate_conc_camp_done} trader_after_liberate, trader_generic_buy
-sell_condition = {+gar_quest_liberate_conc_camp_done} sell_after_liberate, trader_generic_sell
+buy_condition = {+srp_freeplay =actor_rank_ge(300)} trader_after_liberate, {+gar_quest_liberate_conc_camp_done} trader_after_liberate, trader_generic_buy
+sell_condition = {+srp_freeplay =actor_rank_ge(300)} sell_after_liberate, {+gar_quest_liberate_conc_camp_done} sell_after_liberate, trader_generic_sell
 buy_supplies = supplies_start
 
 [trader_generic_buy]:trade_nothing

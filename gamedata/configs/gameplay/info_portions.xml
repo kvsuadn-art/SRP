@@ -11,6 +11,7 @@
 <!--	Freeplay start	-->
 
 	<info_portion id="srp_freeplay"/>
+	<info_portion id="srp_freeplay_equipped"/>
 
 <!--	Freeplay end	-->
 

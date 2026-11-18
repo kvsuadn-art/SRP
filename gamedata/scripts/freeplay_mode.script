@@ -28,3 +28,29 @@ function on_new_game()
 		enable()
 	end
 end
+
+-- Gives the Freeplay starting kit (misc\freeplay.ltx [start_equipment]) to the actor, once per game.
+function give_start_equipment()
+	local EQUIPPED = "srp_freeplay_equipped"
+	if has_alife_info(EQUIPPED) then
+		return
+	end
+	local act = db.actor
+	local ini = ini_file("misc\\freeplay.ltx")
+	local sim = alife()
+	if act and sim and ini:section_exist("start_equipment") then
+		local pos, lvid, gvid, id = act:position(), act:level_vertex_id(), act:game_vertex_id(), act:id()
+		for i = 0, ini:line_count("start_equipment") - 1 do
+			local result, section, value = ini:r_line("start_equipment", i, "", "")
+			local count = tonumber(value) or 1
+			if string.find(section, "^ammo_") then
+				sim:create_ammo(section, pos, lvid, gvid, id, count)
+			else
+				for n = 1, count do
+					sim:create(section, pos, lvid, gvid, id)
+				end
+			end
+		end
+	end
+	act:give_info_portion(EQUIPPED)
+end

@@ -1,9 +1,9 @@
 #include "trade_template.ltx"
 
 [trader]
-buy_condition = {+esc_bring_habar_complete} trade_good_price_buy, trade_generic_buy
-sell_condition = {+esc_bring_habar_complete} trade_good_price_sell, trade_generic_sell
-buy_supplies = {+gar_story_got_info_from_digger} trade_new_supplies, {+esc_bring_habar_complete} supplies_good_price, supplies_start
+buy_condition = {+srp_freeplay =actor_rank_ge(300)} trade_good_price_buy, {+esc_bring_habar_complete} trade_good_price_buy, trade_generic_buy
+sell_condition = {+srp_freeplay =actor_rank_ge(300)} trade_good_price_sell, {+esc_bring_habar_complete} trade_good_price_sell, trade_generic_sell
+buy_supplies = {+srp_freeplay =actor_rank_ge(600)} trade_new_supplies, {+srp_freeplay =actor_rank_ge(300)} supplies_good_price, {+gar_story_got_info_from_digger} trade_new_supplies, {+esc_bring_habar_complete} supplies_good_price, supplies_start
 
 [trade_generic_buy]:trade_nothing
 af_baloon                       = 0.7, 0.7

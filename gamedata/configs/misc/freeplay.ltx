@@ -3,3 +3,14 @@
 
 [freeplay]
 enabled = false
+
+; Starting kit given once at the end of the Marsh intro in Freeplay (replaces Suslov's story kit, whose
+; giver dialogs_marsh.tutorial_give_equipment lives in the base game and is not available to the mod).
+; "section = count". PLACEHOLDER list - choose what the player should really get.
+; Ammo sections are created as one stack of <count> rounds, everything else as <count> separate items.
+[start_equipment]
+wpn_pm = 1
+ammo_9x18_fmj = 60
+bandage = 3
+medkit = 2
+conserva = 3
