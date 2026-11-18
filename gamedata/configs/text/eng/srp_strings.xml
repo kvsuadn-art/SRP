@@ -143,4 +143,9 @@
 		<text>(preparing)</text>
 	</string>
 
+	<!-- Freeplay -->
+	<string id="srp_fp_esc_hello">
+		<text>What do you need?</text>
+	</string>
+
 </string_table>

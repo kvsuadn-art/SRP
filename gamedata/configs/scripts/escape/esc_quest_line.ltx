@@ -1,5 +1,5 @@
 [logic]
-active = sr_idle@actor_on_level
+active = {+srp_freeplay} sr_idle@fp_arrival, sr_idle@actor_on_level
 
 [sr_idle@actor_on_level]
 on_info = sr_idle@actor_on_level_wait %=disable_level_changer(446:tips_wait_conversation_finish)%
@@ -70,3 +70,14 @@ on_info = {+esc_bring_habar_complete} sr_idle@esc_gar %=give_inited_task(storyli
 on_actor_not_in_zone = esc_space_restrictor_trader_door_into | {+esc_join_need_sound !is_faction_enemy_to_actor(stalker) !actor_in_stalker} sr_idle@end %=play_sound(esc_can_join_stalker:stalker:esc_leader_stalkerbase_name)%
 
 [sr_idle@end]
+
+;=======================================================================
+; FREEPLAY BLOCK (srp_freeplay). Entered from [logic] active; the story chain above is not run:
+; no reach-trader / stalker-base / military tasks, no Sidorovich PDA call, no mar_story_go_to_escape_done.
+; Done once on arrival, same as the story does around Sidorovich: stalkers are neutral, level changer 446 open.
+;=======================================================================
+
+[sr_idle@fp_arrival]
+on_info = {!black_screen} sr_idle@fp_idle %=set_level_faction_community(stalker:escape:neutral) =enable_level_changer(446)%
+
+[sr_idle@fp_idle]

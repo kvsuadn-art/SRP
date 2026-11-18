@@ -177,8 +177,10 @@
 				<next>4</next>
 <!--			<next>5</next> -->
 				<next>6</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>esc_military_comm_talked</dont_has_info>
 				<dont_has_info>esc_stalker_leader_meet</dont_has_info>
@@ -280,6 +282,15 @@
 			</phrase>
 			<phrase id="66">
 				<text>esc_leader_talk_66</text>
+			</phrase>
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
+				<next>991</next>
+			</phrase>
+			<phrase id="991">
+				<text>srp_fp_esc_hello</text>
+				<action>dialogs.break_dialog</action>
 			</phrase>
 		</phrase_list>
 	</dialog>
@@ -447,6 +458,7 @@
 				<next>4</next>
 				<next>5</next>
 				<next>6</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
 				<text/>
@@ -568,6 +580,11 @@
 				<text>esc_comm_talk_11111122</text>
 			</phrase>
 -->
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
+				<next>5555</next>
+			</phrase>
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_trader_about_other">
@@ -814,8 +831,10 @@
 				<next>1</next>
 				<next>2</next>
 				<next>3</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text>esc_wolf_talk_1</text>
 				<dont_has_info>esc_wolf_talked</dont_has_info>
 				<dont_has_info>esc_actor_inside_traders_dung</dont_has_info>
@@ -853,6 +872,15 @@
 				<give_info>esc_wolf_talked_2</give_info>
 			</phrase>
 -->
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
+				<next>991</next>
+			</phrase>
+			<phrase id="991">
+				<text>srp_fp_esc_hello</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_wolf_stalker_novice">
@@ -1161,8 +1189,10 @@
 				<next>2</next>
 				<next>4</next>
 				<next>5</next>
+				<next>99</next>
 			</phrase>
 			<phrase id="1">
+				<dont_has_info>srp_freeplay</dont_has_info>
 				<text/>
 				<dont_has_info>esc_actor_inside_traders_dung</dont_has_info>
 				<next>11</next>
@@ -1240,6 +1270,11 @@
 				<give_info>esc_actor_inside_traders_dung</give_info>
 				<give_info>esc_reach_trader_complete</give_info>
 				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="99">
+				<text/>
+				<has_info>srp_freeplay</has_info>
+				<next>55</next>
 			</phrase>
 		</phrase_list>
 	</dialog>

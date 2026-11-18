@@ -2,7 +2,7 @@
 active = sr_idle
 
 [sr_idle]
-on_actor_inside = sr_idle@minus %+esc_actor_come_first -esc_trader_bye_played%
+on_actor_inside = {+srp_freeplay} sr_idle@minus %+esc_actor_come_first -esc_trader_bye_played +esc_trader_hello_first_played%, sr_idle@minus %+esc_actor_come_first -esc_trader_bye_played%
 
 [sr_idle@minus]
 on_info = {+esc_trader_hello_first_played} sr_idle@last
