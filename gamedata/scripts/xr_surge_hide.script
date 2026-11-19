@@ -17,12 +17,12 @@ cur_prop = 15
 local add_prop = 10
 levels_surge_table = {
 --	                    marsh       = {condlist="{+mar_story_go_to_escape_done} true", surge_time=30},
-											escape      = {condlist="{+esc_bring_habar_complete} true", surge_time=40},
-											garbage     = {condlist="{+gar_story_got_info_from_digger -val_deliver_pda_done} true, {+agr_garbage_end} true", surge_time=45},
-											darkvalley  = {condlist="{+val_deliver_pda_done} true", surge_time=45},
-											agroprom    = {condlist="{+agru_go_out_end_task_complete} true", surge_time=30},
-											red_forest  = {condlist="{+red_strelok_task_end -red_bridge_scene_begin} true, {+red_bridge_finished} true, {+red_bridge_actor_fail} true", surge_time=30},
-											military    = {condlist="{+mil_actor_go_to_limansk} true", surge_time=30},
+											escape      = {condlist="{+srp_freeplay} true, {+esc_bring_habar_complete} true", surge_time=40},
+											garbage     = {condlist="{+srp_freeplay} true, {+gar_story_got_info_from_digger -val_deliver_pda_done} true, {+agr_garbage_end} true", surge_time=45},
+											darkvalley  = {condlist="{+srp_freeplay} true, {+val_deliver_pda_done} true", surge_time=45},
+											agroprom    = {condlist="{+srp_freeplay} true, {+agru_go_out_end_task_complete} true", surge_time=30},
+											red_forest  = {condlist="{+srp_freeplay} true, {+red_strelok_task_end -red_bridge_scene_begin} true, {+red_bridge_finished} true, {+red_bridge_actor_fail} true", surge_time=30},
+											military    = {condlist="{+srp_freeplay} true, {+mil_actor_go_to_limansk} true", surge_time=30},
 										 }
 
 ---------------------------------------------------------------------------------------------------------------------

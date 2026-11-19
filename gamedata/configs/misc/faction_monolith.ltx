@@ -27,7 +27,7 @@ military 	= sim_default_monolith_0, 1, sim_default_monolith_1, 1, sim_default_mo
 [expansion_0]
 base_squad_number = 0
 respawn_idle_time = 100 ;Время между двумя попытками доспауна отрядов в игровых минутах.
-precondition_cond = {+mil_start_after_red_forest_completed} true, false
+precondition_cond = {+srp_freeplay} true, {+mil_start_after_red_forest_completed} true, false
 
 
 [expansion_1]
