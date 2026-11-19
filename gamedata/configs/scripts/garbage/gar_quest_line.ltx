@@ -2,7 +2,7 @@
 active = sr_idle@1
 
 [sr_idle@1]
-on_info = sr_idle@2 %=disable_level_changer(704) =disable_level_changer(705) +gar_visited_level%
+on_info = {+srp_freeplay} sr_idle@fp_idle %=enable_level_changer(704) =enable_level_changer(705) =enable_level_changer(707) +gar_visited_level%, sr_idle@2 %=disable_level_changer(704) =disable_level_changer(705) +gar_visited_level%
 
 [sr_idle@2]
 on_info = {+gar_story_got_info_from_digger} sr_idle@5, {+esc_bring_habar_complete +gar_story_reached_dead_diggers_camp} sr_idle@3 %=give_inited_task(storyline:gar_story_search_digger_bodies:csky)%
@@ -33,3 +33,6 @@ on_info = {+red_strelok_task_end} sr_idle@11 %=enable_level_changer(704)%
 on_info = {+mil_start_after_red_forest_completed} sr_idle@end_section %=enable_level_changer(705)%
 
 [sr_idle@end_section]
+
+; Freeplay: all exits stay open, no story quest chain on this level
+[sr_idle@fp_idle]
