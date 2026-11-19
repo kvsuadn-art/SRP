@@ -13,7 +13,7 @@ attack_power = {+red_artefact_hunters_go2} 50
 [red_pursuit_bounty_hunters_squad_1]
 faction = stalker
 npc = red_bounty_hunter_6
-target_smart = {+red_bounty_hunters_free} nil, red_smart_terrain_bridge
+target_smart = {+srp_freeplay} nil, {+red_bounty_hunters_free} nil, red_smart_terrain_bridge
 attack_power = 500
 sympathy = 0
 relationship = enemy
@@ -21,7 +21,7 @@ relationship = enemy
 [red_pursuit_bounty_hunters_squad_2]
 faction = stalker
 npc = red_bounty_hunter_1, red_bounty_hunter_2, red_bounty_hunter_3, red_bounty_hunter_4, red_bounty_hunter_5
-target_smart = {+red_bounty_hunters_free} nil, red_smart_terrain_bridge
+target_smart = {+srp_freeplay} nil, {+red_bounty_hunters_free} nil, red_smart_terrain_bridge
 sympathy = 0
 relationship = enemy
 attack_power = 500
@@ -32,7 +32,7 @@ attack_power = 500
 [red_pursuit_bounty_hunters_squad_3]
 faction = stalker
 npc = red_pursuit_bounty_hunter, red_pursuit_bounty_hunter, red_pursuit_bounty_hunter, red_pursuit_bounty_hunter
-target_smart = {+red_bounty_hunters_free} nil, red_smart_terrain_4_5
+target_smart = {+srp_freeplay} nil, {+red_bounty_hunters_free} nil, red_smart_terrain_4_5
 sympathy = 0
 ;relationship = neutral ; This only zeroes personal_goodwill.
 
@@ -42,7 +42,7 @@ sympathy = 0
 [red_allyes_recon_squad_1]
 faction = killer
 npc = red_bridge_stalker_leshiy, red_bridge_ally_stalker_1, red_bridge_ally_stalker_2, red_bridge_ally_stalker_3, red_bridge_ally_stalker_4
-target_smart = {=squad_in_zone(red_allyes_recon_squad_1:red_smart_terrain_5_5_defence)} nil, {+red_leshiy_reward_done +red_bridge_allyes_free} red_smart_terrain_5_5, {+red_bridge_allyes_free} red_smart_terrain_bridge, {+red_bridge_bandit_out}red_bridge_bandit_smart, red_bridge_ally_smart
+target_smart = {+srp_freeplay} nil, {=squad_in_zone(red_allyes_recon_squad_1:red_smart_terrain_5_5_defence)} nil, {+red_leshiy_reward_done +red_bridge_allyes_free} red_smart_terrain_5_5, {+red_bridge_allyes_free} red_smart_terrain_bridge, {+red_bridge_bandit_out}red_bridge_bandit_smart, red_bridge_ally_smart
 invulnerability = {+red_bridge_allyes_try_pull_down} false, true
 sympathy = 0
 relationship = friend

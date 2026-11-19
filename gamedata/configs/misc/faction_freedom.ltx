@@ -19,21 +19,21 @@ military   = sim_default_freedom_0,  5, sim_default_freedom_1, 10, sim_default_f
 [expansion_0]
 base_squad_number             = 13 ; 20
 precondition_target           = val_smart_terrain_7_3, val_smart_terrain_7_4, val_smart_terrain_7_5 ; Uncle Yar's hangar, Freedom base, Gulp of Freedom bar
-precondition_cond             = {+val_strike_antenna_ready} true, false
+precondition_cond             = {+srp_freeplay} true, {+val_strike_antenna_ready} true, false
 
 ;-----------------------
 
 [expansion_1]
 base_squad_number             = 20
 precondition_target           = val_smart_terrain_7_8, val_smart_terrain_4_0 ; Swamp camp, Encampment on farm
-precondition_cond             = {+val_freedom_2_1_dead} true, {+val_destroy_killer_base_done} true, false
+precondition_cond             = {+srp_freeplay} true, {+val_freedom_2_1_dead} true, {+val_destroy_killer_base_done} true, false
 
 ;-----------------------
 
 [expansion_2]
 base_squad_number             = 20
 precondition_target_eliminate = val_smart_terrain_1_2 ; Factory lobby
-precondition_cond             = {+val_destroy_killer_base_done} true, false
+precondition_cond             = {+srp_freeplay} true, {+val_destroy_killer_base_done} true, false
 
 ;-----------------------
 
