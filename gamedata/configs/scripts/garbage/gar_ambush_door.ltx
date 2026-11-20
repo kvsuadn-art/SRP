@@ -1,8 +1,5 @@
-<<<<<<< Updated upstream
-; Copy of the base-game file with ONE changed line ([logic] active, Freeplay alternative).
 [logic]
-active = {+srp_freeplay} ph_door@closed, ph_door@locked
-
+active = {+srp_freeplay} ph_door@closed, ph_door@locked ; Freeplay
 [ph_door@locked]
 locked = true
 closed = true
@@ -27,32 +24,3 @@ snd_open_start = wood_small_open
 snd_close_start = wood_small_close_start
 snd_close_stop = wood_small_close_stop
 on_use = ph_door@closed
-=======
-[logic]
-active = ph_door@locked
-
-[ph_door@locked]
-locked = true
-closed = true
-snd_open_start = wood_small_open
-snd_close_start = wood_small_close_start
-snd_close_stop = wood_small_close_stop
-;on_use = ph_door@open
-on_info = {+val_deliver_pda_complete} ph_door@closed
-
-[ph_door@closed]
-locked = false
-closed = true
-snd_open_start = wood_small_open
-snd_close_start = wood_small_close_start
-snd_close_stop = wood_small_close_stop
-on_use = ph_door@open
-
-[ph_door@open]
-locked = false
-closed = false
-snd_open_start = wood_small_open
-snd_close_start = wood_small_close_start
-snd_close_stop = wood_small_close_stop
-on_use = ph_door@closed
->>>>>>> Stashed changes
