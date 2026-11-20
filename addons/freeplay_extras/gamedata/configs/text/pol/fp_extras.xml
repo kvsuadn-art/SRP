@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="doc_descr_general">
+		<text>A folder of documents stamped "Top Secret". Most of the text is unreadable, but some paragraphs can be made out. The information may interest faction leaders as well as scientists.</text>
+	</string>
+	<string id="saharov_items_dialog_0">
+		<text>I was wandering around and came across a stiff body with some strange documents...</text>
+	</string>
+	<string id="saharov_items_dialog_1">
+		<text>Hm, looks like correspondence of our colleagues, and some names seem familiar... But we were told they died long ago... Young man, I am ready to buy these documents from you; they are of no use to you anyway.</text>
+	</string>
+	<string id="saharov_items_dialog_2">
+		<text>By all means.</text>
+	</string>
+	<string id="mar_csky_leader_items_dialog_0">
+		<text>Took some documents off a dead man in my spare time, thought you might be interested...</text>
+	</string>
+	<string id="mar_csky_leader_items_dialog_1">
+		<text>A timely and truly valuable find. Information like this must not fall into the wrong hands. If you find more, bring all such documents only to me. And better not to look inside yourself. Here is your well-earned reward...</text>
+	</string>
+	<string id="mar_csky_leader_items_dialog_2">
+		<text>Agreed.</text>
+	</string>
+	<string id="val_freedom_leader_items_dialog_0">
+		<text>Would a folder of intel interest you by any chance? Found it in my spare time...</text>
+	</string>
+	<string id="val_freedom_leader_items_dialog_1">
+		<text>Let me take a look... hmm... quite curious. I can toss in some cash for a find like this...</text>
+	</string>
+	<string id="val_freedom_leader_items_dialog_2">
+		<text>Much obliged.</text>
+	</string>
+	<string id="agr_duty_base_commander_items_dialog_0">
+		<text>Looks like I stumbled upon some curious information...</text>
+	</string>
+	<string id="agr_duty_base_commander_items_dialog_1">
+		<text>I need to look it over first, then we will decide what is curious... wow! Very curious. I will buy these documents for a reasonable sum, not millions, but enough to cover the delivery...</text>
+	</string>
+	<string id="agr_duty_base_commander_items_dialog_2">
+		<text>Better than nothing.</text>
+	</string>
+	<string id="bandit_base_commander_items_dialog_0">
+		<text>Hey, who around here can I pass valuable info to?</text>
+	</string>
+	<string id="bandit_base_commander_items_dialog_1">
+		<text>Well, sure thing, pal! What did you dig up, hand it over. Oh... I have buddies who will definitely be interested. Here is some cash, now go look for more and bring it all to me, I will figure out where to take it next.</text>
+	</string>
+	<string id="bandit_base_commander_items_dialog_2">
+		<text>Okay.</text>
+	</string>
+	<string id="stalker_base_commander_items_dialog_0">
+		<text>Found the body of a stalker who seems to have got hold of valuable information...</text>
+	</string>
+	<string id="stalker_base_commander_items_dialog_1">
+		<text>Yes, our guys keep poking their noses everywhere... That is how it ends, if a mutant does not eat you, someone kills you for excess curiosity. Wow... They could easily kill you for such information. Better give the documents to me, I will get rid of them. I am ready to pay a little, here.</text>
+	</string>
+	<string id="stalker_base_commander_items_dialog_2">
+		<text>All right.</text>
+	</string>
+	<string id="doc_1">
+		<text>Transfer of the Territory</text>
+	</string>
+	<string id="doc_2">
+		<text>Hermit Scientists</text>
+	</string>
+	<string id="doc_3">
+		<text>Beyond Limits</text>
+	</string>
+	<string id="doc_4">
+		<text>Laboratory Rivalry</text>
+	</string>
+	<string id="doc_5">
+		<text>Sheep</text>
+	</string>
+	<string id="doc_6">
+		<text>Prisoners</text>
+	</string>
+	<string id="doc_7">
+		<text>Unusual Money</text>
+	</string>
+	<string id="doc_8">
+		<text>O-Consciousness</text>
+	</string>
+	<string id="doc_9">
+		<text>Future of Humanity</text>
+	</string>
+	<string id="doc_10">
+		<text>A Spoonful of Tar</text>
+	</string>
+	<string id="doc_11">
+		<text>Third-Kind Psi Influence</text>
+	</string>
+	<string id="doc_12">
+		<text>Extraordinary Danger</text>
+	</string>
+	<string id="doc_13">
+		<text>Precautions</text>
+	</string>
+	<string id="doc_14">
+		<text>Final Stage</text>
+	</string>
+	<string id="doc_15">
+		<text>Turning Point</text>
+	</string>
+</string_table>

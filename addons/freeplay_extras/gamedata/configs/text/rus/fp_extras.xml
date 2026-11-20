@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+
+	<string id="doc_descr_general">
+		<text>Папка с документами с грифом «Секретно». Большую часть текста невозможно разобрать, но некоторые абзацы можно прочитать. Информация может заинтересовать как лидеров группировок, так и учёных.</text>
+	</string>
+
+	<string id="doc_1">
+		<text>Передача территории</text>
+	</string>
+	<string id="doc_2">
+		<text>Учёные-отшельники</text>
+	</string>
+	<string id="doc_3">
+		<text>Запредельные режимы</text>
+	</string>
+	<string id="doc_4">
+		<text>Конкуренция лабораторий</text>
+	</string>
+	<string id="doc_5">
+		<text>Овцы</text>
+	</string>
+	<string id="doc_6">
+		<text>Заключенные</text>
+	</string>
+	<string id="doc_7">
+		<text>Небанальные деньги</text>
+	</string>
+	<string id="doc_8">
+		<text>О-Сознание</text>
+	</string>
+	<string id="doc_9">
+		<text>Будущее человечества</text>
+	</string>
+	<string id="doc_10">
+		<text>Ложечка дёгтя</text>
+	</string>
+	<string id="doc_11">
+		<text>Пси-воздействие третьего рода</text>
+	</string>
+	<string id="doc_12">
+		<text>Необычайная опасность</text>
+	</string>
+	<string id="doc_13">
+		<text>Меры предосторожности</text>
+	</string>
+	<string id="doc_14">
+		<text>Финальная стадия</text>
+	</string>
+	<string id="doc_15">
+		<text>Переломный момент</text>
+	</string>
+
+	<string id="saharov_items_dialog_0">
+		<text>Бродил тут по окрестностям, набрёл на окоченевшее тело со странными документами...</text>
+	</string>
+	<string id="saharov_items_dialog_1">
+		<text>Хм, похоже на какую-то переписку наших коллег, и некоторые имена мне кажутся знакомыми... Но нам сообщали, что они давно скончались... Молодой человек, я готов выкупить у вас эти документы, вам они всё равно ни к чему.</text>
+	</string>
+	<string id="saharov_items_dialog_2">
+		<text>Да пожалуйста.</text>
+	</string>
+
+	<string id="mar_csky_leader_items_dialog_0">
+		<text>Снял вот на досуге какие-то документы с одного погибшего, думаю, вас заинтересует...</text>
+	</string>
+	<string id="mar_csky_leader_items_dialog_1">
+		<text>Своевременная и действительно ценная находка. Подобная информация не должна попасть в чужие руки. Если найдешь ещё - неси все подобные документы только мне. И желательно сам в них не заглядывай. Держи заслуженную награду...</text>
+	</string>
+	<string id="mar_csky_leader_items_dialog_2">
+		<text>Договорились.</text>
+	</string>
+
+	<string id="val_freedom_leader_items_dialog_0">
+		<text>Папка с инфой не интересует случайно? Нашёл тут на досуге...</text>
+	</string>
+	<string id="val_freedom_leader_items_dialog_1">
+		<text>Позволь взглянуть... хмм... очень даже любопытно. Поэтому вполне могу подкинуть деньжат за такую находку...</text>
+	</string>
+	<string id="val_freedom_leader_items_dialog_2">
+		<text>Премного благодарен.</text>
+	</string>
+
+	<string id="agr_duty_base_commander_items_dialog_0">
+		<text>Похоже, случайно набрел на любопытную инфу...</text>
+	</string>
+	<string id="agr_duty_base_commander_items_dialog_1">
+		<text>Надо бы ознакомиться сначала, а там уж решим, что любопытно... ого! Весьма любопытно. Выкуплю эти документы за вменяемую сумму, не миллионы, но расходы на доставку окупит...</text>
+	</string>
+	<string id="agr_duty_base_commander_items_dialog_2">
+		<text>Всё лучше, чем ничего.</text>
+	</string>
+
+	<string id="bandit_base_commander_items_dialog_0">
+		<text>Слышь, а кому тут поблизости можно спихнуть ценную инфу?</text>
+	</string>
+	<string id="bandit_base_commander_items_dialog_1">
+		<text>Ну дык эта... Конечно, Йоге, брателла! Чё ты там надыбал-то, давай сюда. Оп-па... Есть у меня кореша, которые этим точно заинтересуются. Короче, на бабла за это и иди ещё ищи, всё неси мне, я уже разрулю, куда с этим дальше тыркаться.</text>
+	</string>
+	<string id="bandit_base_commander_items_dialog_2">
+		<text>Ладно.</text>
+	</string>
+
+	<string id="stalker_base_commander_items_dialog_0">
+		<text>Нашёл тут тело сталкера, который похоже раздобыл ценную информацию...</text>
+	</string>
+	<string id="stalker_base_commander_items_dialog_1">
+		<text>Да, лезут наши ребята вечно куда попало... Вот так оно и заканчивается потом, если не монстр сожрёт, так за любопытство лишнее прибьют. Ух ты... Да за такую информацию точно прибить могут. Давай документы лучше мне, я от них избавлюсь. Готов заплатить немного, держи.</text>
+	</string>
+	<string id="stalker_base_commander_items_dialog_2">
+		<text>И на этом спасибо.</text>
+	</string>
+
+
+	<string id="freedom_trader_job_dialog_0">
+		<text>Приветствую, командир. Может чем помочь?</text>
+	</string>
+	<string id="freedom_trader_job_dialog_1">
+		<text>Панимаишь тут такои дело, дарагой. Бил у миня талысман. Настоячий сымейны рилыквия! Даражил ею как зыныца ока, обыригал от пахытытелей. Ни убирег! Патырял сам свой талысман. Панимаеишь? Сам обыригал и сам патырял. Балда я польний! Есили наидешь мой рилыквий, то я запилатити тебе корочо. Не самниваися! Ты гилавное наиди талысман...</text>
+	</string>
+	<string id="freedom_trader_job_dialog_2">
+		<text>Да я не против посодействовать, а что хоть за талисман?</text>
+	</string>
+	<string id="freedom_trader_job_dialog_3">
+		<text>Билиардни шар! Забил сиказать, извини дарагой. Это очинь хароший билиардни шар, он пириносить удача!</text>
+	</string>
+	<string id="freedom_trader_job_dialog_4">
+		<text>Пускай будет шар. Главное, чтобы и сумма была кругленькая.</text>
+	</string>
+	<string id="freedom_trader_job_done_dialog_0">
+		<text>Отыскал я твой шар бильярдный...</text>
+	</string>
+	<string id="freedom_trader_job_done_dialog_1">
+		<text>Ай маладца! Ай парадывал! Вот диржи нагряду! Ай заслужиль!</text>
+	</string>
+	<string id="freedom_trader_job_done_dialog_2">
+		<text>Вполне достойно за шарик...</text>
+	</string>
+
+	<string id="freedom_barman_job_dialog_0">
+		<text>Может чем подсобить, дружище?</text>
+	</string>
+	<string id="freedom_barman_job_dialog_1">
+		<text>Подсобить, говоришь. Вообще, конечно, нечем тут подсабливать. Дымок заструился и проблемы улетучились! Но есть деликатное одно дельце. Был у меня детектор в начале карьеры. Ошивался я по предбанникам, по свалкам разным и хлам собирал. Детектор этот счастливым был! Быстро я разбогател и дело открыл. Вот здесь и открыл. Но вот незадача! Детектор я тот посеял. Сам не знаю, где и когда. Вот если бы сыскать его, то и был бы я счастлив со счастливым детектором...</text>
+	</string>
+	<string id="freedom_barman_job_dialog_2">
+		<text>Отличить-то его каким макаром?</text>
+	</string>
+	<string id="freedom_barman_job_dialog_3">
+		<text>Счастливая аура у моего детектора! Так и отличить. Но если серьёзно, то отличить можно по наклейкам с бананов. Если ещё серьёзней, то заплачу нормально за такую доставку. Сам детектор не рабочий. Стоимость его равно нолику. Может быть, полсотник кто и накинет за запчасти. Но мне он дорог как память и достойно заплачу...</text>
+	</string>
+	<string id="freedom_barman_job_dialog_4">
+		<text>Договорились.</text>
+	</string>
+	<string id="freedom_barman_job_done_dialog_0">
+		<text>Отыскал я твоё счастье...</text>
+	</string>
+	<string id="freedom_barman_job_done_dialog_1">
+		<text>Вот ведь порадовал старика! Вот ведь осчастливил! Сейчас и тебе перекачаю немного тугрикового счастья...</text>
+	</string>
+	<string id="freedom_barman_job_done_dialog_2">
+		<text>Спасибо. Пойду дальше.</text>
+	</string>
+
+	<string id="duty_trader_job_dialog_0">
+		<text>Работа есть?</text>
+	</string>
+	<string id="duty_trader_job_dialog_1">
+		<text>Нет ничего у меня и глупых вопросов здесь не приветствуют... хотя нет... подожди. Ты вроде не болтливый. Давай я тебе сложное одно дельце подскажу. Была у одного моего товарища чашка удивительная. Дорога она была ему. Вроде бы обыкновенная чашка с медведем и...</text>
+	</string>
+	<string id="duty_trader_job_dialog_2">
+		<text>С чем? Кажется, я ослышался...</text>
+	</string>
+	<string id="duty_trader_job_dialog_3">
+		<text>Будем смеяться или на работу наниматься?!? На чашке был нарисован медведь, и мне... то есть моему приятелю эта чашка была дорога. Воспоминания навевала жизнерадостные. Если возьмёшься найти эту кружку для меня, в смысле для моего приятеля, то я заплачу и передам ему, моему приятелю. Годится такая работа?</text>
+	</string>
+	<string id="duty_trader_job_dialog_4">
+		<text>Вполне.</text>
+	</string>
+	<string id="duty_trader_job_done_dialog_0">
+		<text>Нашёл я твою чашку с медведем...</text>
+	</string>
+	<string id="duty_trader_job_done_dialog_1">
+		<text>Нашёл! Потрясающе! Вот ведь мой товарищ обрадуется! Сейчас переброшу тебе спонсорские взносы, давай свой наладонник... да и лучше не распространяйся об этой чашке? Мне... то есть моему товарищу хотелось бы оставить это в тайне. Думаю, ты понимаешь, наёмник.</text>
+	</string>
+	<string id="duty_trader_job_done_dialog_2">
+		<text>Понимаю. Ничего не было.</text>
+	</string>
+
+	<string id="duty_barman_job_dialog_0">
+		<text>Помощь не требуется?</text>
+	</string>
+	<string id="duty_barman_job_dialog_1">
+		<text>Если ты вообще спрашиваешь, тогда не требуется, а если лично меня, то могу подкинуть одну работу непыльную. Хотя это даже не работа, а просто пунктик на заметку кладоискателям и путешественникам. Вдруг наткнёшься на одну вещицу в своих похождениях, то вот я бы и выкупил эту вещицу...</text>
+	</string>
+	<string id="duty_barman_job_dialog_2">
+		<text>О чём речь?</text>
+	</string>
+	<string id="duty_barman_job_dialog_3">
+		<text>Речь о сувенирчике небольшом в виде гранаты. Совершенно ничего выдающегося, обычный дешёвенький брелок с кольцом. Но меня он оберегал, как талисман. Всё удачно и складно у меня шло, пока граната была со мной. Потом потерял случайно и всё поехало под откос. Вот отсиживаюсь в тылу барной стоечки, пока удача не благоволит...</text>
+	</string>
+	<string id="duty_barman_job_dialog_4">
+		<text>Если встретится, то обязательно занесу.</text>
+	</string>
+	<string id="duty_barman_job_done_dialog_0">
+		<text>Нашёл я твою гранату-сувенирчик...</text>
+	</string>
+	<string id="duty_barman_job_done_dialog_1">
+		<text>Спасибо, приятель! Откровенно говоря, не ожидал, что сыщется мой брелок! Вот, лови награду...</text>
+	</string>
+	<string id="duty_barman_job_done_dialog_2">
+		<text>Бывай.</text>
+	</string>
+</string_table>

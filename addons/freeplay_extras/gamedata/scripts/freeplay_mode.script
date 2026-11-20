@@ -1,0 +1,86 @@
+-- COPY of scripts\freeplay_mode.script from SRP Freeplay with one added call (fp_loot.startup_spawn at the end of prepare_world).
+-- Freeplay mode: the single source of truth for "is Freeplay active".
+--
+-- The mode is stored as the info portion below, NOT as a Lua variable:
+-- info portions are written to savegames, Lua variables are not.
+--
+-- Until the main menu gets a Freeplay entry, the mode is switched on at the start
+-- of a new game by [freeplay] enabled = true in misc\freeplay.ltx.
+-- The future menu entry should simply call freeplay_mode.enable() instead.
+
+local INFO = "srp_freeplay"
+
+function is_freeplay()
+	return has_alife_info(INFO)
+end
+
+function enable()
+	if not has_alife_info(INFO) then
+		db.actor:give_info_portion(INFO)
+	end
+end
+
+-- Called once per new game from bind_stalker, in actor_binder:net_spawn, i.e. before any object's logic is
+-- initialized: restrictors and NPCs initialize their logic on their own first update and must already see
+-- the mode flag, otherwise they would start in their story sections.
+function on_new_game()
+	local ini = ini_file("misc\\freeplay.ltx")
+	if utils.cfg_get_bool(ini, "freeplay", "enabled", nil, false, false) then
+		enable()
+	end
+end
+
+-- Gives the Freeplay starting kit (misc\freeplay.ltx [start_equipment]) to the actor, once per game.
+function give_start_equipment()
+	local EQUIPPED = "srp_freeplay_equipped"
+	if has_alife_info(EQUIPPED) then
+		return
+	end
+	local act = db.actor
+	local ini = ini_file("misc\\freeplay.ltx")
+	if act and ini:section_exist("start_equipment") then
+		-- the same giver the story dialogs use: creates the items in the actor's inventory and shows the
+		-- "item received" news; the count of an ammo section is a number of boxes
+		for i = 0, ini:line_count("start_equipment") - 1 do
+			local result, section, value = ini:r_line("start_equipment", i, "", "")
+			dialogs.relocate_item_section_to_actor(nil, nil, section, tonumber(value) or 1)
+		end
+	end
+	act:give_info_portion(EQUIPPED)
+end
+
+-- Freeplay = the world as it is after the story. scripts\ogsm_freeplay.script (the post-credits Freeplay of SRP)
+-- already knows how to do it for the late levels; its parts are reused here WITHOUT its post-credits effects
+-- (no teleport, no wake-up camera effects, no killing of all NPCs, no outro).
+-- Once per game, called from the Marsh start logic (%=freeplay_prepare_world%).
+function prepare_world()
+	local DONE = "srp_freeplay_world_prepared"
+	if has_alife_info(DONE) then
+		return
+	end
+	db.actor:give_info_portion(DONE)
+
+	-- two-way Red Forest <-> Limansk changers and Stancia-2 <-> Limansk (replaces the one-way story changer)
+	ogsm_freeplay.set_lc()
+
+	-- Clear Sky presence of the Limansk story: scripted squads and the hospital blockers
+	for _, squad_id in ipairs({"lim_allyes_recon_squad", "lim_allyes_final_squad", "lim_allyes_final_squad2",
+			"lim_allyes_final_squad3", "lim_csky_bridge_squad", "lim_csky_storm_troops2"}) do
+		xr_effects.remove_squad(nil, nil, {squad_id})
+	end
+	for _, name in ipairs({"kat_hosp_z3_cs_spawn_restr", "kat_hosp_z1_barricade_1", "kat_hosp_z1_barricade_2",
+			"kat_hosp_z1_barricade_3", "kat_hosp_z1_barricade_4", "kat_hosp_z1_barricade_5", "kat_hosp_z1_minigunner"}) do
+		ogsm_freeplay.del_so(name)
+	end
+
+	-- the final story scene at Stancia-2: Strelok and the scene controllers (as ogsm_freeplay.armagezdec does)
+	for _, name in ipairs({"stc_stalker_strelok", "stc_strelok_enemy_checker_0", "stc_strelok_enemy_checker_1",
+			"stc_strelok_enemy_checker_2", "stc_strelok_enemy_checker_3", "stc_strelok_enemy_checker_5",
+			"stc_strelok_enemy_checker_6", "stc_strelok_enemy_checker_7", "stc_space_restrictor_0002",
+			"stc_scene_manager_restrictor", "stc_cut_scene_final", "stc_quest_controller"}) do
+		ogsm_freeplay.del_so(name)
+	end
+
+	-- Freeplay extras addon (addons/freeplay_extras): hidden flash drives and secret documents
+	fp_loot.startup_spawn()
+end
