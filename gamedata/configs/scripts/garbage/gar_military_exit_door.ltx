@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ; Copy of the base-game file with ONE changed line ([logic] active, Freeplay alternative).
 [logic]
 active = {+srp_freeplay} ph_door@open, ph_door@locked
@@ -28,3 +29,34 @@ snd_close_start =
 snd_close_stop =
 slider = true
 on_use = ph_door@closed
+=======
+[logic]
+active = ph_door@locked
+
+[ph_door@locked]
+locked = true
+closed = true
+snd_open_start =
+snd_close_start =
+snd_close_stop =
+slider = true
+on_info = {+mil_start_after_red_forest_completed} ph_door@open
+
+[ph_door@closed]
+locked = false
+closed = true
+snd_open_start =
+snd_close_start =
+snd_close_stop =
+slider = true
+on_use = ph_door@open
+
+[ph_door@open]
+locked = false
+closed = false
+snd_open_start =
+snd_close_start =
+snd_close_stop =
+slider = true
+on_use = ph_door@closed
+>>>>>>> Stashed changes
