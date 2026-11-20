@@ -12,6 +12,7 @@
 
 	<info_portion id="srp_freeplay"/>
 	<info_portion id="srp_freeplay_equipped"/>
+	<info_portion id="srp_freeplay_world_prepared"/>
 
 <!--	Freeplay end	-->
 

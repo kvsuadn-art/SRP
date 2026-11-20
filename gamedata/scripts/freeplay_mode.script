@@ -47,3 +47,36 @@ function give_start_equipment()
 	end
 	act:give_info_portion(EQUIPPED)
 end
+
+-- Freeplay = the world as it is after the story. scripts\ogsm_freeplay.script (the post-credits Freeplay of SRP)
+-- already knows how to do it for the late levels; its parts are reused here WITHOUT its post-credits effects
+-- (no teleport, no wake-up camera effects, no killing of all NPCs, no outro).
+-- Once per game, called from the Marsh start logic (%=freeplay_prepare_world%).
+function prepare_world()
+	local DONE = "srp_freeplay_world_prepared"
+	if has_alife_info(DONE) then
+		return
+	end
+	db.actor:give_info_portion(DONE)
+
+	-- two-way Red Forest <-> Limansk changers and Stancia-2 <-> Limansk (replaces the one-way story changer)
+	ogsm_freeplay.set_lc()
+
+	-- Clear Sky presence of the Limansk story: scripted squads and the hospital blockers
+	for _, squad_id in ipairs({"lim_allyes_recon_squad", "lim_allyes_final_squad", "lim_allyes_final_squad2",
+			"lim_allyes_final_squad3", "lim_csky_bridge_squad", "lim_csky_storm_troops2"}) do
+		xr_effects.remove_squad(nil, nil, {squad_id})
+	end
+	for _, name in ipairs({"kat_hosp_z3_cs_spawn_restr", "kat_hosp_z1_barricade_1", "kat_hosp_z1_barricade_2",
+			"kat_hosp_z1_barricade_3", "kat_hosp_z1_barricade_4", "kat_hosp_z1_barricade_5", "kat_hosp_z1_minigunner"}) do
+		ogsm_freeplay.del_so(name)
+	end
+
+	-- the final story scene at Stancia-2: Strelok and the scene controllers (as ogsm_freeplay.armagezdec does)
+	for _, name in ipairs({"stc_stalker_strelok", "stc_strelok_enemy_checker_0", "stc_strelok_enemy_checker_1",
+			"stc_strelok_enemy_checker_2", "stc_strelok_enemy_checker_3", "stc_strelok_enemy_checker_5",
+			"stc_strelok_enemy_checker_6", "stc_strelok_enemy_checker_7", "stc_space_restrictor_0002",
+			"stc_scene_manager_restrictor", "stc_cut_scene_final", "stc_quest_controller"}) do
+		ogsm_freeplay.del_so(name)
+	end
+end

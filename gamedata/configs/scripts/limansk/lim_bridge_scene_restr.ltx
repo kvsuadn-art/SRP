@@ -1,5 +1,5 @@
 [logic]
-active = sr_idle@spawn_squad
+active = {+srp_freeplay} sr_idle@fp_idle, sr_idle@spawn_squad
 
 [sr_idle@spawn_squad]
 on_info = sr_idle@abuse_smart6 %=create_squad(lim_csky_bridge_squad:lim_smart_terrain_5)%
@@ -14,3 +14,6 @@ on_info = {+lim_military_minigun_out =squad_exist(lim_csky_bridge_squad)} sr_idl
 on_game_timer = 50 | sr_idle@nil %=play_sound(lim_cs_storm_troop2_leader_order3:csky:st_ui_pda_legend_squad) =update_squad(lim_csky_bridge_squad)%
 
 [sr_idle@nil]
+
+; Freeplay: story chain of this level is skipped
+[sr_idle@fp_idle]

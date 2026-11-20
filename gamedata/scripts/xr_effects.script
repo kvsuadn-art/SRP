@@ -1948,3 +1948,8 @@ end
 function freeplay_give_start_equipment(actor, npc, p)
 	freeplay_mode.give_start_equipment()
 end
+
+-- Freeplay: world state after the story (Limansk changers, story blockers), see freeplay_mode.prepare_world
+function freeplay_prepare_world(actor, npc, p)
+	freeplay_mode.prepare_world()
+end

@@ -1,5 +1,5 @@
 [logic]
-active = sr_idle@first_task
+active = {+srp_freeplay} sr_idle@fp_idle, sr_idle@first_task
 
 [sr_idle@first_task]
 on_info = {-red_bridge_finished} sr_idle@ambush_2_task %=give_inited_task(storyline:lim_go_into_limansk:csky)%, sr_idle@ambush_2_task
@@ -39,3 +39,6 @@ on_info3 = {-lim_final_actor_find_transformer =actor_in_zone(lim_final_find_tran
 on_info = {=actor_in_zone(lim_final_find_transformer)} sr_idle@nil %+lim_final_actor_find_transformer =give_inited_task(storyline:lim_electro_fence:csky)%, {+lim_electro_fence_off} sr_idle@nil
 
 [sr_idle@nil]
+
+; Freeplay: story chain of this level is skipped
+[sr_idle@fp_idle]

@@ -2075,18 +2075,6 @@ function CHideFromSurgeTask:check_task(tm)
 		xr_surge_hide.surge_activated = false
 	end
 
-	-- Freeplay/SRP: the actor counts as hidden if he is inside ANY registered surge cover,
-	-- not only inside the nearest one (no need to stand exactly at the marked point)
-	local function actor_is_hidden()
-		for _, v in pairs(tbl) do
-			local sr = db.storage[v.id]
-			if sr and sr.object and sr.object:inside(act_pos) then
-				return true
-			end
-		end
-		return false
-	end
-
 	local t = self.t
 
 	if t == nil then
@@ -2122,7 +2110,8 @@ function CHideFromSurgeTask:check_task(tm)
 			level.set_weather("[default]", false)
 			xr_surge_hide.weather_surge = true
 			xr_surge_hide.start_surge = false
-			if not actor_is_hidden() then
+			local sr = db.storage[self.target]
+			if not(sr and sr.object:inside(act_pos)) then
 				xr_effects.disable_ui(act)
 				level.add_pp_effector("mar_surge.ppe", 200211, false)
 			end
@@ -2130,7 +2119,8 @@ function CHideFromSurgeTask:check_task(tm)
 			self.disable_ui = true
 		elseif not(self.kill_em_all) and (_delta>=20000) then
 			self.kill_em_all = true
-			if not actor_is_hidden() then
+			local sr = db.storage[self.target]
+			if not(sr and sr.object:inside(act_pos)) then
 				if level.name()=="marsh" or level.name()=="marsh_nvidia" then
 					level.remove_pp_effector(200208)
 					level.remove_cam_effector(200209)
@@ -2201,7 +2191,8 @@ function CHideFromSurgeTask:check_task(tm)
 		xr_sound.set_volume_sound_looped(0, "blowout_rumble", self.blowout_rumble_level) -- 0 = actor ID
 	end
 
-	if actor_is_hidden() then
+	local stt = db.storage[self.target]
+	if stt and stt.object:inside(act_pos) then
 		if self.name == "hide_from_surge_name" then
 			t:set_title(trans("hide_from_surge_name2"))
 		end
