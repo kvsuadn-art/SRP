@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="st_fp_treasure_flash">
+		<text>Флешка с данными</text>
+	</string>
+	<string id="st_fp_treasure_outfit">
+		<text>Костюм</text>
+	</string>
+	<string id="st_fp_treasure_weapon">
+		<text>Оружие</text>
+	</string>
+</string_table>

@@ -3,9 +3,10 @@
 -- Adaptation for SRP Freeplay: Eon
 --
 -- Freeplay extras, module 1: "finds in the world".
---  * flash drives (flesh_up_*) that the original game hands out only as story rewards are scattered
---    over the Zone at the start of a Freeplay game;
---  * 15 secret documents are scattered the same way and can be sold to the leaders of the bases.
+--  * 15 secret documents are scattered over the Zone at the start of a Freeplay game and can be sold
+--    to the leaders of the bases;
+--  * optional extra flash drives (misc\fp_loot.ltx [flashes], empty by default). Flash drives that the
+--    original game gives only as story rewards are handled in the Freeplay core (treasure_freeplay.ltx).
 -- Differences from OGSM: native SRP flash drives (no second flash set), items lie at the spots
 -- (OGSM puts them on dead stalkers), state is kept in info portions only, nothing runs per update.
 

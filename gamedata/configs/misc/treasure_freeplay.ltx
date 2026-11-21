@@ -1,0 +1,66 @@
+; Freeplay treasures: items that the original game hands out only as rewards of story quests.
+; Each section reuses an existing inventory box (target) and is sold through the generic treasure dialog,
+; the same way as the other *_quest_treasure_* sections. Offered only when the info portion srp_freeplay is set.
+; NOTE: the number of sections is written into savegames (treasure_manager.save), so saves made before this file was added are incompatible.
+
+[list_treasure_freeplay]
+fp_mar_flash_bd_mp5
+fp_mar_flash_novice_outfit
+fp_mar_cs_light_outfit
+fp_val_flash_abcd_svu
+fp_agr_flash_abcd_pkm
+fp_red_wpn_fn2000
+
+[fp_mar_flash_bd_mp5]
+target = mar_q_t_l_4
+name = st_fp_treasure_flash
+description = st_mar_q_t_l_4_descr
+items = flesh_up_bd_mp5, 1
+condlist = {+srp_freeplay =actor_on_level(marsh)} true, false
+treasure_cost = 800
+say_item_name = true
+
+[fp_mar_flash_novice_outfit]
+target = mar_q_n_8
+name = st_fp_treasure_flash
+description = st_mar_q_n_8_descr
+items = flesh_up_a_novice_outfit, 1
+condlist = {+srp_freeplay =actor_on_level(marsh)} true, false
+treasure_cost = 600
+say_item_name = true
+
+[fp_mar_cs_light_outfit]
+target = mar_q_n_6
+name = st_fp_treasure_outfit
+description = st_mar_q_n_6_descr
+items = cs_light_outfit, 1
+condlist = {+srp_freeplay =actor_on_level(marsh)} true, false
+treasure_cost = 2500
+say_item_name = true
+
+[fp_val_flash_abcd_svu]
+target = val_q9_n
+name = st_fp_treasure_flash
+description = st_val_q9_n_descr
+items = flesh_up_abcd_svu, 1
+condlist = {+srp_freeplay =actor_on_level(darkvalley)} true, false
+treasure_cost = 3500
+say_item_name = true
+
+[fp_agr_flash_abcd_pkm]
+target = agr_q6_n
+name = st_fp_treasure_flash
+description = st_agr_q6_n_descr
+items = flesh_up_abcd_pkm, 1
+condlist = {+srp_freeplay =actor_on_level(agroprom)} true, false
+treasure_cost = 6000
+say_item_name = true
+
+[fp_red_wpn_fn2000]
+target = red_q4_n
+name = st_fp_treasure_weapon
+description = st_red_q4_n_descr
+items = wpn_fn2000, 1
+condlist = {+srp_freeplay =actor_on_level(red_forest)} true, false
+treasure_cost = 6000
+say_item_name = true
