@@ -1,0 +1,7 @@
+-- Freeplay base layer: list of modules attached to ogse_signals.
+-- ogse_signals.get_mgr() reads "addons" and calls <module>.attach(mgr) for each name.
+-- The module name is kept as in OGSE, ogse_signals expects it.
+-- Adding a module = adding its script name here, nothing else changes.
+
+addons = {
+}

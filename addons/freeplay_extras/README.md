@@ -9,8 +9,20 @@
 | SRP (community patch для S.T.A.L.K.E.R.: Clear Sky) и ветка Freeplay | Decane и участники SRP; Freeplay — Eon | Основа, файлы-копии с точечными правками |
 | OGSM Extended 2.0 для Clear Sky (репозиторий CSOGSM) | DEXXX, Alex Ros, kstn и другие авторы OGSM | Идея и данные спавна находок по миру (100 точек), 15 секретных документов, тексты документов и диалогов продажи, цены |
 | Sigerous Mod 3.10 (SGM, репозиторий -SGM) | GeJorge (Болотов Николай) | Планируется: записки об оружии и изучение (модуль 2) |
+| OGS Evolution (OGSE) | Malandrinus, OGS Evolution Team | Система сигналов `ogse_signals` (оригинальные имя и копирайт сохранены) |
 
 В шапках заимствованных скриптов сохранены оригинальные копирайты и добавлена строка `-- Адаптация под SRP Freeplay: Eon`.
+
+## Базовый слой `fp_*` — наследование вместо правок оригиналов
+
+Оригинальные `bind_stalker.script` и `actor.ltx` ядра не меняются. Аддон подменяет только строку `script_binding` в своей копии `configs/creatures/actor.ltx`, а биндер актора наследуется:
+
+- `scripts/fp_binder.script` — класс `fp_actor_binder` (наследник `bind_stalker.actor_binder`). Вызывает базовый метод, затем отправляет сигнал: `on_net_spawn`, `on_net_destroy`, `on_update`, `on_item_take`, `on_item_drop`, `on_trade`, `on_task`, `on_take_from_box`, `on_save`, `on_load` (аргументы описаны в шапке файла). Новые коллбэки движка (`use_object`, info, hit и др.) не регистрируются, пока нет модуля, которому они нужны.
+- `scripts/ogse_signals.script` — менеджер сигналов и слотов (Malandrinus, OGS Evolution Team) с минимальными правками: `ASSERT` и `log2` определены локально, `profile_timer` и `debug.getinfo` защищены проверкой наличия, `slot` сделан `local`. Модули подписываются в собственном `attach(mgr)`, редкие подписки задают период через `reschedule(мс)`.
+- `scripts/ogse_signals_addons_list.script` — список подключаемых модулей (`addons`, пока пуст).
+- `configs/creatures/actor.ltx` — копия из ядра, изменена одна строка `script_binding = fp_binder.actor_init`.
+
+Ошибки подписчиков намеренно не перехватываются: пойманная ошибка оставила бы очередь `ogse_signals` в полуобработанном состоянии. Подписчик, пишущий в пакет сохранения (`on_save`), меняет формат сейва.
 
 ## Модуль 1 — «Находки в Зоне»
 

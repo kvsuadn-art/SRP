@@ -1,13 +1,41 @@
--- Freeplay base layer (fp_*): actor binder subclass.
+-- Freeplay base layer (fp_*): actor binder subclass and signal emitter.
 -- Original bind_stalker.script is untouched: only script_binding in
 -- configs/creatures/actor.ltx is overridden by the addon.
+--
+-- The subclass calls the base method first, then emits a signal through
+-- ogse_signals. Modules subscribe in their own attach(mgr) (see
+-- ogse_signals_addons_list.addons), this file never needs to change for them.
+--
+-- Signals (arguments):
+--   on_net_spawn()                 after the base net_spawn succeeded
+--   on_net_destroy()               BEFORE the base net_destroy (actor still alive)
+--   on_update(delta)               every tick after the base update; use mgr:reschedule(ms)
+--   on_item_take(obj)              skipped while the game is synchronizing (as in base)
+--   on_item_drop(obj)              skipped while quitting the game (as in base)
+--   on_trade(item, sell_bye, money)
+--   on_task(task, state)
+--   on_take_from_box(box, item)
+--   on_save(packet)                after the base save; a subscriber that writes
+--                                  to the packet changes the savegame format
+--   on_load(reader)                after the base load, must read exactly what on_save wrote
+--
+-- Errors in subscribers are NOT swallowed on purpose: a swallowed error would leave
+-- ogse_signals with a half-processed queue.
+-- Адаптация под SRP Freeplay: Eon
 
 function actor_init(obj)
 	obj:bind_object(fp_actor_binder(obj))
 end
 
 local TAG = "[fp_binder] "
-local update_logged = false
+local mgr = nil
+
+local function emit(name, ...)
+	if not mgr then
+		mgr = ogse_signals.get_mgr()
+	end
+	mgr:call(name, ...)
+end
 
 class "fp_actor_binder" (bind_stalker.actor_binder)
 
@@ -15,11 +43,57 @@ function fp_actor_binder:__init(obj) super(obj)
 	dbglog("%s", TAG .. "init ok, subclass of bind_stalker.actor_binder")
 end
 
+function fp_actor_binder:net_spawn(se_abstract)
+	if not bind_stalker.actor_binder.net_spawn(self, se_abstract) then
+		return false
+	end
+	emit("on_net_spawn")
+	return true
+end
+
+function fp_actor_binder:net_destroy()
+	emit("on_net_destroy")
+	bind_stalker.actor_binder.net_destroy(self)
+end
+
 function fp_actor_binder:update(delta)
 	bind_stalker.actor_binder.update(self, delta)
-	-- later: fp.on_actor_update(self.object)
-	if not update_logged then
-		update_logged = true
-		dbglog("%s", TAG .. "first subclass update called")
-	end
+	emit("on_update", delta)
+end
+
+function fp_actor_binder:on_item_take(obj)
+	bind_stalker.actor_binder.on_item_take(self, obj)
+	if device().precache_frame > 1 then return end
+	emit("on_item_take", obj)
+end
+
+function fp_actor_binder:on_item_drop(obj)
+	bind_stalker.actor_binder.on_item_drop(self, obj)
+	if bind_stalker.quitting_game then return end
+	emit("on_item_drop", obj)
+end
+
+function fp_actor_binder:on_trade(item, sell_bye, money)
+	bind_stalker.actor_binder.on_trade(self, item, sell_bye, money)
+	emit("on_trade", item, sell_bye, money)
+end
+
+function fp_actor_binder:task_callback(_task, _state)
+	bind_stalker.actor_binder.task_callback(self, _task, _state)
+	emit("on_task", _task, _state)
+end
+
+function fp_actor_binder:take_item_from_box(box, item)
+	bind_stalker.actor_binder.take_item_from_box(self, box, item)
+	emit("on_take_from_box", box, item)
+end
+
+function fp_actor_binder:save(packet)
+	bind_stalker.actor_binder.save(self, packet)
+	emit("on_save", packet)
+end
+
+function fp_actor_binder:load(reader)
+	bind_stalker.actor_binder.load(self, reader)
+	emit("on_load", reader)
 end
