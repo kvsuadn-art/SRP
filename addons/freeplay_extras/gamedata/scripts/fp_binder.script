@@ -1,0 +1,25 @@
+-- Freeplay base layer (fp_*): actor binder subclass.
+-- Original bind_stalker.script is untouched: only script_binding in
+-- configs/creatures/actor.ltx is overridden by the addon.
+
+function actor_init(obj)
+	obj:bind_object(fp_actor_binder(obj))
+end
+
+local TAG = "[fp_binder] "
+local update_logged = false
+
+class "fp_actor_binder" (bind_stalker.actor_binder)
+
+function fp_actor_binder:__init(obj) super(obj)
+	dbglog("%s", TAG .. "init ok, subclass of bind_stalker.actor_binder")
+end
+
+function fp_actor_binder:update(delta)
+	bind_stalker.actor_binder.update(self, delta)
+	-- later: fp.on_actor_update(self.object)
+	if not update_logged then
+		update_logged = true
+		dbglog("%s", TAG .. "first subclass update called")
+	end
+end
