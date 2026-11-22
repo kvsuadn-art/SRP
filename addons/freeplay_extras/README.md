@@ -28,11 +28,11 @@
 | `scripts/fp_loot.script` | новый (адаптация `ogsm_bring_items.script`) |
 | `scripts/freeplay_mode.script` | копия из Freeplay + вызов `fp_loot.startup_spawn()` в конце `prepare_world` |
 | `configs/misc/fp_loot.ltx` | новый, список дополнительных флешек (пуст) |
-| `configs/misc/fp_documents.ltx` | секции `doc_1…doc_15`, подключаются из `system.ltx` сразу после `[document]` |
+| `configs/misc/quest_items.ltx` | копия из Freeplay + `[document]:device_pda` и секции `doc_1…doc_15` (родитель определён в этом же файле) |
 | `configs/gameplay/dialogs_fp_extras.xml` | новый, 6 диалогов продажи |
 | `configs/gameplay/character_desc_{marsh,escape,garbage,darkvalley,agroprom,yantar}.xml` | копии из Freeplay + строка `<actor_dialog>` у покупателя |
 | `configs/gameplay/info_portions.xml` | копия из Freeplay + `fp_loot_spawned` |
-| `configs/system.ltx` | копия из Freeplay + `dialogs_fp_extras` в `[dialogs]` |
+| `configs/system.ltx` | копия из Freeplay + `dialogs_fp_extras` в `[dialogs]`; секция `[document]` убрана (определена в `quest_items.ltx`) |
 | `configs/text/*/fp_extras.xml` | новый; русский и английский (английский во всех остальных языках) |
 
 ## Ограничения и допущения

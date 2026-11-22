@@ -1,4 +1,4 @@
-; COPY of system.ltx from SRP Freeplay; changes: dialogs_fp_extras added to [dialogs] files; misc\fp_documents.ltx included after [document].
+; COPY of system.ltx from SRP Freeplay; changes: dialogs_fp_extras added to [dialogs] files; [document] removed (redefined in misc\quest_items.ltx).
 #include "defines.ltx"
 #include "prefetch\prefetch.ltx"
 ;#include "weathers\environment.ltx"
@@ -238,28 +238,6 @@ grenade_mark_texture 	= ui\ui_hud_grenade_mark
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; inventory items
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-[document]
-GroupControlSection = spawn_group
-;discovery_dependency =
-$spawn        = "documents\document 01"
-;$prefetch      = 32
-class       = II_DOC
-cform       = skeleton
-visual        = dynamics\equipments\item_document_1.ogf
-
-inv_name      = Document
-inv_name_short    = Document
-inv_weight      = 1 ;0.2
-
-inv_grid_width    = 1
-inv_grid_height   = 1
-inv_grid_x      = 0
-inv_grid_y      = 0
-cost        = 0
-
-#include "misc\fp_documents.ltx"
 
 
 [spectator]
