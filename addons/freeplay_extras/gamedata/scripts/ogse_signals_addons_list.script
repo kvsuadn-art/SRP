@@ -4,4 +4,5 @@
 -- Adding a module = adding its script name here, nothing else changes.
 
 addons = {
+	"fp_surge",
 }

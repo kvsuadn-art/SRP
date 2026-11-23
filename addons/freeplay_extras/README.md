@@ -19,7 +19,7 @@
 
 - `scripts/fp_binder.script` — класс `fp_actor_binder` (наследник `bind_stalker.actor_binder`). Вызывает базовый метод, затем отправляет сигнал: `on_net_spawn`, `on_net_destroy`, `on_update`, `on_item_take`, `on_item_drop`, `on_trade`, `on_task`, `on_take_from_box`, `on_save`, `on_load` (аргументы описаны в шапке файла). Новые коллбэки движка (`use_object`, info, hit и др.) не регистрируются, пока нет модуля, которому они нужны.
 - `scripts/ogse_signals.script` — менеджер сигналов и слотов (Malandrinus, OGS Evolution Team) с минимальными правками: `ASSERT` и `log2` определены локально, `profile_timer` и `debug.getinfo` защищены проверкой наличия, `slot` сделан `local`. Модули подписываются в собственном `attach(mgr)`, редкие подписки задают период через `reschedule(мс)`.
-- `scripts/ogse_signals_addons_list.script` — список подключаемых модулей (`addons`, пока пуст).
+- `scripts/ogse_signals_addons_list.script` — список подключаемых модулей (`addons`: сейчас `fp_surge`).
 - `configs/creatures/actor.ltx` — копия из ядра, изменена одна строка `script_binding = fp_binder.actor_init`.
 
 Ошибки подписчиков намеренно не перехватываются: пойманная ошибка оставила бы очередь `ogse_signals` в полуобработанном состоянии. Подписчик, пишущий в пакет сохранения (`on_save`), меняет формат сейва.
@@ -56,3 +56,20 @@
 ## Дальше
 
 Модуль 2: записки об оружии и изучение на info portion (в духе SGM, без привязки к оружейным пакам).
+
+## Модуль 2 — «Выброс по часам и затмение»
+
+Работает целиком на слое сигналов (`scripts/fp_surge.script`, подписчик `on_update` с `reschedule` раз в 2 с), штатный `xr_surge_hide` SRP не меняется: фазы, задание «укрыться», урон и поведение NPC те же.
+
+- **Выброс по часам** (как в ЗП): раз в игровые сутки, в час из диапазона 8–20, зависящий от даты, на уровне из `xr_surge_hide.levels_surge_table` с выполненным `condlist`. Признак «сегодня уже был» берётся из `xr_surge_hide.initialization_time` (SRP сам сохраняет его в блоке `SurgeHide`), поэтому модуль **ничего не пишет в сейв** и не заводит своих переменных. Следствие: в первые игровые сутки новой игры часового выброса нет.
+- **Затмение** — вариант выброса с другим эффектом. Запуск как в оригинале SRP: бросок при входе на уровень (15 % и +10 % за промах). Если выброс начался сразу после входа на уровень и не по часам, модуль заменяет погодный эффект на эффект затмения из SGM (`fx_blackday_clear` при ясной/облачной погоде, иначе `fx_blackday_rain`).
+- **Включение**: info `srp_freeplay` включает оба; `fp_surge_clock` и `fp_eclipse` включают по отдельности (для сюжетного режима).
+
+| Файл | Тип |
+|---|---|
+| `scripts/fp_surge.script` | новый |
+| `scripts/ogse_signals_addons_list.script` | изменён (`fp_surge` в списке) |
+| `configs/environment/weather_effects/fx_blackday_clear.ltx`, `fx_blackday_rain.ltx` | из SGM 3.10 (GeJorge), без изменений |
+| `configs/gameplay/info_portions.xml` | добавлены `fp_surge_clock`, `fp_eclipse` |
+
+Не взято: код `sgm_blackday` (таймер на `time_global`, собственное хранилище, нет укрытия и урона) и звук `blackday_pre.ogg`.

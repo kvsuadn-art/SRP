@@ -1,0 +1,119 @@
+-- Freeplay extras: surge by the clock + eclipse (variety of surge).
+-- Idea: eclipse effect (fx_blackday_*) and the "darkness" surge variant from Sigerous Mod 3.10 (GeJorge);
+-- surge machinery (xr_surge_hide: phases, cover task, damage) is the SRP original and is NOT changed.
+-- Adaptation for SRP Freeplay: Eon
+--
+-- Two triggers, one behaviour (everything is done by xr_surge_hide.activate_surge):
+--  1. Clock surge (like in Call of Pripyat): once per game day, at an hour that depends on the date
+--     (08..20), on a level from xr_surge_hide.levels_surge_table whose condlist is true.
+--     "Already today" is read from xr_surge_hide.initialization_time (SRP saves it in its own
+--     SurgeHide block), so this module keeps NO state of its own and writes nothing to the savegame.
+--     Side effect: no clock surge on the first game day of a new game (initialization_time starts as "now").
+--  2. Eclipse: SRP rolls a surge when the actor enters a level (surge_can_be_started, 15% +10% per miss).
+--     When such a surge starts shortly after level entry and it was not started by the clock, this module
+--     swaps the weather effect for the SGM eclipse one (fx_blackday_clear / fx_blackday_rain).
+--     Hide task, damage, NPC behaviour stay exactly the same.
+--
+-- Switches (info portions): srp_freeplay turns both on; fp_surge_clock / fp_eclipse turn one on separately.
+-- Cost: one subscriber on on_update, rescheduled every CHECK_MS; with no surge it reads a few variables.
+
+local TAG = "[fp_surge] "
+
+local CHECK_MS = 2000          -- period of the check (real ms)
+local ENTRY_WINDOW_MS = 15000  -- the eclipse can only replace a surge that started this soon after level entry
+local MAX_AGE_SEC = 30         -- ... and that is this fresh (real seconds since initialization_time, as SRP counts them)
+local HOUR_FIRST = 8           -- clock surge hour: HOUR_FIRST + (d*7 + m*3) % HOUR_SPAN
+local HOUR_SPAN = 13
+
+local mgr = nil
+local entry_time = 0
+local handled = false          -- the surge of the current activation was already looked at
+local clock_started = false    -- this activation was started by the clock
+local condlists = {}           -- parsed condlists by level name
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_net_spawn", fun = on_net_spawn })
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+function on_net_spawn()
+	entry_time = time_global()
+	clock_started = false
+	dbglog("%s", TAG .. "level entry: " .. level.name())
+end
+
+local function enabled(own_info)
+	return has_alife_info("srp_freeplay") or has_alife_info(own_info)
+end
+
+local function ymd(t)
+	local y, m, d, h, mi, s, ms = 0, 0, 0, 0, 0, 0, 0
+	y, m, d, h, mi, s, ms = t:get(y, m, d, h, mi, s, ms)
+	return y, m, d
+end
+
+local function condlist_ok(level_name, entry)
+	local cl = condlists[level_name]
+	if not cl then
+		cl = xr_logic.parse_condlist(nil, "xr_surge_hide", "condlist", entry.condlist)
+		condlists[level_name] = cl
+	end
+	return xr_logic.pick_section_from_condlist(db.actor, db.actor, cl) == "true"
+end
+
+local function try_clock()
+	if not enabled("fp_surge_clock") then return end
+	if not (db.actor and db.actor:alive()) then return end
+
+	local level_name = level.name()
+	local entry = xr_surge_hide.levels_surge_table[level_name]
+	if not entry then return end
+
+	local y, m, d = ymd(game.get_game_time())
+	if level.get_time_hours() < HOUR_FIRST + (d * 7 + m * 3) % HOUR_SPAN then return end
+
+	-- already had a surge today (or this is the first day of the game)?
+	local y0, m0, d0 = ymd(xr_surge_hide.initialization_time)
+	if y0 == y and m0 == m and d0 == d then return end
+
+	if not condlist_ok(level_name, entry) then return end
+
+	clock_started = true
+	handled = true
+	local time = math.random(entry.surge_time - 10, entry.surge_time + 10)
+	dbglog("%s", TAG .. "clock surge on " .. level_name .. ", hide time " .. time)
+	xr_surge_hide.activate_surge(time)
+end
+
+local function start_eclipse()
+	local weather = level.get_weather()
+	if weather == "default_clear" or weather == "default_cloudy" then
+		level.set_weather_fx("fx_blackday_clear")
+	else
+		level.set_weather_fx("fx_blackday_rain")
+	end
+	dbglog("%s", TAG .. "eclipse effect, weather was " .. tostring(weather))
+end
+
+function on_update(delta)
+	mgr:reschedule(CHECK_MS)
+
+	local x = xr_surge_hide
+	if x.phase == 0 then
+		handled = false
+		clock_started = false
+		try_clock()
+		return
+	end
+
+	-- a surge is running; look at it once, when it has just started (phase 1)
+	if handled or x.phase ~= 1 or not x.start_surge then return end
+	handled = true
+	if clock_started then return end
+	if not enabled("fp_eclipse") then return end
+	if time_global() - entry_time > ENTRY_WINDOW_MS then return end
+	local age = game.get_game_time():diffSec(x.initialization_time) / level.get_time_factor()
+	if age > MAX_AGE_SEC then return end
+	start_eclipse()
+end

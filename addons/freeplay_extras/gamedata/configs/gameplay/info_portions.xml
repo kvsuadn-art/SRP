@@ -14,6 +14,8 @@
 	<info_portion id="srp_freeplay_equipped"/>
 	<info_portion id="srp_freeplay_world_prepared"/>
 	<info_portion id="fp_loot_spawned"/>
+	<info_portion id="fp_surge_clock"/>
+	<info_portion id="fp_eclipse"/>
 
 <!--	Freeplay end	-->
 
