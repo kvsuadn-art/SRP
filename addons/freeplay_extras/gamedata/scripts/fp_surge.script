@@ -29,6 +29,8 @@ local mgr = nil
 local entry_time = 0
 local handled = false          -- the surge of the current activation was already looked at
 local clock_started = false    -- this activation was started by the clock
+local forced_run = false       -- the surge was started from the dev tools
+local was_running = false     -- a surge was seen running (to restore control when it ends)
 local eclipse_pending = false  -- eclipse chosen for this surge; it starts when the surge reaches phase 2 (about 15 s in, red sky -> dark)
 local condlists = {}           -- parsed condlists by level name
 
@@ -87,14 +89,25 @@ local function try_clock()
 	xr_surge_hide.activate_surge(time)
 end
 
+-- The engine refuses set_weather_fx while another weather effect is still playing (SRP's fx_surge_day_1),
+-- so the result is checked and the caller retries on the next check.
 local function start_eclipse()
 	local weather = level.get_weather()
-	if weather == "default_clear" or weather == "default_cloudy" then
-		level.set_weather_fx("fx_blackday_clear")
-	else
-		level.set_weather_fx("fx_blackday_rain")
-	end
-	dbglog("%s", TAG .. "eclipse effect, weather was " .. tostring(weather))
+	local fx = (weather == "default_clear" or weather == "default_cloudy") and "fx_blackday_clear" or "fx_blackday_rain"
+	local ok = level.set_weather_fx(fx)
+	dbglog("%s", TAG .. "eclipse effect " .. fx .. ", weather was " .. tostring(weather) .. ", accepted: " .. tostring(ok))
+	return ok ~= false   -- a binding that returns nothing counts as accepted; only an explicit false is retried
+end
+
+-- SRP's own surge task disables the player's input before the end and enables it back only after a normal
+-- finish. If the player is not in cover in the swamp ("reversed" ending, meant for the story) nothing enables it.
+local function restore_control()
+	if not (db.actor and db.actor:alive()) then return end
+	xr_effects.enable_ui()
+	level.remove_pp_effector(200211)
+	level.remove_pp_effector(200208)
+	level.remove_cam_effector(200209)
+	dbglog("%s", TAG .. "surge ended: player control restored")
 end
 
 -- Dev tools (fp_dev_tools): start a surge or an eclipse right now. Returns a message for the player.
@@ -103,6 +116,7 @@ function force(time, eclipse)
 	if x.phase ~= 0 or x.start_surge or x.surge_activated then
 		return "A surge is already running"
 	end
+	forced_run = true
 	clock_started = true   -- keep the update loop from treating this as a level-entry surge
 	handled = true
 	x.activate_surge(time)
@@ -121,15 +135,20 @@ function on_update(delta)
 		handled = false
 		clock_started = false
 		eclipse_pending = false
+		if was_running then
+			was_running = false
+			if forced_run or has_alife_info("srp_freeplay") then restore_control() end
+			forced_run = false
+		end
 		try_clock()
 		return
 	end
+	was_running = true
 
 	-- SRP (bind_stalker) forces the weather to cloudy when a surge starts and runs its own fx_surge_day_1 until phase 2;
 	-- an effect set earlier is wiped out within seconds. So the eclipse waits for phase 2 and then stays dark.
 	if eclipse_pending and x.phase >= 2 then
-		eclipse_pending = false
-		start_eclipse()
+		if start_eclipse() or x.phase >= 4 then eclipse_pending = false end
 	end
 
 	-- a surge is running; look at it once, when it has just started (phase 1)

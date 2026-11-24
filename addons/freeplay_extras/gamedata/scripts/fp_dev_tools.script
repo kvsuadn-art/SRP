@@ -26,28 +26,41 @@ local function tip(text)
 end
 
 -- list of a tab: array of { key, name, descr }
+-- "teleport": every guide point on every level that SRP guides can reach from the current level
+-- (same level, or a level with a cross-level point in guiders_table), named the way guides name them:
+-- "<level>. <point name>", both localized.
+local function teleport_list()
+	local res = {}
+	local cur = level.name()
+	local smarts = sim_board.get_sim_board().smarts_by_names
+	local cross = guiders_table.cross_level_teleport[cur] or {}
+	for name, d in pairs(guiders_table.teleport_points) do
+		local smart = smarts[name]
+		if smart and (d.level == cur or cross[d.level]) then
+			local ok, label = pcall(smart_names.get_smart_terrain_name, smart)
+			if not ok or not label then label = name end
+			local lvl = game.translate_string(d.level)
+			res[#res + 1] = {
+				key = name,
+				name = lvl .. ". " .. label,
+				descr = (d.level == cur) and "Точка на этом уровне." or "Точка на другом уровне: переход через переход уровня, как у проводников.",
+				here = (d.level == cur) and 0 or 1,
+				lvl = lvl,
+			}
+		end
+	end
+	table.sort(res, function(a, b)
+		if a.here ~= b.here then return a.here < b.here end
+		if a.lvl ~= b.lvl then return a.lvl < b.lvl end
+		return a.name < b.name
+	end)
+	return res
+end
+
 function list(tab)
 	if tab == "tools" then return tools end
-	local res = {}
-	if tab ~= "teleport" then return res end
-	local cur = level.name()
-	local lv, pt = {}, {}
-	local t = guiders_table.cross_level_teleport[cur]
-	if t then
-		for dest in pairs(t) do lv[#lv + 1] = dest end
-	end
-	for name, d in pairs(guiders_table.teleport_points) do
-		if d.level == cur and d.point then pt[#pt + 1] = name end
-	end
-	table.sort(lv)
-	table.sort(pt)
-	for i = 1, #lv do
-		res[#res + 1] = { key = "L:" .. lv[i], name = "Уровень: " .. lv[i], descr = "Переход на другой уровень (точка перехода SRP)." }
-	end
-	for i = 1, #pt do
-		res[#res + 1] = { key = "P:" .. pt[i], name = "Точка: " .. pt[i], descr = "Точка проводников на этом уровне." }
-	end
-	return res
+	if tab == "teleport" then return teleport_list() end
+	return {}
 end
 
 function describe(tab, key)
@@ -58,24 +71,73 @@ function describe(tab, key)
 	return ""
 end
 
+-- The jump is done by SRP's own guide code: guiders.start_teleport (fade, control back at the end).
+-- To another level SRP does it in two steps (jump to the level changer, then, on the new level, to the point);
+-- the target is kept in the savegame for that: here it is "pending" (one string, empty when nothing is pending;
+-- the Lua state is rebuilt on a level change, SRP's own guiders.save/load work the same way).
+local pending = ""
+local entry_time = 0
+local mgr = nil
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_save", fun = on_save })
+	m:subscribe({ signal = "on_load", fun = on_load })
+	m:subscribe({ signal = "on_net_spawn", fun = on_net_spawn })
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+function on_save(packet)
+	packet:w_stringZ(pending)
+end
+
+function on_load(reader)
+	pending = reader:r_stringZ()
+end
+
+function on_net_spawn()
+	entry_time = time_global()
+	if pending ~= "" then
+		guiders.teleported_to_another_level = false   -- SRP's flag for its own 2-step jump; we do the 2nd step ourselves
+	end
+end
+
+local function jump_to(key)
+	local d = guiders_table.teleport_points[key]
+	local point, look = d.point, d.look
+	if not (point and look) then
+		point, look = key .. "_kamp_1", key .. "_kamp_1_task"
+	end
+	guiders.start_teleport(point, look)
+end
+
+function on_update(delta)
+	mgr:reschedule(1000)
+	if pending == "" or time_global() - entry_time < 2000 then return end
+	if not (db.actor and db.actor:alive()) then return end
+	local key = pending
+	pending = ""
+	local d = guiders_table.teleport_points[key]
+	if d and d.level == level.name() then
+		jump_to(key)
+		dbglog("%s", TAG .. "arrived, second step to " .. key)
+	end
+end
+
 local function teleport(key)
-	local point, look
-	local kind, id = string.sub(key, 1, 1), string.sub(key, 3)
-	if kind == "L" then
-		point = guiders_table.cross_level_teleport[level.name()][id]
+	local d = guiders_table.teleport_points[key]
+	if not d then return false end
+	local cur = level.name()
+	if d.level == cur then
+		jump_to(key)
 	else
-		local d = guiders_table.teleport_points[id]
-		point, look = d.point, d.look
+		local cross = guiders_table.cross_level_teleport[cur] and guiders_table.cross_level_teleport[cur][d.level]
+		if not cross then return false end
+		pending = key
+		guiders.level_changed = true
+		guiders.start_teleport(cross, nil)
 	end
-	if not point then return false end
-	local act = db.actor
-	local pnt = patrol(point)
-	act:set_actor_position(pnt:point(0))
-	if look then
-		local dir = patrol(look):point(0):sub(pnt:point(0))
-		act:set_actor_direction(-dir:getH())
-	end
-	dbglog("%s", TAG .. "teleport to " .. id .. " (" .. point .. ")")
+	dbglog("%s", TAG .. "teleport to " .. key .. " (" .. tostring(d.level) .. ")")
 	return true
 end
 
