@@ -32,58 +32,72 @@
 		</frame>
 		
 		<tab x="55" y="22" width="461" height="96">
-			<button x="0" y="64" width="114" height="44" id="weapons">
+			<button x="0" y="64" width="92" height="44" id="weapons">
 				<texture>ui_button_tablist</texture>
-				<text font="graffiti19" align="c">Оружие</text>				
+				<text font="graffiti19" align="c">Оружие</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="116" y="64" width="114" height="44" id="ammo">
+			<button x="92" y="64" width="92" height="44" id="ammo">
 				<texture>ui_button_tablist</texture>
-				<text font="graffiti19" align="c">Боеприпасы</text>
+				<text font="graffiti19" align="c">Патроны</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="232" y="64" width="114" height="44" id="addons">
+			<button x="184" y="64" width="92" height="44" id="addons">
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">Навесы</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="348" y="64" width="114" height="44" id="outfits">
+			<button x="276" y="64" width="92" height="44" id="outfits">
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">Костюмы</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="0" y="20" width="114" height="44" id="artefacts">
+			<button x="368" y="64" width="92" height="44" id="tools">
+				<texture>ui_button_tablist</texture>
+				<text font="graffiti19" align="c">Инструм.</text>
+				<text_color>
+					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
+				</text_color>
+			</button>
+			<button x="0" y="20" width="92" height="44" id="artefacts">
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">Артефакты</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="116" y="20" width="114" height="44" id="items">
+			<button x="92" y="20" width="92" height="44" id="items">
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">Предметы</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="232" y="20" width="114" height="44" id="quest_items">
+			<button x="184" y="20" width="92" height="44" id="quest_items">
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">Квестовые</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>
 			</button>
-			<button x="348" y="20" width="114" height="44" id="mobs">
+			<button x="276" y="20" width="92" height="44" id="mobs">
 				<texture>ui_button_tablist</texture>
 				<text font="graffiti19" align="c">Живность</text>
+				<text_color>
+					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
+				</text_color>
+			</button>
+			<button x="368" y="20" width="92" height="44" id="teleport">
+				<texture>ui_button_tablist</texture>
+				<text font="graffiti19" align="c">Телепорт</text>
 				<text_color>
 					<e r="106" g="95" b="91"/> <t r="227" g="199" b="178"/> <h r="180" g="153" b="155"/>
 				</text_color>

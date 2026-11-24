@@ -1,13 +1,13 @@
 -- Freeplay extras: developer tools, entry points (fp_dev, fp_dev_util, fp_dev_tools).
 -- Spawn menu: naxac's universal spawn menu (collect_sections, ui_cheat_main, ui_cheat_cs), adapted.
--- Tools window (teleport over the Zone, game time, surge/eclipse, heal): fp_dev_tools.
+-- Tools (tabs "Teleport" and "Tools" of the same window: teleport, game time, surge/eclipse, heal): fp_dev_tools.
 -- Adaptation for SRP Freeplay: Eon
 --
 -- Two ways to open (both work with the signals layer, nothing in the normal game runs by itself):
 --  1. In game: use one of two items (they are in the spawn menu, tab "Items"):
---     fp_dev_console - spawn menu, fp_dev_tools - tools window. An item is consumed by the use and
+--     fp_dev_console - spawn menu, fp_dev_tools - the same window on the "Tools" tab. An item is consumed by the use and
 --     given back, so it stays in the inventory.
---  2. Main menu (Esc): F1 - spawn menu, F2 - tools window. Needs the addon copy of ui_main_menu.script.
+--  2. Main menu (Esc): F1 - spawn menu, F2 - the "Tools" tab. Needs the addon copy of ui_main_menu.script.
 --
 -- State: none (nothing is written to the savegame, no info portions).
 
@@ -51,15 +51,9 @@ function open_spawner(owner)
 	ui_cheat_main.start_menu(owner)
 end
 
+-- the same window (naxac), opened on the "Tools" tab
 function open_tools(owner)
-	local wnd = fp_dev_tools.fp_dev_tools(owner)
-	if owner then
-		owner:GetHolder():start_stop_menu(wnd, true)
-		owner:GetHolder():start_stop_menu(owner, true)
-		owner:Show(false)
-	else
-		level.start_stop_menu(wnd, true)
-	end
+	ui_cheat_main.start_menu(owner, "tools")
 end
 
 -- called from the main menu (addon copy of ui_main_menu.script)

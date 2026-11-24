@@ -1,152 +1,73 @@
--- Freeplay extras: developer tools window (teleport over the Zone, game time, surge/eclipse, heal).
+-- Freeplay extras: developer tools for the naxac window (tabs "Телепорт" and "Инструменты").
+-- No window of its own: ui_cheat_cs asks this module for the list of a tab (list), the text for the description
+-- area (describe) and runs the chosen entry with the same "Получить" button (run).
 -- Teleport targets are taken from SRP's own guide data (guiders_table): the cross-level points
 -- (cross_level_teleport) and the guide points of the current level (teleport_points). The jump itself is
 -- the one SRP guides use: db.actor:set_actor_position(patrol point).
--- Adaptation for SRP Freeplay: Eon (list window layout from naxac's spawn menu)
+-- Adaptation for SRP Freeplay: Eon
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
 
-class "list_item" (CUIListItemEx)
-function list_item:__init() super()
-	self:SetWndRect		(Frect():set(0,0,430,22))
-	self.nm					= CUIStatic	()
-	self.nm:SetAutoDelete	(true)
-	self:AttachChild		(self.nm)
-	self.nm:SetWndRect		(Frect():set(0,0,380,22))
-	self.nm:SetText			("name")
-	self.nm:SetFont			(GetFontLetterica16Russian())
-	self.nm:SetTextColor	(255,255,234,104)
-	self.sct				= CUIStatic	()
-	self.sct:SetAutoDelete	(true)
-	self:AttachChild		(self.sct)
-	self.sct:SetWndRect		(Frect():set(300,0,50,22))
-	self.sct:SetText		("key")
-	self.sct:SetFont		(GetFontLetterica16Russian())
-	self.sct:SetTextColor	(0,0,0,0)
-end
-
-class "fp_dev_tools" (CUIScriptWnd)
-
-function fp_dev_tools:__init(owner) super()
-	self.owner = owner
-	self.mode = 1   -- 1: other levels, 2: guide points of this level
-	self:InitControls()
-	self:InitCallBacks()
-	self:FillList()
-end
-
-function fp_dev_tools:__finalize()
-end
-
-function fp_dev_tools:InitControls()
-	self:SetWndRect(Frect():set(0,0,1024,768))
-	self:Enable(true)
-	local xml = CScriptXmlInit()
-	xml:ParseFile("ui_fp_dev.xml")
-	xml:InitStatic("background", self)
-	local dialog = xml:InitStatic("main_dialog:dialog", self)
-	xml:InitStatic("main_dialog:cap", dialog)
-	xml:InitFrame("main_dialog:list_frame", dialog)
-	self.list = xml:InitList("main_dialog:list_window", dialog)
-	self:Register(self.list, "list_window")
-	self.btn_mode = xml:Init3tButton("main_dialog:btn_mode", dialog)
-	self:Register(self.btn_mode, "btn_mode")
-	local names = {"btn_tp", "btn_pos", "btn_h1", "btn_h6", "btn_d1", "btn_tf2", "btn_tf1", "btn_heal", "btn_surge", "btn_eclipse", "btn_cancel"}
-	for i = 1, #names do
-		local ctrl = xml:Init3tButton("main_dialog:" .. names[i], dialog)
-		self:Register(ctrl, names[i])
-	end
-	self:UpdateModeText()
-end
-
-function fp_dev_tools:InitCallBacks()
-	self:AddCallback("btn_tp",       ui_events.BUTTON_CLICKED, self.OnTeleport,  self)
-	self:AddCallback("btn_mode",     ui_events.BUTTON_CLICKED, self.OnMode,      self)
-	self:AddCallback("btn_pos",      ui_events.BUTTON_CLICKED, self.OnLogPos,    self)
-	self:AddCallback("btn_h1",       ui_events.BUTTON_CLICKED, self.OnHour1,     self)
-	self:AddCallback("btn_h6",       ui_events.BUTTON_CLICKED, self.OnHour6,     self)
-	self:AddCallback("btn_d1",       ui_events.BUTTON_CLICKED, self.OnDay1,      self)
-	self:AddCallback("btn_tf2",      ui_events.BUTTON_CLICKED, self.OnTimeFactorUp,    self)
-	self:AddCallback("btn_tf1",      ui_events.BUTTON_CLICKED, self.OnTimeFactorReset, self)
-	self:AddCallback("btn_heal",     ui_events.BUTTON_CLICKED, self.OnHeal,      self)
-	self:AddCallback("btn_surge",    ui_events.BUTTON_CLICKED, self.OnSurge,     self)
-	self:AddCallback("btn_eclipse",  ui_events.BUTTON_CLICKED, self.OnEclipse,   self)
-	self:AddCallback("btn_cancel",   ui_events.BUTTON_CLICKED, self.OnClose,     self)
-	self:AddCallback("list_window",  ui_events.WINDOW_LBUTTON_DB_CLICK, self.OnTeleport, self)
-end
-
-function fp_dev_tools:UpdateModeText()
-	self.btn_mode:SetText(self.mode == 1 and "Список: уровни" or "Список: точки")
-end
-
-function fp_dev_tools:AddItem(name, key)
-	local itm = list_item()
-	itm.nm:SetText(name)
-	itm.sct:SetText(key)
-	self.list:AddItem(itm)
-end
-
-function fp_dev_tools:FillList()
-	if self.list:GetSize() > 0 then self.list:RemoveAll() end
-	local cur = level.name()
-	local keys = {}
-	if self.mode == 1 then
-		local t = guiders_table.cross_level_teleport[cur]
-		if t then
-			for dest in pairs(t) do keys[#keys + 1] = dest end
-		end
-	else
-		for name, d in pairs(guiders_table.teleport_points) do
-			if d.level == cur and d.point then keys[#keys + 1] = name end
-		end
-	end
-	table.sort(keys)
-	for i = 1, #keys do
-		self:AddItem(keys[i], keys[i])
-	end
-end
-
-function fp_dev_tools:OnMode()
-	self.mode = (self.mode == 1) and 2 or 1
-	self:UpdateModeText()
-	self:FillList()
-end
+local tools = {
+	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
+	{ key = "h1",      name = "Время +1 час",           descr = "Сдвинуть игровое время на час вперёд." },
+	{ key = "h6",      name = "Время +6 часов",         descr = "Сдвинуть игровое время на 6 часов вперёд." },
+	{ key = "d1",      name = "Время +1 сутки",         descr = "Сдвинуть игровое время на сутки вперёд." },
+	{ key = "tf2",     name = "Таймфактор x2",          descr = "Ускорить игровое время вдвое (максимум 1000)." },
+	{ key = "tf1",     name = "Таймфактор по умолчанию", descr = "Вернуть таймфактор " .. tf_default .. "." },
+	{ key = "heal",    name = "Здоровье и деньги",      descr = "Восстановить здоровье, выносливость, психику, убрать радиацию и кровотечение, +100000 руб." },
+	{ key = "surge",   name = "Запустить выброс",       descr = "Немедленно запустить выброс (30 сек. до укрытия), если он сейчас не идёт." },
+	{ key = "eclipse", name = "Запустить затмение",     descr = "Выброс с эффектом затмения (fx_blackday)." },
+}
 
 local function tip(text)
 	news_manager.send_tip(db.actor, text)
 end
 
-function fp_dev_tools:Close()
-	if self.owner then
-		self:GetHolder():start_stop_menu(self.owner, true)
-		self:GetHolder():start_stop_menu(self, true)
-		self.owner:Show(true)
-	else
-		self:GetHolder():start_stop_menu(self, true)
+-- list of a tab: array of { key, name, descr }
+function list(tab)
+	if tab == "tools" then return tools end
+	local res = {}
+	if tab ~= "teleport" then return res end
+	local cur = level.name()
+	local lv, pt = {}, {}
+	local t = guiders_table.cross_level_teleport[cur]
+	if t then
+		for dest in pairs(t) do lv[#lv + 1] = dest end
 	end
+	for name, d in pairs(guiders_table.teleport_points) do
+		if d.level == cur and d.point then pt[#pt + 1] = name end
+	end
+	table.sort(lv)
+	table.sort(pt)
+	for i = 1, #lv do
+		res[#res + 1] = { key = "L:" .. lv[i], name = "Уровень: " .. lv[i], descr = "Переход на другой уровень (точка перехода SRP)." }
+	end
+	for i = 1, #pt do
+		res[#res + 1] = { key = "P:" .. pt[i], name = "Точка: " .. pt[i], descr = "Точка проводников на этом уровне." }
+	end
+	return res
 end
 
-function fp_dev_tools:OnClose()
-	self:Close()
+function describe(tab, key)
+	local t = list(tab)
+	for i = 1, #t do
+		if t[i].key == key then return t[i].descr end
+	end
+	return ""
 end
 
-function fp_dev_tools:OnTeleport()
-	if self.list:GetSize() == 0 then return end
-	local idx = self.list:GetFocusedItem()
-	if (not idx) or idx < 0 then return end
-	local itm = self.list:GetItem(idx)
-	if itm == nil then return end
-	local key = itm.sct:GetText()
+local function teleport(key)
 	local point, look
-	if self.mode == 1 then
-		point = guiders_table.cross_level_teleport[level.name()][key]
+	local kind, id = string.sub(key, 1, 1), string.sub(key, 3)
+	if kind == "L" then
+		point = guiders_table.cross_level_teleport[level.name()][id]
 	else
-		local d = guiders_table.teleport_points[key]
+		local d = guiders_table.teleport_points[id]
 		point, look = d.point, d.look
 	end
-	if not point then return end
-	self:Close()
+	if not point then return false end
 	local act = db.actor
 	local pnt = patrol(point)
 	act:set_actor_position(pnt:point(0))
@@ -154,10 +75,16 @@ function fp_dev_tools:OnTeleport()
 		local dir = patrol(look):point(0):sub(pnt:point(0))
 		act:set_actor_direction(-dir:getH())
 	end
-	dbglog("%s", TAG .. "teleport to " .. key .. " (" .. point .. ")")
+	dbglog("%s", TAG .. "teleport to " .. id .. " (" .. point .. ")")
+	return true
 end
 
-function fp_dev_tools:OnLogPos()
+local function change_time(h, text)
+	local ok = pcall(level.change_game_time, 0, h, 0)
+	tip(ok and text or "level.change_game_time недоступна в этом движке")
+end
+
+local function log_pos()
 	local act = db.actor
 	local lvid, gvid = act:level_vertex_id(), act:game_vertex_id()
 	local pos = level.vertex_position(lvid)
@@ -168,44 +95,36 @@ function fp_dev_tools:OnLogPos()
 	tip("Координаты записаны в лог")
 end
 
-function fp_dev_tools:ChangeTime(h, text)
-	self:Close()
-	local ok = pcall(level.change_game_time, 0, h, 0)
-	tip(ok and text or "level.change_game_time недоступна в этом движке")
-end
-
-function fp_dev_tools:OnHour1() self:ChangeTime(1, "Время +1 ч") end
-function fp_dev_tools:OnHour6() self:ChangeTime(6, "Время +6 ч") end
-function fp_dev_tools:OnDay1()  self:ChangeTime(24, "Время +1 сутки") end
-
-function fp_dev_tools:OnTimeFactorUp()
-	local tf = math.min(level.get_time_factor() * 2, 1000)
-	level.set_time_factor(tf)
-	tip("Таймфактор " .. tf)
-end
-
-function fp_dev_tools:OnTimeFactorReset()
-	level.set_time_factor(tf_default)
-	tip("Таймфактор " .. tf_default)
-end
-
-function fp_dev_tools:OnHeal()
-	local act = db.actor
-	act.health = 0.99
-	act.bleeding = 0.99
-	act.power = 0.99
-	act.psy_health = 0.99
-	act.radiation = -1.0
-	act:give_money(100000)
-	tip("Здоровье восстановлено, +100000 руб.")
-end
-
-function fp_dev_tools:OnSurge()
-	self:Close()
-	tip(fp_surge.force(30, false))
-end
-
-function fp_dev_tools:OnEclipse()
-	self:Close()
-	tip(fp_surge.force(30, true))
+-- Runs an entry. Returns true when the window must be closed (the action needs the game to continue).
+function run(tab, key)
+	if not (db.actor and db.actor:alive()) then return false end
+	if tab == "teleport" then
+		return teleport(key)
+	end
+	if key == "pos" then log_pos(); return false
+	elseif key == "h1" then change_time(1, "Время +1 ч"); return true
+	elseif key == "h6" then change_time(6, "Время +6 ч"); return true
+	elseif key == "d1" then change_time(24, "Время +1 сутки"); return true
+	elseif key == "tf2" then
+		local tf = math.min(level.get_time_factor() * 2, 1000)
+		level.set_time_factor(tf)
+		tip("Таймфактор " .. tf)
+	elseif key == "tf1" then
+		level.set_time_factor(tf_default)
+		tip("Таймфактор " .. tf_default)
+	elseif key == "heal" then
+		local act = db.actor
+		act.health = 0.99
+		act.bleeding = 0.99
+		act.power = 0.99
+		act.psy_health = 0.99
+		act.radiation = -1.0
+		act:give_money(100000)
+		tip("Здоровье восстановлено, +100000 руб.")
+	elseif key == "surge" then
+		tip(fp_surge.force(30, false)); return true
+	elseif key == "eclipse" then
+		tip(fp_surge.force(30, true)); return true
+	end
+	return false
 end

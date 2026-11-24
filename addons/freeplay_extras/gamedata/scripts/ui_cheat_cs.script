@@ -34,8 +34,11 @@ end
 ------------------------------------------------------------------------------------------
 class "cheat_menu"  (CUIScriptWnd)
 
-local id2index = {weapons = 1, ammo = 2, addons = 3, outfits = 4, artefacts = 5, items = 6, quest_items = 7, mobs = 8}
-local index2id = {"weapons","ammo","addons","outfits","artefacts","items","quest_items","mobs"}
+-- Freeplay: two more tabs, "tools" and "teleport" (entries come from fp_dev_tools, not from the spawn list)
+local id2index = {weapons = 1, ammo = 2, addons = 3, outfits = 4, tools = 5, artefacts = 6, items = 7, quest_items = 8, mobs = 9, teleport = 10}
+local index2id = {"weapons","ammo","addons","outfits","tools","artefacts","items","quest_items","mobs","teleport"}
+local dev_tab = {tools = true, teleport = true}
+local TAB_ROW, TAB_STEP = 5, 92
 
 function cheat_menu:__init(owner) super()
 	self.menu_index = 1
@@ -50,7 +53,15 @@ end
 
 function cheat_menu:FillList()
 	if self.list:GetSize() > 0 then self.list:RemoveAll() end
-	local tbl = ui_cheat_main.cheat_list[self.tab:GetActiveId()]
+	local id = self.tab:GetActiveId()
+	local tbl
+	if dev_tab[id] then
+		tbl = {}
+		local l = fp_dev_tools.list(id)
+		for i = 1,#l do tbl[i] = {section = l[i].key, name = l[i].name} end
+	else
+		tbl = ui_cheat_main.cheat_list[id] or {}
+	end
 	self.len_tbl = #tbl
 	if self.len_tbl==0 then return end
 	for i = 1,#tbl do
@@ -80,6 +91,7 @@ function cheat_menu:InitControls()
 	local ctrl
 	ctrl = xml:Init3tButton("main_dialog:btn_spawn", dialog)
 	self:Register(ctrl, "btn_spawn")
+	self.btn_spawn = ctrl
 	ctrl:Enable(ui_cheat_main.gameIsOn)
 	ctrl = xml:Init3tButton("main_dialog:btn_cancel", dialog)
 	self:Register(ctrl, "btn_cancel")
@@ -205,20 +217,26 @@ end
 
 function cheat_menu:OnTabChange()
 	local ids = self.tab:GetActiveId()
+	self.tab_id = ids
 	self.menu_index = id2index[ids]
+	local dev = dev_tab[ids] == true
+	self.btn_spawn:SetText(dev and "Выполнить" or "Получить")
+	self.btn_spawn:Enable(dev and (db.actor ~= nil) or ui_cheat_main.gameIsOn)
+	if dev then self.btn_del:Enable(false) end
+	self.edit_box:Enable(true)
 	
 	local x1, x2 = 0, 0
 	local y1, y2 = 64, 20
-	if self.menu_index>4 then y1,y2 = y2,y1 end
+	if self.menu_index>TAB_ROW then y1,y2 = y2,y1 end
 	local btn
 	for a=1,self.tab:GetTabsCount() do
 		btn = self.tab:GetButtonById(index2id[a])
-		if a>4 then
+		if a>TAB_ROW then
 			btn:SetWndPos(vector2():set(x2,y2))
-			x2 = x2+116
+			x2 = x2+TAB_STEP
 		else
 			btn:SetWndPos(vector2():set(x1,y1))
-			x1 = x1+116
+			x1 = x1+TAB_STEP
 		end
 	end
 	
@@ -246,8 +264,18 @@ function cheat_menu:ShowDescription(indx)
 	if itm == nil then return end
 	
 	local sect = itm.sct:GetText()
+	if dev_tab[self.tab_id] then
+		self.btn_del:Enable(false)
+		self.icon:Show(false)
+		self.descr:SetText(fp_dev_tools.describe(self.tab_id, sect))
+		self.cost:SetText("")
+		self.weight:SetText("")
+		self.scroll_v:ScrollToBegin()
+		self.section_name:SetText(sect)
+		return
+	end
 	local sizes, file
-	if self.menu_index ==8 then
+	if self.tab_id == "mobs" then
 		sizes, file = ui_cheat_main.give_monster_icon(sect)
 		self.btn_del:Enable(false)
 	else
@@ -320,9 +348,15 @@ function cheat_menu:OnBtnSpawn()
 	local itm = self.list:GetItem(itm_index)
 	if itm==nil then return end
 	local sect = itm.sct:GetText()
+	if dev_tab[self.tab_id] then
+		if fp_dev_tools.run(self.tab_id, sect) then
+			get_console():execute('main_menu off')
+		end
+		return
+	end
 	local n = math.ceil(tonumber(self.edit_box:GetText()) or 1)
 	n = fp_dev_util.clamp(math.abs(n), 1, 7)
-	if self.menu_index ~= 8 then
+	if self.tab_id ~= "mobs" then
 		ui_cheat_main.spawn_item(sect, n)
 	else
 		ui_cheat_main.spawn_npc(sect, n)

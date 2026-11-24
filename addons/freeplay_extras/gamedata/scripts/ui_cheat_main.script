@@ -19,7 +19,8 @@ local file = nil
 local dlg = nil
 
 -- owner: the main menu (opened from the menu, F1) or nil (opened in game, from the console item)
-function start_menu(owner)
+-- tab: optional id of the tab to open ("tools", "teleport", ...)
+function start_menu(owner, tab)
 	gameIsOn = (level.present() and db.actor and db.actor:alive())
 	if cheat_list == nil then
 		cheat_list = {}
@@ -51,6 +52,7 @@ function start_menu(owner)
 		dlg = ui_cheat_cs.cheat_menu()
 	end
 	dlg.owner = owner
+	if tab then dlg.tab:SetActiveTab(tab) end
 	if owner then
 		owner:GetHolder():start_stop_menu(dlg, true)
 		owner:GetHolder():start_stop_menu(owner, true)
