@@ -6,8 +6,7 @@
 	Copyright         : naxac / naxac.spaces.ru /
 --]]
 -- Adaptation for SRP Freeplay: Eon (changes against the original: log through dbglog; r_*_ex helpers from fp_dev_util instead of
--- global ini_file patches; ver_prefix fixed to 'cs'; config files that live in game archives (not unpacked) are read through the
--- virtual file system too; the spawn_list.ltx cache is NOT written when the scan found nothing)---------------------------------------------------------------------------------------
+-- global ini_file patches; ver_prefix fixed to 'cs'; the spawn_list.ltx cache is NOT written when the scan found nothing)---------------------------------------------------------------------------------------
 local ver_prefix = "cs"
 local sys_ini = system_ini()
 local log = function(fmt, ...)
@@ -209,8 +208,7 @@ function collect()
 		f = fs:exist("$game_config$", path)
 		if f==nil then
 			log("collect_sections: incorrect path for file: '%s'", path)
-		elseif f.modif ~= 0 or fs:r_open("$game_config$", path) ~= nil then
-			-- Freeplay: files kept in game archives (modif == 0) are read through the virtual file system
+		elseif f.modif ~= 0 then
 			file = fs:r_open("$game_config$", path)
 			find_somewhat(file:r_stringZ(), path)
 		else
