@@ -1,5 +1,5 @@
 -- Freeplay extras: surge by the clock + eclipse (variety of surge).
--- Idea: eclipse effect (fx_blackday_*) and the "darkness" surge variant from Sigerous Mod 3.10 (GeJorge);
+-- Idea: eclipse (fx_eclipse_*: made from the SGM fx_blackday_* effects, with a light start) and the "darkness" surge variant from Sigerous Mod 3.10 (GeJorge);
 -- surge machinery (xr_surge_hide: phases, cover task, damage) is the SRP original and is NOT changed.
 -- Adaptation for SRP Freeplay: Eon
 --
@@ -11,7 +11,8 @@
 --     Side effect: no clock surge on the first game day of a new game (initialization_time starts as "now").
 --  2. Eclipse: SRP rolls a surge when the actor enters a level (surge_can_be_started, 15% +10% per miss).
 --     When such a surge starts shortly after level entry and it was not started by the clock, this module
---     swaps the weather effect for the SGM eclipse one (fx_blackday_clear / fx_blackday_rain).
+--     swaps the weather effect for the eclipse one (fx_eclipse_clear / fx_eclipse_rain): the first 20 s are light
+--     (like the surge itself), then it gets dark in 15 s, so the player has time to run to the cover.
 --     Hide task, damage, NPC behaviour stay exactly the same.
 --
 -- Switches (info portions): srp_freeplay turns both on; fp_surge_clock / fp_eclipse turn one on separately.
@@ -93,9 +94,9 @@ end
 -- so the result is checked and the caller retries on the next check.
 local function start_eclipse()
 	local weather = level.get_weather()
-	local fx = (weather == "default_clear" or weather == "default_cloudy") and "fx_blackday_clear" or "fx_blackday_rain"
+	local fx = (weather == "default_clear" or weather == "default_cloudy") and "fx_eclipse_clear" or "fx_eclipse_rain"
 	local ok = level.set_weather_fx(fx)
-	dbglog("%s", TAG .. "eclipse effect " .. fx .. ", weather was " .. tostring(weather) .. ", accepted: " .. tostring(ok))
+	dbglog("%s", TAG .. "eclipse effect " .. fx .. ", weather " .. tostring(weather) .. ", surge phase " .. tostring(xr_surge_hide.phase) .. ", accepted: " .. tostring(ok))
 	return ok ~= false   -- a binding that returns nothing counts as accepted; only an explicit false is retried
 end
 
