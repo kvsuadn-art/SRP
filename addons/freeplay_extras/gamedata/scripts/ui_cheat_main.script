@@ -24,6 +24,16 @@ function start_menu(owner)
 	if cheat_list == nil then
 		cheat_list = {}
 		local tmp = collect_sections.main()
+		local total = 0
+		for k,v in pairs(tmp) do total = total + #v end
+		if total == 0 then
+			-- Freeplay: stub instead of an empty window (the scan found nothing, spawn_list.ltx was not made)
+			cheat_list = nil
+			local msg = "Спавн-меню: список секций пуст (см. лог: collect_sections). Если configs\\spawn_list.ltx уже есть - удалите его и откройте меню снова."
+			dbglog("%s", msg)
+			if db.actor then news_manager.send_tip(db.actor, msg) end
+			return
+		end
 		local t
 		for k,v in pairs(tmp) do
 			cheat_list[k] = {}
