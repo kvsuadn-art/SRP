@@ -5,12 +5,15 @@
 	Last update       : 03.12.2015
 	Copyright         : naxac / naxac.spaces.ru /
 --]]
--- Adaptation for SRP Freeplay: Eon (see addons/freeplay_extras/README.md: no global patches, no cache file, no main-menu substitution)---------------------------------------------------------------------------------------
+-- Adaptation for SRP Freeplay: Eon (changes against the original: log through dbglog; r_*_ex helpers from fp_dev_util instead of
+-- global ini_file patches; ver_prefix fixed to 'cs'; config files that live in game archives (not unpacked) are read through the
+-- virtual file system too; the spawn_list.ltx cache is NOT written when the scan found nothing)---------------------------------------------------------------------------------------
+local ver_prefix = "cs"
+local sys_ini = system_ini()
 local log = function(fmt, ...)
 	dbglog("%s", string.format(fmt, ...))
 end
 
-local sys_ini = system_ini()
 local included = {"system.ltx"}
 local sections = {}
 local classes = {
@@ -153,8 +156,47 @@ function main()
 	-- Чтобы не вылетало при открытии незаполненной вкладки
 	for k in pairs(classes) do sections[k] = {} end
 	
-	-- Freeplay: always scan in memory (the original wrote/read configs\spawn_list.ltx as a cache)
-	collect()
+	if io then	-- можем писать в файл
+		local fs = getFS()
+		-- ini ещё нет, создаём
+		if fs:exist("$game_config$", "spawn_list.ltx")==nil then
+			local f1 = fs:update_path("$fs_root$", "fsgame.ltx")
+			local f2 = fs:update_path("$game_config$", "spawn_list.ltx")
+			fs:file_copy(f1, f2)
+			
+			this.collect()
+			
+			local found = 0
+			for k,v in pairs(sections) do found = found + #v end
+			if found == 0 then return sections end
+			if ver_prefix~='soc' then f2 = string.gsub(f2,'\\', '//') end
+			local file = io.open(f2,"w")
+			if file then
+				for k,v in pairs(sections) do
+					file:write("[",k,"]\n")
+					for i,s in pairs(v) do
+						file:write(s,"\n")
+					end
+					file:write("\n")
+				end
+				file:close(file)
+			end
+		else	-- ini есть, читаем из него
+			local spawn_ini = ini_file("spawn_list.ltx")
+			for k in pairs(classes) do
+				if spawn_ini:section_exist(k) then
+					sections[k] = {}
+					local result, id, value
+					for i=0,spawn_ini:line_count(k)-1 do
+						result, id, value = spawn_ini:r_line(k,i,"","")
+						table.insert(sections[k], id)
+					end
+				end
+			end
+		end
+	else	-- не можем писать в файл: ТЧ, мать его...
+		this.collect()
+	end
 	
 	return sections
 end
@@ -167,7 +209,8 @@ function collect()
 		f = fs:exist("$game_config$", path)
 		if f==nil then
 			log("collect_sections: incorrect path for file: '%s'", path)
-		elseif f.modif ~= 0 then
+		elseif f.modif ~= 0 or fs:r_open("$game_config$", path) ~= nil then
+			-- Freeplay: files kept in game archives (modif == 0) are read through the virtual file system
 			file = fs:r_open("$game_config$", path)
 			find_somewhat(file:r_stringZ(), path)
 		else
