@@ -13,12 +13,12 @@ local icon_stretch = (vid_mode~="800x600" and vid_mode~="1024x768") and 3 or 4
 class "list_item" (CUIListItemEx)
 
 function list_item:__init() super()
-	self:SetWndRect		(Frect():set(0,0,430,22))
+	self:SetWndRect		(Frect():set(0,0,473,22))
 	
 	self.nm					= CUIStatic	()
 	self.nm:SetAutoDelete	(true)
 	self:AttachChild		(self.nm)
-	self.nm:SetWndRect		(Frect():set(0,0,380,22))
+	self.nm:SetWndRect		(Frect():set(0,0,418,22))
 	self.nm:SetText			("name")
 	self.nm:SetFont			(GetFontLetterica16Russian())
 	self.nm:SetTextColor	(255,255,234,104)
@@ -38,7 +38,7 @@ class "cheat_menu"  (CUIScriptWnd)
 local id2index = {weapons = 1, ammo = 2, addons = 3, outfits = 4, tools = 5, artefacts = 6, items = 7, quest_items = 8, mobs = 9, teleport = 10}
 local index2id = {"weapons","ammo","addons","outfits","tools","artefacts","items","quest_items","mobs","teleport"}
 local dev_tab = {tools = true, teleport = true}
-local TAB_ROW, TAB_STEP = 5, 92
+local TAB_ROW, TAB_STEP = 5, 101
 
 function cheat_menu:__init(owner) super()
 	self.menu_index = 1
@@ -192,6 +192,14 @@ function cheat_menu:OnBtnCancel()
 		self:GetHolder():start_stop_menu(self, true)
 	end
 end
+-- close the window and give the control back to the game (OnBtnCancel would return to the main menu)
+function cheat_menu:CloseToGame()
+	self:GetHolder():start_stop_menu(self, true)
+	if self.owner then
+		get_console():execute('main_menu off')
+	end
+end
+
 function cheat_menu:OnBtnShowDescr()
 	local s = self.descWnd:IsShown()
 	self.descWnd:Show(not s)
@@ -350,7 +358,7 @@ function cheat_menu:OnBtnSpawn()
 	local sect = itm.sct:GetText()
 	if dev_tab[self.tab_id] then
 		if fp_dev_tools.run(self.tab_id, sect) then
-			get_console():execute('main_menu off')
+			self:CloseToGame()
 		end
 		return
 	end

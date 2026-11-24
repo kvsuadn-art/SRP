@@ -29,6 +29,7 @@ local mgr = nil
 local entry_time = 0
 local handled = false          -- the surge of the current activation was already looked at
 local clock_started = false    -- this activation was started by the clock
+local eclipse_pending = false  -- eclipse chosen for this surge; it starts when the surge reaches phase 2 (about 15 s in, red sky -> dark)
 local condlists = {}           -- parsed condlists by level name
 
 function attach(m)
@@ -106,7 +107,7 @@ function force(time, eclipse)
 	handled = true
 	x.activate_surge(time)
 	if eclipse then
-		start_eclipse()
+		eclipse_pending = true
 		return "Eclipse started"
 	end
 	return "Surge started"
@@ -119,8 +120,16 @@ function on_update(delta)
 	if x.phase == 0 then
 		handled = false
 		clock_started = false
+		eclipse_pending = false
 		try_clock()
 		return
+	end
+
+	-- SRP (bind_stalker) forces the weather to cloudy when a surge starts and runs its own fx_surge_day_1 until phase 2;
+	-- an effect set earlier is wiped out within seconds. So the eclipse waits for phase 2 and then stays dark.
+	if eclipse_pending and x.phase >= 2 then
+		eclipse_pending = false
+		start_eclipse()
 	end
 
 	-- a surge is running; look at it once, when it has just started (phase 1)
@@ -131,5 +140,5 @@ function on_update(delta)
 	if time_global() - entry_time > ENTRY_WINDOW_MS then return end
 	local age = game.get_game_time():diffSec(x.initialization_time) / level.get_time_factor()
 	if age > MAX_AGE_SEC then return end
-	start_eclipse()
+	eclipse_pending = true
 end
