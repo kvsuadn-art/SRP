@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<window>
+	<background x="0" y="0" width="1024" height="768">
+		<auto_static x="0" y="0" width="1024" height="430">
+			<texture x="0" y="0" width="1024" height="430">ui\ui_mm_window_back_crop</texture>
+		</auto_static>
+		<auto_static x="0" y="0" width="1024" height="768">
+			<texture>ui_inGame2_back_01</texture>
+		</auto_static>
+	</background>
+	<main_dialog>
+		<dialog x="435" y="124" width="548" height="519" stretch="1">
+			<texture>ui_menu_options_dlg</texture>
+		</dialog>
+		<cap x="45" y="9" width="378" height="33">
+			<text font="graffiti22" r="255" g="210" b="63">Инструменты разработчика</text>
+		</cap>
+		<list_frame x="62" y="50" width="456" height="222">
+			<texture>ui_tablist_textbox</texture>
+		</list_frame>
+		<list_window x="69" y="57" width="442" height="208" item_height="18">
+			<font font="letterica16" r="216" g="186" b="140" />
+		</list_window>
+		<btn_tp x="57" y="282" width="157" height="40">
+			<text font="graffiti19" align="c">Телепорт</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_tp>
+		<btn_mode x="216" y="282" width="157" height="40">
+			<text font="graffiti19" align="c">Список</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_mode>
+		<btn_pos x="375" y="282" width="157" height="40">
+			<text font="graffiti19" align="c">Координаты в лог</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_pos>
+		<btn_h1 x="57" y="326" width="157" height="40">
+			<text font="graffiti19" align="c">Время +1 ч</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_h1>
+		<btn_h6 x="216" y="326" width="157" height="40">
+			<text font="graffiti19" align="c">Время +6 ч</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_h6>
+		<btn_d1 x="375" y="326" width="157" height="40">
+			<text font="graffiti19" align="c">Время +1 сутки</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_d1>
+		<btn_tf2 x="57" y="370" width="157" height="40">
+			<text font="graffiti19" align="c">Таймфактор x2</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_tf2>
+		<btn_tf1 x="216" y="370" width="157" height="40">
+			<text font="graffiti19" align="c">Таймфактор 10</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_tf1>
+		<btn_heal x="375" y="370" width="157" height="40">
+			<text font="graffiti19" align="c">Лечение, деньги</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_heal>
+		<btn_surge x="57" y="414" width="157" height="40">
+			<text font="graffiti19" align="c">Выброс</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_surge>
+		<btn_eclipse x="216" y="414" width="157" height="40">
+			<text font="graffiti19" align="c">Затмение</text>
+			<texture>ui_button_main02</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_eclipse>
+		<btn_cancel x="375" y="470" width="157" height="40">
+			<text font="graffiti19" align="c">Выход</text>
+			<texture>ui_button_main03</texture>
+			<text_color>
+				<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+			</text_color>
+		</btn_cancel>
+	</main_dialog>
+</window>

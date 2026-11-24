@@ -96,6 +96,22 @@ local function start_eclipse()
 	dbglog("%s", TAG .. "eclipse effect, weather was " .. tostring(weather))
 end
 
+-- Dev tools (fp_dev_tools): start a surge or an eclipse right now. Returns a message for the player.
+function force(time, eclipse)
+	local x = xr_surge_hide
+	if x.phase ~= 0 or x.start_surge or x.surge_activated then
+		return "A surge is already running"
+	end
+	clock_started = true   -- keep the update loop from treating this as a level-entry surge
+	handled = true
+	x.activate_surge(time)
+	if eclipse then
+		start_eclipse()
+		return "Eclipse started"
+	end
+	return "Surge started"
+end
+
 function on_update(delta)
 	mgr:reschedule(CHECK_MS)
 

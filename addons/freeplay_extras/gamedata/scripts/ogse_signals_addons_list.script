@@ -5,4 +5,5 @@
 
 addons = {
 	"fp_surge",
+	"fp_dev",
 }

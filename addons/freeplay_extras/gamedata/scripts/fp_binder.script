@@ -10,6 +10,8 @@
 --   on_net_spawn()                 after the base net_spawn succeeded
 --   on_net_destroy()               BEFORE the base net_destroy (actor still alive)
 --   on_update(delta)               every tick after the base update; use mgr:reschedule(ms)
+--   on_item_use(obj)               the actor used an item (callback.use_object, registered by this
+--                                  subclass: the base class keeps it commented out)
 --   on_item_take(obj)              skipped while the game is synchronizing (as in base)
 --   on_item_drop(obj)              skipped while quitting the game (as in base)
 --   on_trade(item, sell_bye, money)
@@ -41,6 +43,15 @@ class "fp_actor_binder" (bind_stalker.actor_binder)
 
 function fp_actor_binder:__init(obj) super(obj)
 	dbglog("%s", TAG .. "init ok, subclass of bind_stalker.actor_binder")
+end
+
+function fp_actor_binder:reinit()
+	bind_stalker.actor_binder.reinit(self)
+	self.object:set_callback(callback.use_object, self.on_use_object, self)
+end
+
+function fp_actor_binder:on_use_object(obj)
+	emit("on_item_use", obj)
 end
 
 function fp_actor_binder:net_spawn(se_abstract)

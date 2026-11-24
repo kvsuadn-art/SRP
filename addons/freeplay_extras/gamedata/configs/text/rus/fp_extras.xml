@@ -211,4 +211,17 @@
 	<string id="duty_barman_job_done_dialog_2">
 		<text>Бывай.</text>
 	</string>
+	<string id="st_fp_dev_console_name">
+		<text>Консоль разработчика: спавн</text>
+	</string>
+	<string id="st_fp_dev_console_descr">
+		<text>Открывает спавн-меню (предметы, существа). Предмет возвращается в инвентарь после использования.</text>
+	</string>
+	<string id="st_fp_dev_tools_name">
+		<text>Консоль разработчика: инструменты</text>
+	</string>
+	<string id="st_fp_dev_tools_descr">
+		<text>Телепорт по Зоне, время, выброс и затмение, лечение. Предмет возвращается в инвентарь после использования.</text>
+	</string>
+
 </string_table>

@@ -1,0 +1,64 @@
+; Freeplay extras: developer tools items (see scripts/fp_dev.script).
+; Self-contained sections (no parent, nothing inherited), reusable use items: the use consumes the item, fp_dev gives it back.
+[fp_dev_console]
+GroupControlSection	= spawn_group
+discovery_dependency	=
+cform			= skeleton
+class			= II_ANTIR
+visual			= dynamics\equipments\documents_2.ogf
+
+description		= st_fp_dev_console_descr
+inv_name		= st_fp_dev_console_name
+inv_name_short		= st_fp_dev_console_name
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x		= 2
+inv_grid_y		= 25
+
+inv_weight		= 0.05
+cost			= 0
+can_trade		= false
+
+eat_health		= 0
+eat_satiety		= 0
+eat_power		= 0
+eat_radiation		= 0
+eat_alcohol		= 0
+wounds_heal_perc	= 0
+eat_portions_num	= 1
+
+animation_slot		= 4
+hud			= wpn_vodka_hud
+
+[fp_dev_tools]
+GroupControlSection	= spawn_group
+discovery_dependency	=
+cform			= skeleton
+class			= II_ANTIR
+visual			= dynamics\equipments\documents_2.ogf
+
+description		= st_fp_dev_tools_descr
+inv_name		= st_fp_dev_tools_name
+inv_name_short		= st_fp_dev_tools_name
+
+inv_grid_width		= 2
+inv_grid_height		= 1
+inv_grid_x		= 2
+inv_grid_y		= 25
+
+inv_weight		= 0.05
+cost			= 0
+can_trade		= false
+
+eat_health		= 0
+eat_satiety		= 0
+eat_power		= 0
+eat_radiation		= 0
+eat_alcohol		= 0
+wounds_heal_perc	= 0
+eat_portions_num	= 1
+
+animation_slot		= 4
+hud			= wpn_vodka_hud
+

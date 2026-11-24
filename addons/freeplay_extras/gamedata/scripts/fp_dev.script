@@ -1,0 +1,75 @@
+-- Freeplay extras: developer tools, entry points (fp_dev, fp_dev_util, fp_dev_tools).
+-- Spawn menu: naxac's universal spawn menu (collect_sections, ui_cheat_main, ui_cheat_cs), adapted.
+-- Tools window (teleport over the Zone, game time, surge/eclipse, heal): fp_dev_tools.
+-- Adaptation for SRP Freeplay: Eon
+--
+-- Two ways to open (both work with the signals layer, nothing in the normal game runs by itself):
+--  1. In game: use one of two items (they are in the spawn menu, tab "Items"):
+--     fp_dev_console - spawn menu, fp_dev_tools - tools window. An item is consumed by the use and
+--     given back, so it stays in the inventory.
+--  2. Main menu (Esc): F1 - spawn menu, F2 - tools window. Needs the addon copy of ui_main_menu.script.
+--
+-- State: none (nothing is written to the savegame, no info portions).
+
+local TAG = "[fp_dev] "
+local ITEMS = { fp_dev_console = true, fp_dev_tools = true }
+local pending = {}   -- [id of the used item] = section; a new item is created when the old one is gone
+local mgr = nil
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+function on_item_use(obj)
+	local section = obj:section()
+	if not ITEMS[section] then return end
+	pending[obj:id()] = section
+	get_hud():HideActorMenu()
+	dbglog("%s", TAG .. "used " .. section)
+	if section == "fp_dev_console" then
+		open_spawner(nil)
+	else
+		open_tools(nil)
+	end
+end
+
+function on_update(delta)
+	mgr:reschedule(500)
+	-- the used item is released by the engine; give a new one when it is gone
+	for id, section in pairs(pending) do
+		if alife():object(id) == nil then
+			pending[id] = nil
+			local act = db.actor
+			alife():create(section, act:position(), act:level_vertex_id(), act:game_vertex_id(), act:id())
+		end
+	end
+end
+
+function open_spawner(owner)
+	ui_cheat_main.start_menu(owner)
+end
+
+function open_tools(owner)
+	local wnd = fp_dev_tools.fp_dev_tools(owner)
+	if owner then
+		owner:GetHolder():start_stop_menu(wnd, true)
+		owner:GetHolder():start_stop_menu(owner, true)
+		owner:Show(false)
+	else
+		level.start_stop_menu(wnd, true)
+	end
+end
+
+-- called from the main menu (addon copy of ui_main_menu.script)
+function on_menu_key(menu, dik)
+	if dik == DIK_keys.DIK_F1 then
+		open_spawner(menu)
+	elseif dik == DIK_keys.DIK_F2 then
+		if level.present() and db.actor and db.actor:alive() then
+			get_console():execute("main_menu off")
+			open_tools(nil)
+		end
+	end
+end

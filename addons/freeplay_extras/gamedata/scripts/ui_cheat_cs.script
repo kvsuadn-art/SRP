@@ -1,0 +1,383 @@
+-- For 'Clear Sky'
+-- naxac, universal spawn menu. -- Adaptation for SRP Freeplay: Eon (see addons/freeplay_extras/README.md: no global patches, no cache file, no main-menu substitution)
+local sys_ini = system_ini()
+local eng = [[qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?!@#$%^&*()-_+=\| 0123456789]]
+local rus = [[éöóêåíãøùçõúôûâàïðîëäæýÿ÷ñìèòüáþ.ÉÖÓÊÅÍÃØÙÇÕÚÔÛÂÀÏÐÎËÄÆÝß×ÑÌÈÒÜÁÞ,!"¹;%:?*()-_+=\/ 0123456789]]
+local translit_tbl = {}
+for i = 1, #rus do translit_tbl[eng:sub(i, i)] = rus:sub(i, i) end
+local function translit(s) return translit_tbl[s] or s end
+
+local vid_mode = get_console():get_string("vid_mode")
+local icon_stretch = (vid_mode~="800x600" and vid_mode~="1024x768") and 3 or 4
+----------------------------------------------------------------------------------
+class "list_item" (CUIListItemEx)
+
+function list_item:__init() super()
+	self:SetWndRect		(Frect():set(0,0,430,22))
+	
+	self.nm					= CUIStatic	()
+	self.nm:SetAutoDelete	(true)
+	self:AttachChild		(self.nm)
+	self.nm:SetWndRect		(Frect():set(0,0,380,22))
+	self.nm:SetText			("name")
+	self.nm:SetFont			(GetFontLetterica16Russian())
+	self.nm:SetTextColor	(255,255,234,104)
+	
+	self.sct				= CUIStatic	()
+	self.sct:SetAutoDelete	(true)
+	self:AttachChild		(self.sct)
+	self.sct:SetWndRect		(Frect():set(300,0,50,22))
+	self.sct:SetText		("section")
+	self.sct:SetFont		(GetFontLetterica16Russian())
+	self.sct:SetTextColor	(0,0,0,0)
+end
+------------------------------------------------------------------------------------------
+class "cheat_menu"  (CUIScriptWnd)
+
+local id2index = {weapons = 1, ammo = 2, addons = 3, outfits = 4, artefacts = 5, items = 6, quest_items = 7, mobs = 8}
+local index2id = {"weapons","ammo","addons","outfits","artefacts","items","quest_items","mobs"}
+
+function cheat_menu:__init(owner) super()
+	self.menu_index = 1
+	self.was_found = -1
+	self:InitControls()
+	self:InitCallBacks()
+	self:FillList()
+end
+
+function cheat_menu:__finalize()
+end
+
+function cheat_menu:FillList()
+	if self.list:GetSize() > 0 then self.list:RemoveAll() end
+	local tbl = ui_cheat_main.cheat_list[self.tab:GetActiveId()]
+	self.len_tbl = #tbl
+	if self.len_tbl==0 then return end
+	for i = 1,#tbl do
+		self:AddItemToList(tbl[i])
+	end
+end
+
+function cheat_menu:InitControls()
+	self:SetWndRect(Frect():set(0,0,1024,768))
+	self:Enable(true)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_cs.xml")
+	xml:InitStatic("background", self)
+	
+	local dialog = xml:InitStatic("main_dialog:dialog", self)
+	xml:InitStatic("main_dialog:cap_cheat", dialog)
+	
+	xml:InitFrame("main_dialog:frame",	dialog)
+	
+	self.tab = xml:InitTab("main_dialog:tab", dialog)
+	self:Register(self.tab,	"tab")
+	
+	xml:InitFrame("main_dialog:list_frame",			dialog)
+	self.list = xml:InitList("main_dialog:list_window", 	dialog)
+	self:Register(self.list, "list_window")
+	
+	local ctrl
+	ctrl = xml:Init3tButton("main_dialog:btn_spawn", dialog)
+	self:Register(ctrl, "btn_spawn")
+	ctrl:Enable(ui_cheat_main.gameIsOn)
+	ctrl = xml:Init3tButton("main_dialog:btn_cancel", dialog)
+	self:Register(ctrl, "btn_cancel")
+	
+	self.btn_del = xml:Init3tButton("main_dialog:btn_delitem", dialog)
+	self.btn_del:Enable(false)
+	self:Register(self.btn_del, "btn_delitem")
+	
+	-- Ïîèñê ïî èìåíè
+	ctrl = xml:Init3tButton("main_dialog:button_search", dialog)
+	self:Register(ctrl, "btn_search")
+	self.lang_mode = true
+	self.last_text = ""
+	self.edit_box = xml:InitEditBox("main_dialog:edit_box", dialog)
+	self.btn_lang = xml:Init3tButton("main_dialog:button_lang", dialog)
+	self.btn_lang:SetText("ÐÓÑ")
+	self:Register(self.btn_lang, "button_lang")
+	ctrl = xml:InitButton("main_dialog:button_clear", dialog)
+	self:Register(ctrl, "btn_clear")
+	
+	self.section_name = xml:InitStatic("main_dialog:sect_wnd", dialog)
+	
+	-- Îïèñàíèå
+	self.descWnd = xml:InitFrame("description", self)
+	self.scroll_v = xml:InitScrollView("description:scroll_v", self.descWnd)
+	
+	ctrl = xml:Init3tButton("description:button_descr", self)
+	self:Register(ctrl, "btn_descr")
+	
+	self.icon = CUIStatic()
+	self.icon:SetWindowName("icon")
+	self.icon:SetAutoDelete(true)
+	self.icon:SetWndRect(Frect():set(20,95,300,150))
+	self.descWnd:AttachChild(self.icon)
+	
+	self.cost = xml:InitStatic("description:cost_wnd", self.descWnd)
+	
+	self.weight = xml:InitStatic("description:weight_wnd", self.descWnd)
+	
+	ctrl = xml:InitStatic("description:templ_item", self.scroll_v)
+	self.descr = xml:InitStatic("description:descr_list", ctrl)
+	
+	self.tab:SetActiveTab("weapons")
+end
+
+function cheat_menu:InitCallBacks()
+	self:AddCallback("tab",				ui_events.TAB_CHANGED,				self.OnTabChange,			self)
+	self:AddCallback("btn_clear",		ui_events.BUTTON_CLICKED,			self.OnBtnClearText,		self)
+	self:AddCallback("button_lang",		ui_events.BUTTON_CLICKED,			self.OnBtnChangeLanguage,	self)
+	self:AddCallback("btn_descr",		ui_events.BUTTON_CLICKED,			self.OnBtnShowDescr,		self)
+	self:AddCallback("btn_search",		ui_events.BUTTON_CLICKED,			self.SearchItem,			self)
+	self:AddCallback("btn_delitem",		ui_events.BUTTON_CLICKED,			self.OnBtnDelItem,			self)
+	self:AddCallback("btn_cancel",		ui_events.BUTTON_CLICKED,			self.OnBtnCancel,			self)
+	self:AddCallback("btn_spawn",		ui_events.BUTTON_CLICKED,			self.OnBtnSpawn,			self)
+	self:AddCallback("list_window",		ui_events.LIST_ITEM_CLICKED, 		self.OnListItemClicked,		self)
+	self:AddCallback("list_window",		ui_events.WINDOW_LBUTTON_DB_CLICK,	self.OnListItemDbClicked,	self)
+end
+
+function cheat_menu:OnBtnClearText()
+	self.edit_box:SetText("")
+	self.was_found = -1
+end
+
+function cheat_menu:OnChangeEditText()
+	local text = self.edit_box:GetText()
+	local len_l = #self.last_text
+	local len_t = #text
+	if self.lang_mode and len_l<len_t then
+		local s, l = "", ""
+		local f = false
+		for i=1,len_t do
+			l = text:sub(i,i)
+			if f==false and (len_l<i or l~=self.last_text:sub(i,i)) then
+				f = true
+				l = translit(l)
+			end
+			s = s..l
+		end
+		self.last_text = s
+		self.edit_box:SetText(s)
+	else
+		self.last_text = text
+	end
+	self.was_found = -1
+end
+
+function cheat_menu:OnBtnChangeLanguage()
+	self.lang_mode = not self.lang_mode
+	self.btn_lang:SetText(self.lang_mode and "ÐÓÑ" or "ENG")
+end
+
+function cheat_menu:OnBtnCancel()
+	if self.owner then
+		self:GetHolder():start_stop_menu(self.owner, true) --new(show main window)
+		self:GetHolder():start_stop_menu(self,true)
+		self.owner:Show(true)
+	else
+		self:GetHolder():start_stop_menu(self, true)
+	end
+end
+function cheat_menu:OnBtnShowDescr()
+	local s = self.descWnd:IsShown()
+	self.descWnd:Show(not s)
+	local b = self:GetButton("btn_descr")
+	b:SetText(s and "Ïîêàçàòü îïèñàíèå" or "Ñêðûòü îïèñàíèå")
+end
+
+function cheat_menu:OnBtnDelItem()
+	if self.list:GetSize()==0 then return end
+	local itm_index = self.list:GetFocusedItem()
+	if (not itm_index) or itm_index < 0 then return end
+
+	local itm = self.list:GetItem(itm_index)
+	if itm==nil then return end
+	local sect = itm.sct:GetText()
+	local obj = db.actor:object(sect)
+	if obj then
+		news_manager.send_tip(db.actor, "Óäàëèëè èç èíâåíòàðÿ:%c[255,0,255,0] "..itm.nm:GetText())
+		alife():release(alife():object(obj:id()))
+		get_console():execute('main_menu off')
+	end
+end
+
+function cheat_menu:OnTabChange()
+	local ids = self.tab:GetActiveId()
+	self.menu_index = id2index[ids]
+	
+	local x1, x2 = 0, 0
+	local y1, y2 = 64, 20
+	if self.menu_index>4 then y1,y2 = y2,y1 end
+	local btn
+	for a=1,self.tab:GetTabsCount() do
+		btn = self.tab:GetButtonById(index2id[a])
+		if a>4 then
+			btn:SetWndPos(vector2():set(x2,y2))
+			x2 = x2+116
+		else
+			btn:SetWndPos(vector2():set(x1,y1))
+			x1 = x1+116
+		end
+	end
+	
+	self:FillList()
+	self.list:ResetFocusCapture()
+	self:OnListItemClicked()
+	self.was_found = -1
+	
+	local itm_index = self.list:GetFocusedItem()
+	if itm_index then self.list:ScrollToPos(itm_index) end
+end
+
+function cheat_menu:OnListItemClicked()
+	if self.list:GetSize()==0 then return end
+	
+	local itm_index = self.list:GetSelectedItem()
+	if itm_index < 0 or self.len_tbl<itm_index+1 then return end
+	self.list:SetFocusedItem(itm_index)
+	self:ShowDescription(itm_index)
+	self.was_found = -1
+end
+	
+function cheat_menu:ShowDescription(indx)
+	local itm = self.list:GetItem(indx)
+	if itm == nil then return end
+	
+	local sect = itm.sct:GetText()
+	local sizes, file
+	if self.menu_index ==8 then
+		sizes, file = ui_cheat_main.give_monster_icon(sect)
+		self.btn_del:Enable(false)
+	else
+		sizes = ui_cheat_main.give_item_icon(sect)
+		file = "ui\\ui_icon_equipment"
+		if ui_cheat_main.gameIsOn then self.btn_del:Enable(db.actor:object(sect)~=nil) end
+	end
+	
+	local pw = (sizes.width/5)*icon_stretch
+	local ph = (sizes.height/5)*4
+	local px = 145-(pw/2)
+	local py = 125-(ph/2)
+	
+	self.icon:InitTexture(file)
+	self.icon:SetOriginalRect(Frect():set(sizes.x,sizes.y,sizes.width+sizes.x,sizes.height+sizes.y))
+	self.icon:SetWndRect(Frect():set(px,py,pw+px,ph+py))
+	self.icon:SetStretchTexture(true)
+	self.icon:Show(true)
+	
+	local description = fp_dev_util.r_string_ex(sys_ini, sect, "description", "%c[255,255,0,0]<no description>")
+	local cst = fp_dev_util.r_float_ex(sys_ini, sect, "cost")
+	local wght = fp_dev_util.r_float_ex(sys_ini, sect, "inv_weight")
+	self.descr:SetTextST(description)
+	self.cost:SetText(cst and string.format("Öåíà: %d ðóá.", cst) or "")
+	self.weight:SetText(wght and string.format("Âåñ: %.2f êã.", wght) or "")
+	self.scroll_v:ScrollToBegin()
+	self.section_name:SetText(sect)
+end
+
+function cheat_menu:OnListItemDbClicked()
+	self:OnBtnSpawn()
+end
+
+function cheat_menu:SearchItem()
+	local search_text = self.edit_box:GetText()
+	if #search_text==0 then return end
+	local size = self.list:GetSize()
+	if size==0 then return end
+	
+	search_text = fp_dev_util.lower1(string.gsub(search_text, "[%p¨¸]", " "))
+	
+	local res = false
+	local item, item_text
+	for i=0,size-1 do
+		item = self.list:GetItem(i)
+		item_text = fp_dev_util.lower1(item.nm:GetText())
+		item_text = string.gsub(item_text,"[%p¨¸]"," ")
+		if #item_text>=#search_text and string.find(item_text,search_text,1,true) then
+			if self.was_found < i then
+				self.was_found = i
+				if i==size-1 then self.list:ScrollToEnd()
+				else self.list:ScrollToPos(i) end
+				self.list:SetFocusedItem(i)
+				self:ShowDescription(i)
+				res = true
+				break
+			end
+		end
+	end
+	if res==false then
+		self.was_found = -1
+	end
+end
+
+function cheat_menu:OnBtnSpawn()
+	if self.list:GetSize()==0 then return end
+	local itm_index = self.list:GetFocusedItem()
+	if (not itm_index) or itm_index < 0 then return end
+
+	local itm = self.list:GetItem(itm_index)
+	if itm==nil then return end
+	local sect = itm.sct:GetText()
+	local n = math.ceil(tonumber(self.edit_box:GetText()) or 1)
+	n = fp_dev_util.clamp(math.abs(n), 1, 7)
+	if self.menu_index ~= 8 then
+		ui_cheat_main.spawn_item(sect, n)
+	else
+		ui_cheat_main.spawn_npc(sect, n)
+	end
+end
+
+function cheat_menu:Update()
+	CUIScriptWnd.Update(self)
+	if self.change_text then
+		self.change_text = nil
+		self.tmr = time_global()
+	elseif self.tmr and time_global() - self.tmr > 500 then
+		self.tmr = nil
+		self:OnChangeEditText()
+	end
+end
+local kAlt = {[DIK_keys.DIK_LMENU] = true, [DIK_keys.DIK_RMENU] = true}
+local kShift = {[DIK_keys.DIK_LSHIFT] = true, [DIK_keys.DIK_RSHIFT] = true}
+function cheat_menu:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if kAlt[dik] then self.alt_pressed = true
+		elseif kShift[dik] then self.shift_pressed = true end
+		if (self.shift_pressed and kAlt[dik]) or (self.alt_pressed and kShift[dik]) then
+			self:OnBtnChangeLanguage()
+		elseif self.shift_pressed and dik == DIK_keys.DIK_DELETE then
+			self:OnBtnClearText()
+		end
+		
+		if dik == DIK_keys.DIK_ESCAPE then self:OnBtnCancel()
+		elseif dik == DIK_keys.DIK_RETURN then self:OnBtnSpawn()
+		elseif dik == DIK_keys.DIK_TAB then self:OnKeyNewTab()
+		elseif dik == DIK_keys.DIK_DOWN then self:SearchItem()
+		else self.change_text = true end
+	elseif keyboard_action == ui_events.WINDOW_KEY_RELEASED then
+		if kAlt[dik] then self.alt_pressed = nil
+		elseif kShift[dik] then self.shift_pressed = nil end
+	end
+	return true
+end
+
+function cheat_menu:OnKeyNewTab()
+	local ids = self.tab:GetActiveId()
+	if not ids then return end
+	local next_tab = index2id[id2index[ids]+1] or "weapons"
+	
+	self.tab:SetActiveTab(next_tab)
+end
+
+function cheat_menu:AddItemToList(t)
+	local n = t.name
+	if n == nil then return end
+	if #n>80 then n = string.sub(n,1,80).."..." end
+	local _itm = list_item()
+	_itm.nm:SetText(n)
+	_itm.sct:SetText(t.section)
+	self.list:AddItem(_itm)
+end

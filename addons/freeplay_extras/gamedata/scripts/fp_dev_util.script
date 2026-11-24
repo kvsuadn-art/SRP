@@ -1,0 +1,55 @@
+-- Freeplay extras: small helpers for the developer tools (fp_dev*).
+-- They replace the global patches that naxac's add_cheat_spawn.script made (ini_file.r_*_ex,
+-- string.lower1, math.normalize): here they are ordinary functions of this module.
+-- Adaptation for SRP Freeplay: Eon (helpers originally by naxac)
+
+function r_clsid_ex(ini, section, line, def)
+	if ini:section_exist(section) and ini:line_exist(section, line) then
+		return ini:r_clsid(section, line)
+	end
+	return def
+end
+
+function r_bool_ex(ini, section, line, def)
+	if ini:section_exist(section) and ini:line_exist(section, line) then
+		return ini:r_bool(section, line)
+	end
+	return def
+end
+
+function r_float_ex(ini, section, line, def)
+	if ini:section_exist(section) and ini:line_exist(section, line) then
+		return ini:r_float(section, line)
+	end
+	return def
+end
+
+function r_string_ex(ini, section, line, def)
+	if ini:section_exist(section) and ini:line_exist(section, line) then
+		return ini:r_string(section, line)
+	end
+	return def
+end
+
+function r_u32_ex(ini, section, line, def)
+	if ini:section_exist(section) and ini:line_exist(section, line) then
+		return ini:r_u32(section, line)
+	end
+	return def
+end
+
+-- lower case for ASCII and for windows-1251 Cyrillic (bytes 192..223 -> 224..255, 168 -> 184)
+function lower1(str)
+	if not str then return "" end
+	str = string.lower(str)
+	str = string.gsub(str, "[\192-\223]", function(c) return string.char(string.byte(c) + 32) end)
+	str = string.gsub(str, "\168", "\184")
+	return str
+end
+
+function clamp(n, min, max)
+	if min > max then min, max = max, min end
+	if n > max then return max end
+	if n < min then return min end
+	return n
+end

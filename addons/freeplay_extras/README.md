@@ -19,7 +19,7 @@
 
 - `scripts/fp_binder.script` — класс `fp_actor_binder` (наследник `bind_stalker.actor_binder`). Вызывает базовый метод, затем отправляет сигнал: `on_net_spawn`, `on_net_destroy`, `on_update`, `on_item_take`, `on_item_drop`, `on_trade`, `on_task`, `on_take_from_box`, `on_save`, `on_load` (аргументы описаны в шапке файла). Новые коллбэки движка (`use_object`, info, hit и др.) не регистрируются, пока нет модуля, которому они нужны.
 - `scripts/ogse_signals.script` — менеджер сигналов и слотов (Malandrinus, OGS Evolution Team) с минимальными правками: `ASSERT` и `log2` определены локально, `profile_timer` и `debug.getinfo` защищены проверкой наличия, `slot` сделан `local`. Модули подписываются в собственном `attach(mgr)`, редкие подписки задают период через `reschedule(мс)`.
-- `scripts/ogse_signals_addons_list.script` — список подключаемых модулей (`addons`: сейчас `fp_surge`).
+- `scripts/ogse_signals_addons_list.script` — список подключаемых модулей (`addons`: `fp_surge`, `fp_dev`).
 - `configs/creatures/actor.ltx` — копия из ядра, изменена одна строка `script_binding = fp_binder.actor_init`.
 
 Ошибки подписчиков намеренно не перехватываются: пойманная ошибка оставила бы очередь `ogse_signals` в полуобработанном состоянии. Подписчик, пишущий в пакет сохранения (`on_save`), меняет формат сейва.
@@ -73,3 +73,25 @@
 | `configs/gameplay/info_portions.xml` | добавлены `fp_surge_clock`, `fp_eclipse` |
 
 Не взято: код `sgm_blackday` (таймер на `time_global`, собственное хранилище, нет укрытия и урона) и звук `blackday_pre.ogg`.
+
+## Модуль 3 — инструменты разработчика (`fp_dev`)
+
+Для тестирования остальных модулей: спавн-меню, перемещение по Зоне, время, принудительные выброс и затмение. Сейв не меняется (ни info, ни блоков), в обычной игре ничего не работает само: окна открываются только по действию.
+
+**Два способа вызова**
+1. **В игре:** предметы «Консоль разработчика: спавн» (`fp_dev_console`) и «Консоль разработчика: инструменты» (`fp_dev_tools`). Они есть во вкладке «Предметы» спавн-меню (или `alife():create` по имени секции). Использование открывает окно; предмет расходуется и возвращается в инвентарь (колбэк `use_object` зарегистрирован в `fp_binder`, сигнал `on_item_use`).
+2. **Главное меню (Esc):** F1 — спавн-меню, F2 — инструменты (в игре). Для этого в аддоне лежит копия `ui_main_menu.script` с **одной добавленной строкой** в `main_menu:OnKeyboard`; удалите файл, чтобы отключить способ 2. F3/F4 остаются за SRP.
+
+**Спавн-меню — naxac** (универсальное меню для ТЧ/ЧН/ЗП, из CSOGSM): `collect_sections`, `ui_cheat_main`, `ui_cheat_cs` + `configs/ui/ui_cheat_cs.xml`. Список секций строится по реально загруженному `system.ltx`. Изменения: глобальные заплатки (`ini_file.r_*_ex`, `string.lower1`, `math.normalize`, `_G.sys_ini`, `ver_prefix`) заменены функциями `fp_dev_util`; кэш `configs\spawn_list.ltx` убран (список собирается в памяти при первом открытии); подмена `ui_main_menu.main_menu.OnKeyboard` убрана; окно открывается и из игры.
+**Важно:** сборщик читает конфиги через файловую систему игры и требует **распакованных** `configs` (иначе пропущенные файлы пишутся в лог, а список неполный).
+
+**Окно инструментов** (`fp_dev_tools` + `configs/ui/ui_fp_dev.xml`): телепорт (другие уровни и точки гидов текущего уровня — из `guiders_table` SRP, прыжок как у проводников), координаты в лог, время +1 ч/+6 ч/+1 сут, таймфактор x2 и 10, лечение и 100000 руб., принудительный выброс и затмение (`fp_surge.force`).
+
+| Файл | Тип |
+|---|---|
+| `scripts/fp_dev.script`, `fp_dev_tools.script`, `fp_dev_util.script` | новые |
+| `scripts/collect_sections.script`, `ui_cheat_main.script`, `ui_cheat_cs.script`, `configs/ui/ui_cheat_cs.xml` | naxac, адаптированы |
+| `configs/ui/ui_fp_dev.xml` | новый |
+| `scripts/ui_main_menu.script` | копия ядра + 1 строка |
+| `scripts/fp_binder.script` | `use_object` → сигнал `on_item_use` |
+| `configs/misc/fp_dev.ltx`, `configs/system.ltx`, `configs/text/rus/fp_extras.xml` | секции предметов, include, тексты |
