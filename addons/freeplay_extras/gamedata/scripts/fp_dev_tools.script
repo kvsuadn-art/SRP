@@ -26,24 +26,22 @@ local function tip(text)
 end
 
 -- list of a tab: array of { key, name, descr }
--- "teleport": every guide point on every level that SRP guides can reach from the current level
--- (same level, or a level with a cross-level point in guiders_table), named the way guides name them:
+-- "teleport": every guide point of guiders_table on every level, named the way guides name them:
 -- "<level>. <point name>", both localized.
 local function teleport_list()
 	local res = {}
 	local cur = level.name()
 	local smarts = sim_board.get_sim_board().smarts_by_names
-	local cross = guiders_table.cross_level_teleport[cur] or {}
 	for name, d in pairs(guiders_table.teleport_points) do
 		local smart = smarts[name]
-		if smart and (d.level == cur or cross[d.level]) then
+		if smart then
 			local ok, label = pcall(smart_names.get_smart_terrain_name, smart)
 			if not ok or not label then label = name end
 			local lvl = game.translate_string(d.level)
 			res[#res + 1] = {
 				key = name,
 				name = lvl .. ". " .. label,
-				descr = (d.level == cur) and "Точка на этом уровне." or "Точка на другом уровне: переход через переход уровня, как у проводников.",
+				descr = (d.level == cur) and "Точка на этом уровне." or "Точка на другом уровне: сначала переход на уровень (консольная команда jump_to_level), затем прыжок к точке.",
 				here = (d.level == cur) and 0 or 1,
 				lvl = lvl,
 			}
@@ -71,10 +69,11 @@ function describe(tab, key)
 	return ""
 end
 
--- The jump is done by SRP's own guide code: guiders.start_teleport (fade, control back at the end).
--- To another level SRP does it in two steps (jump to the level changer, then, on the new level, to the point);
--- the target is kept in the savegame for that: here it is "pending" (one string, empty when nothing is pending;
--- the Lua state is rebuilt on a level change, SRP's own guiders.save/load work the same way).
+-- The jump inside a level is done by SRP's own guide code: guiders.start_teleport (fade, control back at the end).
+-- To another level: the console command jump_to_level (SRP's cross-level guide points sit in level changer zones,
+-- which are closed or not triggered when the player is moved there from a menu), then, on the new level, the
+-- same guide jump to the point. The target is kept in the savegame for that: "pending" (one string, empty when
+-- nothing is pending; the Lua state is rebuilt on a level change, SRP's own guiders.save/load work the same way).
 local pending = ""
 local entry_time = 0
 local mgr = nil
@@ -98,7 +97,8 @@ end
 function on_net_spawn()
 	entry_time = time_global()
 	if pending ~= "" then
-		guiders.teleported_to_another_level = false   -- SRP's flag for its own 2-step jump; we do the 2nd step ourselves
+		local d = guiders_table.teleport_points[pending]
+		if not (d and d.level == level.name()) then pending = "" end   -- stale target (the level change did not happen)
 	end
 end
 
@@ -127,15 +127,11 @@ end
 local function teleport(key)
 	local d = guiders_table.teleport_points[key]
 	if not d then return false end
-	local cur = level.name()
-	if d.level == cur then
+	if d.level == level.name() then
 		jump_to(key)
 	else
-		local cross = guiders_table.cross_level_teleport[cur] and guiders_table.cross_level_teleport[cur][d.level]
-		if not cross then return false end
 		pending = key
-		guiders.level_changed = true
-		guiders.start_teleport(cross, nil)
+		get_console():execute("jump_to_level " .. d.level)
 	end
 	dbglog("%s", TAG .. "teleport to " .. key .. " (" .. tostring(d.level) .. ")")
 	return true

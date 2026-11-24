@@ -31,7 +31,7 @@ local handled = false          -- the surge of the current activation was alread
 local clock_started = false    -- this activation was started by the clock
 local forced_run = false       -- the surge was started from the dev tools
 local was_running = false     -- a surge was seen running (to restore control when it ends)
-local eclipse_pending = false  -- eclipse chosen for this surge; it starts when the surge reaches phase 2 (about 15 s in, red sky -> dark)
+local eclipse_pending = false  -- eclipse chosen for this surge, the engine has not accepted the effect yet
 local condlists = {}           -- parsed condlists by level name
 
 function attach(m)
@@ -119,9 +119,12 @@ function force(time, eclipse)
 	forced_run = true
 	clock_started = true   -- keep the update loop from treating this as a level-entry surge
 	handled = true
+	-- the eclipse effect goes first: activate_surge then asks for SRP's fx_surge_day_1, which the engine refuses
+	-- while another weather effect plays, so the darkness is there from the very start
+	local accepted = eclipse and start_eclipse()
 	x.activate_surge(time)
 	if eclipse then
-		eclipse_pending = true
+		eclipse_pending = not accepted   -- if it was refused, try again (see on_update)
 		return "Eclipse started"
 	end
 	return "Surge started"
@@ -145,9 +148,8 @@ function on_update(delta)
 	end
 	was_running = true
 
-	-- SRP (bind_stalker) forces the weather to cloudy when a surge starts and runs its own fx_surge_day_1 until phase 2;
-	-- an effect set earlier is wiped out within seconds. So the eclipse waits for phase 2 and then stays dark.
-	if eclipse_pending and x.phase >= 2 then
+	-- the eclipse effect is requested until the engine accepts it (it refuses while SRP's fx_surge_day_1 plays)
+	if eclipse_pending then
 		if start_eclipse() or x.phase >= 4 then eclipse_pending = false end
 	end
 
