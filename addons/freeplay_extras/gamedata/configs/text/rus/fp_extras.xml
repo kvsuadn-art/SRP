@@ -224,4 +224,17 @@
 		<text>Телепорт по Зоне, время, выброс и затмение, лечение. Предмет возвращается в инвентарь после использования.</text>
 	</string>
 
+
+	<string id="st_fp_satiety_1">
+		<text>Вы проголодались.</text>
+	</string>
+	<string id="st_fp_satiety_2">
+		<text>Вы сильно голодны: пора поесть.</text>
+	</string>
+	<string id="st_fp_satiety_3">
+		<text>Вы умираете от голода! Здоровье падает.</text>
+	</string>
+	<string id="st_fp_satiety_fed">
+		<text>Голод утолён.</text>
+	</string>
 </string_table>

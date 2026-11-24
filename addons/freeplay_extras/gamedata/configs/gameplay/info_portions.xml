@@ -16,6 +16,7 @@
 	<info_portion id="fp_loot_spawned"/>
 	<info_portion id="fp_surge_clock"/>
 	<info_portion id="fp_eclipse"/>
+	<info_portion id="fp_satiety"/>
 
 <!--	Freeplay end	-->
 

@@ -1,0 +1,130 @@
+-- Freeplay extras: satiety (hunger emulation).
+-- Ideas: OGSM "hunger emulator" (DEXXX) - a counter in game time that grows while the player does not eat and
+-- hurts the health when it is high; SGM 3.10 (GeJorge) - levels of hunger (70 / 120 / 200) and a per-item
+-- "satiety slake" value read from the item config, not from a hard-coded list.
+-- Adaptation for SRP Freeplay: Eon
+--
+-- How it works:
+--  * hunger (0..MAX) grows by 1 every GAME_MIN_PER_UNIT game minutes (so sleeping or the time factor count);
+--  * an eaten item lowers it by its own value: fp_satiety_slake (optional line of the item section),
+--    otherwise eat_satiety * SLAKE_PER_EAT_SATIETY. The use is taken from the signal on_item_use;
+--  * three levels (HUNGRY / VERY / STARVING) give a message when reached or left;
+--  * at STARVING the player slowly loses health, but never below HEALTH_FLOOR (hunger itself does not kill).
+-- Switch: info portion srp_freeplay, or fp_satiety alone. Cost: one subscriber rescheduled every CHECK_MS,
+-- reading the game time. Savegame: one u16 (hunger * 10), always written, so the format does not depend on the switch.
+
+local TAG = "[fp_satiety] "
+
+local CHECK_MS = 5000
+local GAME_MIN_PER_UNIT = 6
+local MAX = 255
+local HUNGRY, VERY, STARVING = 70, 120, 170
+local SLAKE_PER_EAT_SATIETY = 200
+local MAX_STEP = 30             -- the most that is added at once (after a long time jump)
+local HEALTH_FLOOR = 0.2
+local HIT_POWER = 0.02
+
+local mgr = nil
+local hunger = 0
+local last_time = nil           -- game time of the previous check (not saved)
+local stage = 0
+
+local STAGE_TEXT = { [0] = "st_fp_satiety_fed", "st_fp_satiety_1", "st_fp_satiety_2", "st_fp_satiety_3" }
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ signal = "on_update", fun = on_update })
+	m:subscribe({ signal = "on_save", fun = on_save })
+	m:subscribe({ signal = "on_load", fun = on_load })
+end
+
+local function enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_satiety")
+end
+
+local function stage_of(v)
+	if v >= STARVING then return 3 end
+	if v >= VERY then return 2 end
+	if v >= HUNGRY then return 1 end
+	return 0
+end
+
+function on_save(packet)
+	packet:w_u16(math.floor(hunger * 10))
+end
+
+function on_load(reader)
+	hunger = reader:r_u16() / 10
+	last_time = nil
+	stage = stage_of(hunger)
+end
+
+local function tip(id)
+	if db.actor then news_manager.send_tip(db.actor, game.translate_string(id)) end
+end
+
+local function set_hunger(v)
+	if v < 0 then v = 0 elseif v > MAX then v = MAX end
+	hunger = v
+	local st = stage_of(v)
+	if st ~= stage then
+		-- a message when the level changes: to a worse one, or back to "fed" (not for every step down)
+		if st > stage or st == 0 then tip(STAGE_TEXT[st]) end
+		stage = st
+	end
+end
+
+-- Dev tools: set the hunger level directly.
+function set(v)
+	set_hunger(v)
+	last_time = nil
+end
+
+function get()
+	return hunger
+end
+
+function on_item_use(obj)
+	if not enabled() then return end
+	local sect = obj:section()
+	local ini = system_ini()
+	local slake = fp_dev_util.r_float_ex(ini, sect, "fp_satiety_slake", nil)
+	if not slake then
+		local es = fp_dev_util.r_float_ex(ini, sect, "eat_satiety", 0)
+		if es <= 0 then return end
+		slake = es * SLAKE_PER_EAT_SATIETY
+	end
+	set_hunger(hunger - slake)
+	dbglog("%s", TAG .. sect .. " eaten, hunger " .. string.format("%.1f", hunger))
+end
+
+local function hurt()
+	local act = db.actor
+	if act.health <= HEALTH_FLOOR then return end
+	local h = hit()
+	h.draftsman = act
+	h.type = hit.wound
+	h.power = HIT_POWER
+	h.impulse = 0
+	h.direction = vector():set(0, 0, 1)
+	act:hit(h)
+end
+
+function on_update(delta)
+	mgr:reschedule(CHECK_MS)
+	local act = db.actor
+	if not (act and act:alive()) then return end
+	local now = game.get_game_time()
+	if not enabled() then
+		last_time = nil
+		return
+	end
+	if last_time then
+		local add = now:diffSec(last_time) / (GAME_MIN_PER_UNIT * 60)
+		if add > MAX_STEP then add = MAX_STEP end
+		if add > 0 then set_hunger(hunger + add) end
+	end
+	last_time = now
+	if stage == 3 then hurt() end
+end
