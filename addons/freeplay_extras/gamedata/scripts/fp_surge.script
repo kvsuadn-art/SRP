@@ -30,6 +30,7 @@ local mgr = nil
 local entry_time = 0
 local handled = false          -- the surge of the current activation was already looked at
 local clock_started = false    -- this activation was started by the clock
+local eclipse_active = false   -- the eclipse effect was started for the running surge
 local forced_run = false       -- the surge was started from the dev tools
 local was_running = false     -- a surge was seen running (to restore control when it ends)
 local eclipse_pending = false  -- eclipse chosen for this surge, the engine has not accepted the effect yet
@@ -90,14 +91,35 @@ local function try_clock()
 	xr_surge_hide.activate_surge(time)
 end
 
--- The engine refuses set_weather_fx while another weather effect is still playing (SRP's fx_surge_day_1),
--- so the result is checked and the caller retries on the next check.
+-- SRP plays its own weather effects during a surge (fx_surge_day_1 at the start, day_2 / day_3 later), and the
+-- engine refuses set_weather_fx while any weather effect is playing. So the eclipse effect takes the place of
+-- SRP's ones: bind_stalker makes a forced weather switch when the surge reaches phase 2 (about 17 s in; it raises
+-- weather_surge again right after), the eclipse is requested after that,
+-- if it is still refused the running effect is dropped by a forced weather switch and the request is repeated.
+-- While the eclipse effect plays, the engine refuses SRP's later effects, so only ours is seen.
+local function request_fx(fx)
+	return level.set_weather_fx(fx) ~= false   -- a binding that returns nothing counts as accepted
+end
+
 local function start_eclipse()
 	local weather = level.get_weather()
 	local fx = (weather == "default_clear" or weather == "default_cloudy") and "fx_eclipse_clear" or "fx_eclipse_rain"
-	local ok = level.set_weather_fx(fx)
-	dbglog("%s", TAG .. "eclipse effect " .. fx .. ", weather " .. tostring(weather) .. ", surge phase " .. tostring(xr_surge_hide.phase) .. ", accepted: " .. tostring(ok))
-	return ok ~= false   -- a binding that returns nothing counts as accepted; only an explicit false is retried
+	local ok = request_fx(fx)
+	local dropped = false
+	if not ok then
+		level.set_weather(weather, true)
+		dropped = true
+		ok = request_fx(fx)
+	end
+	dbglog("%s", TAG .. "eclipse effect " .. fx .. ", weather " .. tostring(weather) .. ", surge phase " .. tostring(xr_surge_hide.phase) ..
+		", running effect dropped: " .. tostring(dropped) .. ", accepted: " .. tostring(ok))
+	return ok
+end
+
+-- the surge is over: the eclipse effect would play on (it is long), so drop it and return to the normal weather
+local function end_eclipse()
+	level.set_weather("[default]", true)
+	dbglog("%s", TAG .. "eclipse ended")
 end
 
 -- SRP's own surge task disables the player's input before the end and enables it back only after a normal
@@ -120,12 +142,9 @@ function force(time, eclipse)
 	forced_run = true
 	clock_started = true   -- keep the update loop from treating this as a level-entry surge
 	handled = true
-	-- the eclipse effect goes first: activate_surge then asks for SRP's fx_surge_day_1, which the engine refuses
-	-- while another weather effect plays, so the darkness is there from the very start
-	local accepted = eclipse and start_eclipse()
 	x.activate_surge(time)
 	if eclipse then
-		eclipse_pending = not accepted   -- if it was refused, try again (see on_update)
+		eclipse_pending = true   -- requested by on_update at phase 2, after SRP's weather switch
 		return "Eclipse started"
 	end
 	return "Surge started"
@@ -139,6 +158,10 @@ function on_update(delta)
 		handled = false
 		clock_started = false
 		eclipse_pending = false
+		if eclipse_active then
+			eclipse_active = false
+			end_eclipse()
+		end
 		if was_running then
 			was_running = false
 			if forced_run or has_alife_info("srp_freeplay") then restore_control() end
@@ -149,9 +172,9 @@ function on_update(delta)
 	end
 	was_running = true
 
-	-- the eclipse effect is requested until the engine accepts it (it refuses while SRP's fx_surge_day_1 plays)
-	if eclipse_pending then
-		if start_eclipse() or x.phase >= 4 then eclipse_pending = false end
+	if eclipse_pending and x.phase >= 2 and x.weather_surge then
+		eclipse_pending = false
+		eclipse_active = start_eclipse()
 	end
 
 	-- a surge is running; look at it once, when it has just started (phase 1)
