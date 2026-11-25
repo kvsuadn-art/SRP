@@ -28,6 +28,8 @@
 #include "gameplay\character_criticals_1.xml"
 
 		<actor_dialog>mar_csky_leader_items_dialog</actor_dialog>
+		<actor_dialog>rt_lebedev_task_dialog</actor_dialog>
+		<actor_dialog>rt_lebedev_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="mar_csky_tech" team_default = "1">
@@ -88,6 +90,8 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>rt_kalancha_task_dialog</actor_dialog>
+		<actor_dialog>rt_kalancha_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="mar_csky_trader" team_default = "1">
@@ -115,6 +119,7 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="mar_csky_barman" team_default = "1">
@@ -142,6 +147,8 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>rt_holod_task_dialog</actor_dialog>
+		<actor_dialog>rt_holod_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="mar_intro_lebedev" team_default = "1">

@@ -34,6 +34,8 @@
 #include "gameplay\character_criticals_1.xml"
 
 		<actor_dialog>val_freedom_leader_items_dialog</actor_dialog>
+		<actor_dialog>rt_chehov_task_dialog</actor_dialog>
+		<actor_dialog>rt_chehov_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="val_freedom_comendant" team_default = "1">
@@ -96,6 +98,7 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="val_freedom_fixer" team_default = "1">
@@ -161,6 +164,8 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>rt_ganzha_task_dialog</actor_dialog>
+		<actor_dialog>rt_ganzha_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="val_freedom_blockpost_guard_leader_north" team_default = "1">

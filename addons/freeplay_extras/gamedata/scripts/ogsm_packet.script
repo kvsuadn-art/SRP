@@ -1,0 +1,295 @@
+------------------------- Copyright 2007-2011 xStream & DEXXX -------------------------
+-------------------------------- Работа с нет-пакетами --------------------------------
+-- Адаптация под SRP Freeplay: Eon (оставлена только работа с пакетом сталкера: spawn_stalker)
+
+local stpk=net_packet()
+local uppk=net_packet()
+
+
+function readvu32u8(packet)
+  local v={}
+  local len=packet:r_s32()
+  for i=1,len,1 do
+    table.insert(v,packet:r_u8())
+  end
+  return v
+end
+
+function readvu8u8(packet)
+  local v={}
+  local len=8
+  for i=1,len,1 do
+    table.insert(v,packet:r_u8())
+  end
+  return v
+end
+
+function readvu32u16(packet)
+  local v={}
+  local len=packet:r_s32()
+  for i=1,len,1 do
+    table.insert(v,packet:r_u16())
+  end
+  return v
+end
+
+function writevu32u8(pk,v)
+  local len=table.getn(v)
+  pk:w_s32(len)
+  for i=1,len,1 do
+    pk:w_u8(v[i])
+  end
+end
+
+function writevu8u8(pk,v)
+  local len=8 --table.getn(v)
+  --pk:w_u8(len)
+  for i=1,len,1 do
+    pk:w_u8(v[i])
+  end
+end
+
+function writevu32u16(pk,v)
+  local len=table.getn(v)
+  pk:w_s32(len)
+  for i=1,len,1 do
+    pk:w_u16(v[i])
+  end
+end
+
+function parse_object_packet(ret,stpk,updpk)
+  ret.gvid=stpk:r_u16()
+  ret.obf32u1=stpk:r_float()
+  ret.obs32u2=stpk:r_s32()
+  ret.lvid=stpk:r_s32()
+  ret.oflags=stpk:r_s32()
+  ret.custom=stpk:r_stringZ()
+  ret.sid=stpk:r_s32()
+  ret.obs32u3=stpk:r_s32()
+  return ret
+end
+
+function fill_object_packet(ret,stpk,updpk)
+  stpk:w_u16(ret.gvid)
+  stpk:w_float(ret.obf32u1)
+  stpk:w_s32(ret.obs32u2)
+  stpk:w_s32(ret.lvid)
+  stpk:w_s32(ret.oflags)
+  stpk:w_stringZ(ret.custom)
+  stpk:w_s32(ret.sid)
+  stpk:w_s32(ret.obs32u3)
+end
+
+
+function parse_visual_packet(ret,stpk,updpk)
+  ret.visual=stpk:r_stringZ()
+  ret.vsu8u1=stpk:r_u8()
+  return ret
+end
+
+function fill_visual_packet(ret,stpk,updpk)
+  stpk:w_stringZ(ret.visual)
+  stpk:w_u8(ret.vsu8u1)
+end
+
+function parse_dynamic_object_visual(ret,stpk,updpk)
+  parse_object_packet(ret,stpk,updpk)
+  parse_visual_packet(ret,stpk,updpk)
+  return ret
+end
+
+function fill_dynamic_object_visual(ret,stpk,updpk)
+  fill_object_packet(ret,stpk,updpk)
+  fill_visual_packet(ret,stpk,updpk)
+end
+
+function parse_creature_packet(ret,stpk,updpk)
+  parse_dynamic_object_visual(ret,stpk,updpk)
+  ret.team=stpk:r_u8()
+  ret.squad=stpk:r_u8()
+  ret.group=stpk:r_u8()
+  ret.health=stpk:r_float()
+  ret.crvu32u16u1=readvu32u16(stpk)
+  ret.crvu32u16u2=readvu32u16(stpk)
+  ret.cru16u3=stpk:r_u16()
+  ret.crvu8u8u4=readvu8u8(stpk)
+
+  ret.updhealth=updpk:r_float()
+  ret.upds32u1=updpk:r_s32()
+  ret.updu8u2=updpk:r_u8()
+  ret.updpos={}
+  ret.updpos.x=updpk:r_float()
+  ret.updpos.y=updpk:r_float()
+  ret.updpos.z=updpk:r_float()
+  ret.upddir={}
+  ret.upddir.x=updpk:r_float()
+  ret.upddir.y=updpk:r_float()
+  ret.upddir.z=updpk:r_float()
+  ret.upds32u3=updpk:r_s32()
+  ret.updteam=updpk:r_u8()
+  ret.updsquad=updpk:r_u8()
+  ret.updgroup=updpk:r_u8()
+  return ret
+end
+
+function fill_creature_packet(ret,stpk,updpk)
+  fill_dynamic_object_visual(ret,stpk,updpk)
+  stpk:w_u8(ret.team)
+  stpk:w_u8(ret.squad)
+  stpk:w_u8(ret.group)
+  stpk:w_float(ret.health)
+  writevu32u16(stpk,ret.crvu32u16u1)
+  writevu32u16(stpk,ret.crvu32u16u2)
+  stpk:w_u16(ret.cru16u3)
+  writevu8u8(stpk,ret.crvu8u8u4)
+
+  updpk:w_float(ret.updhealth)
+  updpk:w_s32(ret.upds32u1)
+  updpk:w_u8(ret.updu8u2)
+  updpk:w_float(ret.updpos.x)
+  updpk:w_float(ret.updpos.y)
+  updpk:w_float(ret.updpos.z)
+  updpk:w_float(ret.upddir.x)
+  updpk:w_float(ret.upddir.y)
+  updpk:w_float(ret.upddir.z)
+  updpk:w_s32(ret.upds32u3)
+  updpk:w_u8(ret.updteam)
+  updpk:w_u8(ret.updsquad)
+  updpk:w_u8(ret.updgroup)
+end
+
+function parse_monster_packet(ret,stpk,updpk)
+  parse_creature_packet(ret,stpk,updpk)
+  ret.baseoutr=stpk:r_stringZ()
+  ret.baseinr=stpk:r_stringZ()
+  ret.smtrid=stpk:r_u16()
+  ret.smtrtaskactive=stpk:r_u8()
+
+  ret.updu16u1=updpk:r_u16()
+  ret.updu16u2=updpk:r_u16()
+  ret.upds32u3=updpk:r_s32()
+  ret.upds32u4=updpk:r_s32()
+  return ret
+end
+
+function fill_monster_packet(ret,stpk,updpk)
+  fill_creature_packet(ret,stpk,updpk)
+  stpk:w_stringZ(ret.baseoutr)
+  stpk:w_stringZ(ret.baseinr)
+  stpk:w_u16(ret.smtrid)
+  stpk:w_u8(ret.smtrtaskactive)
+
+  updpk:w_u16(ret.updu16u1)
+  updpk:w_u16(ret.updu16u2)
+  updpk:w_s32(ret.upds32u3)
+  updpk:w_s32(ret.upds32u4)
+end
+
+function parse_trader_packet(ret,stpk,updpk)
+  ret.money=stpk:r_u32()
+  ret.profile=stpk:r_stringZ()
+  ret.infammo=stpk:r_s32()
+  ret.class=stpk:r_stringZ()
+  ret.communityid=stpk:r_s32()
+  ret.rank=stpk:r_s32()
+  ret.reputation=stpk:r_s32()
+  ret.charname=stpk:r_stringZ()
+  return ret
+end
+
+function fill_trader_packet(ret,stpk,updpk)
+  stpk:w_u32(ret.money)
+  stpk:w_stringZ(ret.profile)
+  stpk:w_s32(ret.infammo)
+  stpk:w_stringZ(ret.class)
+  stpk:w_s32(ret.communityid)
+  stpk:w_s32(ret.rank)
+  stpk:w_s32(ret.reputation)
+  stpk:w_stringZ(ret.charname)
+end
+
+function parse_human_packet(ret,stpk,updpk)
+  parse_trader_packet(ret,stpk,updpk)
+  parse_monster_packet(ret,stpk,updpk)
+  ret.huvu32u8u1=readvu32u8(stpk)
+  ret.huvu32u8u2=readvu32u8(stpk)
+  return ret
+end
+
+function fill_human_packet(ret,stpk,updpk)
+  fill_trader_packet(ret,stpk,updpk)
+  fill_monster_packet(ret,stpk,updpk)
+  writevu32u8(stpk,ret.huvu32u8u1)
+  writevu32u8(stpk,ret.huvu32u8u2)
+end
+
+function parse_skeleton_packet(ret,stpk,updpk)
+  ret.skeleton=stpk:r_stringZ()
+  ret.skeleton_flags=stpk:r_u8()
+  ret.source_id=stpk:r_u16()
+  return ret
+end
+
+function fill_skeleton_packet(ret,stpk,updpk)
+  stpk:w_stringZ(ret.skeleton)
+  stpk:w_u8(ret.skeleton_flags)
+  stpk:w_u16(ret.source_id)
+end
+
+function parse_stalker_packet(ret,stpk,updpk,size)
+  parse_human_packet(ret,stpk,updpk)
+  parse_skeleton_packet(ret,stpk,updpk)
+  ret.hellodlg=updpk:r_stringZ()
+  ret.stunk1={}
+  for i=stpk:r_tell(),size-1,1 do
+    table.insert(ret.stunk1,stpk:r_u8())
+  end
+  return ret
+end
+
+function fill_stalker_packet(ret,stpk,updpk)
+  fill_human_packet(ret,stpk,updpk)
+  fill_skeleton_packet(ret,stpk,updpk)
+  updpk:w_stringZ(ret.hellodlg)
+  for i,v in ipairs(ret.stunk1) do
+    stpk:w_u8(v)
+  end
+end
+
+function read_stalker_params(sobj)
+  stpk:w_begin(0)
+  stpk:r_seek(2)
+  uppk:w_begin(0)
+  uppk:r_seek(2)
+  sobj:STATE_Write(stpk)
+  sobj:UPDATE_Write(uppk)
+  local size=stpk:w_tell()
+  local size1=uppk:w_tell()
+  local tbl=parse_stalker_packet({},stpk,uppk,size)
+  if size~=stpk:r_tell() then dbglog("[ogsm_packet] stalker packet size mismatch: %s/%s", size, stpk:r_tell()) end
+  return tbl
+end
+
+function write_stalker_params(tbl,sobj)
+  fill_stalker_packet(tbl,stpk,uppk)
+  local size=stpk:w_tell()
+  local size1=uppk:w_tell()
+  sobj:STATE_Read(stpk,stpk:w_tell()-stpk:r_tell())
+  sobj:UPDATE_Read(uppk)
+end
+
+-- Сталкер
+function spawn_stalker(sect, pos, lvid, gvid, status, loot)
+	local obj = alife():create(sect, pos, lvid, gvid)
+	if obj then
+		local params = read_stalker_params(obj)
+		if status == "dead" then
+			params.updhealth = 0
+		end
+		if loot == "empty" then
+			params.custom = "[dont_spawn_loot]\n[dont_spawn_character_supplies]"
+		end
+		write_stalker_params(params, obj)
+		return obj
+	end
+end

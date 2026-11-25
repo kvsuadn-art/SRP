@@ -237,4 +237,10 @@
 	<string id="st_fp_satiety_fed">
 		<text>Голод утолён.</text>
 	</string>
+	<string id="st_ammo_package_short"><text>Рюкзак с боеприпасами</text></string>
+	<string id="st_ammo_package_name"><text>Рюкзак с боеприпасами</text></string>
+	<string id="st_ammo_package_descr"><text>Рюкзак, под завязку набитый патронами разного калибра. Крайне необходим отряду бойцов, пытающихся выжить в нелёгких условиях Зоны.</text></string>
+	<string id="st_products_package_short"><text>Рюкзак с продуктами</text></string>
+	<string id="st_products_package_name"><text>Рюкзак с продуктами</text></string>
+	<string id="st_products_package_descr"><text>Рюкзак, под завязку набитый разного рода продуктами. Хватит, чтобы прокормить целую базу сталкеров.</text></string>
 </string_table>

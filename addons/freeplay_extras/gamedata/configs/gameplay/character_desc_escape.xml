@@ -31,6 +31,9 @@
 
 #include "gameplay\character_criticals_4.xml"
 
+		<actor_dialog>rt_courier_dialog</actor_dialog>
+		<actor_dialog>rt_sidor_task_dialog</actor_dialog>
+		<actor_dialog>rt_sidor_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="esc_leader_stalkerbase" team_default = "1">
@@ -66,6 +69,8 @@
 #include "gameplay\character_criticals_4.xml"
 
 		<actor_dialog>stalker_base_commander_items_dialog</actor_dialog>
+		<actor_dialog>rt_otec_task_dialog</actor_dialog>
+		<actor_dialog>rt_otec_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="esc_trader_stalkerbase" team_default = "1">
@@ -97,6 +102,7 @@
 
 #include "gameplay\character_criticals_4.xml"
 
+		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="esc_tech_stalkerbase" team_default = "1">

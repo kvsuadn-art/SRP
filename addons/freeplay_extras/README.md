@@ -100,3 +100,15 @@
 | `scripts/ui_main_menu.script` | копия ядра + 1 строка |
 | `scripts/fp_binder.script` | `use_object` → сигнал `on_item_use` |
 | `configs/misc/fp_dev.ltx`, `configs/system.ltx`, `configs/text/rus/fp_extras.xml` | секции предметов, include, тексты |
+
+
+## Менеджер случайных заказов (ogsm_rt_manager)
+
+Источник: OGSM Extended 2.0 (rt_manager, Minister / Kirgudu). Адаптация под SRP Freeplay: Eon.
+- `scripts/ogsm_rt_manager.script` подключается через `ogse_signals` (on_save/on_load/on_task/on_net_spawn/on_update), без хуков в ядро.
+- Заказчики ищутся по имени серверного объекта (`[giver_names]` в `configs/misc/rt_manager.ltx`): у шести NPC story id в all.spawn ЧН нет.
+- Цели `kill_stalker` ищутся обходом серверных объектов, убийца определяется по `death.killer`.
+- 123 задания из 143: убраны 20, которым нужны артефакты/части мутантов OGSM (af_ball/mica/slug/thorn, кошка, излом, полтергейст, химера, контролёр, псевдогигант). Вернутся с модулем «мутанты и артефакты».
+- Диалоги (`rt_dialogs.xml`) доступны только при info `srp_freeplay` или `fp_rt_manager`; привязаны через `<actor_dialog>` в копиях `character_desc_*.xml` аддона (принятое исключение, как и у других диалогов аддона).
+- Рюкзаки `ammo_package`/`products_package` добавлены в `quest_items.ltx` (иконка и модель кейса `agr_quest_duty_case`).
+- Тексты только на русском (в OGSM других языков нет).

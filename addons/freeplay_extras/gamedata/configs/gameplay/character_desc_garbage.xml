@@ -67,6 +67,8 @@
 #include "gameplay\character_criticals_1.xml"
 
 		<actor_dialog>bandit_base_commander_items_dialog</actor_dialog>
+		<actor_dialog>rt_yoga_task_dialog</actor_dialog>
+		<actor_dialog>rt_yoga_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="gar_bandit_barman" team_default = "1">
@@ -100,6 +102,8 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>rt_borov_task_dialog</actor_dialog>
+		<actor_dialog>rt_borov_reward_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="gar_bandit_trader" team_default = "1">
@@ -131,6 +135,7 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="gar_bandit_fixer" team_default = "1">

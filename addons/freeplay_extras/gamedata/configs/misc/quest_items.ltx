@@ -635,3 +635,28 @@ inv_name_short = doc_15
 description = doc_descr_general
 can_trade = false
 cost = 500
+
+; Адаптация под SRP Freeplay: Eon -- рюкзаки для курьерских заданий rt_manager (OGSM Extended 2.0).
+; Иконка и модель взяты у кейса agr_quest_duty_case (в SRP нет иконки рюкзака из OGSM).
+[ammo_package]:device_pda
+$spawn 				= "quest_items\ammo_package"
+$prefetch 			= 16
+visual				= dynamics\devices\dev_instrument_1\dev_instrument_1.ogf
+description			= st_ammo_package_descr
+inv_name			= st_ammo_package_name
+inv_name_short			= st_ammo_package_short
+inv_weight			= 20.0
+inv_grid_width			= 2
+inv_grid_height			= 2
+inv_grid_x			= 10
+inv_grid_y			= 25
+cost				= 2000
+can_trade			= false
+quest_item			= false
+
+[products_package]:ammo_package
+$spawn 				= "quest_items\products_package"
+description			= st_products_package_descr
+inv_name			= st_products_package_name
+inv_name_short			= st_products_package_short
+
