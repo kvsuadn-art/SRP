@@ -17,11 +17,26 @@ af_thorn      | configs/misc/fp_artefacts.ltx | x=3, y=30, 1x1 | в листе O
   (8,14), (0,15) заняты другими предметами (аптечка, Гроза), поэтому в SRP иконки перенесены в строку 30.
   Строки 30-35 на листе SRP целиком свободны.
 
+Части мутантов, нужна своя иконка (клетки свободны на листе SRP)
+----------------------------------------------------------------
+mutant_tushkano_head      | configs/misc/fp_monster_items.ltx | x=4,  y=30, 1x1 | в листе OGSM клетка (4,22)
+mutant_izlom_hand         | configs/misc/fp_monster_items.ltx | x=5,  y=30, 1x1 | в листе OGSM клетка (4,21)
+mutant_cat_tail           | configs/misc/fp_monster_items.ltx | x=6,  y=30, 1x1 | в листе OGSM клетка (6,21)
+mutant_poltergeist_hand   | configs/misc/fp_monster_items.ltx | x=7,  y=30, 1x1 | в листе OGSM клетка (8,21)
+mutant_chimera_nail       | configs/misc/fp_monster_items.ltx | x=8,  y=30, 1x1 | в листе OGSM клетка (1,22)
+mutant_controller_hand    | configs/misc/fp_monster_items.ltx | x=9,  y=30, 1x1 | в листе OGSM клетка (2,22)
+mutant_pseudogigant_nail  | configs/misc/fp_monster_items.ltx | x=10, y=30, 1x1 | в листе OGSM клетка (3,22)
+  Модели: meshes/dynamics/equipments/item_*.ogf (7 штук), текстура textures/act/act_izlom.dds (+.thm).
+  Остальные текстуры частей (act_cat, act_himera, act_poltergeyst, act_controller, act_psevdogigant,
+  act_rat01) в OGSM не лежат: они должны быть в оригинальных архивах игры. Если части в игре "белые" или
+  без текстуры, дай знать.
+  Тексты: configs/text/rus/fp_extras.xml (mutant_*, mutant_*_description).
+
 Пока используют чужую иконку (рисовать не обязательно)
 ------------------------------------------------------
 ammo_package     | configs/misc/quest_items.ltx | x=10, y=25, 2x2 | иконка кейса agr_quest_duty_case
 products_package | configs/misc/quest_items.ltx | x=10, y=25, 2x2 | иконка кейса agr_quest_duty_case
-  Для своей иконки: свободный блок 2x2, например x=4, y=30 (и x=6, y=30), затем поменять inv_grid_x/y.
+  Для своей иконки: свободный блок 2x2, например x=0, y=32 (и x=2, y=32), затем поменять inv_grid_x/y.
   В OGSM у этих предметов иконка в клетке (0,10), 2x2 (там рюкзак), на листе SRP эта область занята.
 
 doc_1 .. doc_15  | configs/misc/quest_items.ltx | x=2, y=25, 2x1 | общая иконка документа (как у оригинального document)
@@ -36,4 +51,5 @@ fp_dev_tools     | configs/misc/fp_dev.ltx       | x=2, y=25, 2x1 | та же и
 Названия и описания: configs/text/rus/fp_extras.xml (st_af_*_name / st_af_*_descr, st_ammo_package_*, st_products_package_*)
 Артефакты в детекторах: configs/misc/devices.ltx (af_mica, af_thorn: простой; af_slug: продвинутый; af_ball: элитный)
 Торговля: configs/misc/trade_generic.ltx и configs/misc/trade/*.ltx (цена как у af_medusa / af_fireball)
+Выпадение частей из мутантов: configs/creatures/m_*.ltx (Spawn_Inventory_Item_Section/Probability; в оригинале вероятность 0.0)
 Появление в мире: scripts/fp_anomaly_zone.script (во Фриплее аномальные зоны получают эти артефакты в свой список)
