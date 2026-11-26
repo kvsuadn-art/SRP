@@ -118,3 +118,13 @@
 Добавлены артефакты OGSM Extended 2.0, которых нет в оригинале: `af_mica`, `af_slug`, `af_ball`, `af_thorn` (`configs/misc/fp_artefacts.ltx`, модели и текстуры, тексты, списки детекторов, торговля).
 В аномальные зоны они попадают через `scripts/fp_anomaly_zone.script` (наследник `bind_anomaly_zone.anomaly_zone_binder`, подключён в `[anomal_zone]` аддонного `system.ltx`): зоны гравитационного семейства получают mica/slug/ball, термального — thorn, только во Фриплее (info `srp_freeplay` или `fp_artefacts`). Списки в all.spawn не менялись.
 Список новых предметов с клетками иконок для `ui_icon_equipment.dds`: `gamedata/new_items_icons.txt`.
+
+## Мутанты трилогии (fp_mutants)
+Основа: CSOGSM (OGSM Extended 2.0) — секции `m_cat`, `m_chimera`, `m_burer`, `m_fracture`, `m_zombie`, меши, звуки кошки/химеры, текстуры (act_cat — из Spavner). Адаптация под SRP Freeplay: Eon.
+- `configs/creatures/monsters.ltx` — копия оригинала + include пяти новых файлов; в них включён дроп частей (`Spawn_Inventory_Item_*`): кошка 0.4, химера 0.8, бюрер 0.8, излом 0.6, зомби 0.4.
+- `configs/misc/fp_squads.ltx` (include из аддон-копии `squad_descr.ltx`) — 23 отряда (`auto_id`); `configs/misc/fp_mutants.ltx` — смарт появления, задержка респавна (3 игровых дня после уничтожения, не ближе 150 м к игроку).
+- `scripts/fp_mutants.script` — создаёт отряды через `sim_board:create_squad`, хранит в сейве только id отряда и время гибели; включается info `srp_freeplay` или `fp_mutants`.
+- Не портировано: kamikaze, plague, electro_chimera, psy_burer (нужны частицы/скрипты OGSM).
+- Бюреры (2 отряда) и контролёр добавлены нами (в OGSM их в мире нет); смарты yan_smart_terrain_5_5 / 2_5 и agru_smart_terrain_1 подобраны без проверки в игре.
+- Текстуры act_himera и act_dog_red_teeth в OGSM не поставляются — ожидаются в архивах игры.
+- Возвращены 12 заказов Каланчи/Сахарова на части излома, кошки, полтергейста, химеры, контролёра, псевдогиганта.

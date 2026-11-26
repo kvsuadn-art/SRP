@@ -9,4 +9,5 @@ addons = {
 	"fp_dev_tools",
 	"fp_satiety",
 	"ogsm_rt_manager",
+	"fp_mutants",
 }

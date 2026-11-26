@@ -1,0 +1,134 @@
+; Mutant squads of Freeplay (trilogy mutants: zombie, fracture, cat, chimera, burer + controller).
+; Squads and lairs from CSOGSM (OGSM Extended 2.0, squad_descr_ogsm.ltx), burers/controller added for Freeplay.
+; Adaptation SRP Freeplay: Eon
+; Squads are created by script fp_mutants (spawn smart: misc\fp_mutants.ltx), NOT by faction start_position.
+
+[fp_esc_zombie_4_10]
+auto_id = true
+faction = monster
+npc = zombie_1, zombie_rotten_2, zombie_3
+target_smart = {+esc_bring_habar_complete} nil, esc_smart_terrain_4_10
+
+[fp_esc_zombie_5_4]
+auto_id = true
+faction = monster
+npc = zombie_1, zombie_2, zombie_rotten_1
+target_smart = {+esc_bring_habar_complete} nil, esc_smart_terrain_5_4
+
+[fp_esc_zombie_6_3]
+auto_id = true
+faction = monster
+npc = zombie_rotten_1, zombie_2, zombie_3
+target_smart = {+esc_bring_habar_complete} nil, esc_smart_terrain_6_3
+
+[fp_esc_zombie_8_10]
+auto_id = true
+faction = monster
+npc = zombie_rotten_2, zombie_2, zombie_1
+target_smart = {+esc_bring_habar_complete} nil, esc_smart_terrain_8_10
+
+[fp_esc_fracture_9_7]
+auto_id = true
+faction = monster
+npc = fracture_weak, fracture_weak
+target_smart = {+srp_freeplay} nil, esc_smart_terrain_9_7
+
+[fp_esc_fracture_5_6]
+auto_id = true
+faction = monster
+npc = fracture_weak, fracture_weak, fracture_weak
+target_smart = {+srp_freeplay} nil, esc_smart_terrain_5_6
+
+[fp_gar_zombie_4_7]
+auto_id = true
+faction = monster
+npc = zombie_rotten_1, zombie_rotten_2, zombie_1
+
+[fp_gar_zombie_3_2]
+auto_id = true
+faction = monster
+npc = zombie_rotten_1, zombie_rotten_2, zombie_1
+
+[fp_gar_fracture_6_7]
+auto_id = true
+faction = monster
+npc = fracture_weak, fracture_weak, fracture_weak
+
+[fp_mar_zombie_6_10]
+auto_id = true
+faction = monster
+npc = zombie_1, zombie_rotten_2, zombie_2
+target_smart = mar_smart_terrain_5_12:nil
+
+[fp_val_fracture_5_10]
+auto_id = true
+faction = monster
+npc = fracture_weak, fracture_weak, fracture_weak
+
+[fp_val_chimera_9_10]
+auto_id = true
+faction = monster
+npc = chimera_weak
+
+[fp_val_cats_9_6]
+auto_id = true
+faction = monster
+npc = cat_weak, cat_weak, cat_weak, cat_weak, cat_weak
+target_smart = {+srp_freeplay} nil, {+val_check_blockpost_complete} val_smart_terrain_9_5, val_smart_terrain_9_6
+
+[fp_agr_zombie_1_3]
+auto_id = true
+faction = monster
+npc = zombie_1, zombie_2, zombie_2, zombie_3, zombie_3
+target_smart = agr_smart_terrain_1_6_near_1
+
+[fp_agr_cats_7_5]
+auto_id = true
+faction = monster
+npc = cat_weak, cat_weak, cat_weak
+target_smart = {+agr_actor_inside_6} nil, agr_smart_terrain_7_5
+
+[fp_agr_chimera_5_2]
+auto_id = true
+faction = monster
+npc = chimera_weak
+target_smart = {+srp_freeplay} nil, agr_smart_terrain_5_2
+
+[fp_agr_chimera_5_4]
+auto_id = true
+faction = monster
+npc = chimera_weak
+target_smart = {+srp_freeplay} nil, agr_smart_terrain_5_4
+
+[fp_mil_chimera_4_7]
+auto_id = true
+faction = monster
+npc = chimera_weak, chimera_weak
+target_smart = {+srp_freeplay} nil, mil_smart_terrain_4_7
+
+[fp_mil_zombie_8_3]
+auto_id = true
+faction = monster
+npc = zombie_rotten_1, zombie_rotten_2, zombie_1
+
+[fp_red_cats_4_3]
+auto_id = true
+faction = monster
+npc = cat_weak, cat_weak, cat_weak, cat_weak, cat_weak
+target_smart = {+srp_freeplay} nil, red_smart_terrain_4_3
+
+[fp_agru_burer_1]
+auto_id = true
+faction = monster
+npc = burer_weak, burer_weak
+target_smart = agru_smart_terrain_1
+
+[fp_yan_burer_5_5]
+auto_id = true
+faction = monster
+npc = burer_weak, burer_weak
+
+[fp_yan_controller_2_5]
+auto_id = true
+faction = monster
+npc = m_controller_normal

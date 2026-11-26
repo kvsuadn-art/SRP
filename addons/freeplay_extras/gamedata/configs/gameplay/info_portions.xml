@@ -19,6 +19,7 @@
 	<info_portion id="fp_satiety"/>
 	<info_portion id="fp_rt_manager"/>
 	<info_portion id="fp_artefacts"/>
+	<info_portion id="fp_mutants"/>
 
 <!--	Freeplay end	-->
 

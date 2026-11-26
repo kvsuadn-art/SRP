@@ -1,0 +1,131 @@
+-- fp_mutants: trilogy mutants (zombie, fracture, cat, chimera, burer, controller) in the Freeplay world.
+-- Squads are described in misc\fp_squads.ltx (included from the addon copy of squad_descr.ltx),
+-- spawn smarts are in misc\fp_mutants.ltx. The module creates the squads once and re-creates
+-- a squad some game days after it was wiped out (and only far from the actor).
+-- Works through ogse_signals (fp_binder), no core hooks. Adaptation SRP Freeplay: Eon
+-- Squads and lairs: CSOGSM (OGSM Extended 2.0).
+
+local ini = ini_file("misc\\fp_mutants.ltx")
+
+local names = {}      -- squad sections in config order
+local smart_of = {}   -- section -> smart name
+local state = {}      -- section -> { sid = string|nil, dead = CTime|nil }
+local respawn_days = 3
+local min_dist = 150
+local mgr = nil
+local inited = false
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_mutants")
+end
+
+local function init()
+	if inited then return end
+	inited = true
+	respawn_days = ini:line_exist("settings", "respawn_days") and ini:r_float("settings", "respawn_days") or 3
+	min_dist = ini:line_exist("settings", "min_dist") and ini:r_float("settings", "min_dist") or 150
+	local n = ini:line_count("squads")
+	for i = 0, n - 1 do
+		local _, sec, smart = ini:r_line("squads", i, "", "")
+		names[#names + 1] = sec
+		smart_of[sec] = smart
+		if state[sec] == nil then state[sec] = {} end
+	end
+end
+
+local function far_enough(smart)
+	local actor = db.actor
+	if actor == nil then return false end
+	local gv = smart.m_game_vertex_id
+	local lvl = game_graph():vertex(gv):level_id()
+	if alife():level_name(lvl) ~= level.name() then return true end
+	return smart.position:distance_to(actor:position()) >= min_dist
+end
+
+local function is_alive(board, sid, sec)
+	if sid == nil then return false end
+	local sq = board.squads[sid]
+	-- squad ids can be reused after removal, so compare the section too
+	return sq ~= nil and sq.settings_id == sec and (sq.npc_count or 0) > 0
+end
+
+local function create(board, sec)
+	local smart = board.smarts_by_names[smart_of[sec]]
+	if smart == nil then
+		printf("[fp_mutants] smart '%s' not found for squad '%s'", tostring(smart_of[sec]), sec)
+		return nil
+	end
+	local sq = board:create_squad("monster", sim_squad_scripted.sim_squad_scripted, smart, nil, sec)
+	sq:update()
+	return sq.squad_id
+end
+
+local function check()
+	if not is_enabled() then return end
+	local board = sim_board.get_sim_board()
+	if board == nil or not board.simulation_started or board.players["monster"] == nil then return end
+	init()
+	local now = game.get_game_time()
+	for _, sec in ipairs(names) do
+		local st = state[sec]
+		if is_alive(board, st.sid, sec) then
+			st.dead = nil
+		elseif st.sid == nil then
+			st.sid = create(board, sec)
+		else
+			if st.dead == nil then
+				st.dead = now
+			elseif now:diffSec(st.dead) >= respawn_days * 86400 then
+				local smart = board.smarts_by_names[smart_of[sec]]
+				if smart ~= nil and far_enough(smart) then
+					st.sid = create(board, sec)
+					st.dead = nil
+				end
+			end
+		end
+	end
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_update", fun = fp_on_update })
+	m:subscribe({ signal = "on_save",   fun = fp_on_save })
+	m:subscribe({ signal = "on_load",   fun = fp_on_load })
+end
+
+function fp_on_update(delta)
+	if mgr then mgr:reschedule(10000) end
+	check()
+end
+
+-- Format: u8 count, then per squad: string section, string squad id ("" = none), CTime of wipe-out
+function fp_on_save(packet)
+	init()
+	local list = {}
+	for _, sec in ipairs(names) do
+		local st = state[sec]
+		if st.sid ~= nil then list[#list + 1] = sec end
+	end
+	packet:w_u8(#list)
+	for _, sec in ipairs(list) do
+		local st = state[sec]
+		packet:w_stringZ(sec)
+		packet:w_stringZ(st.sid)
+		utils.w_CTime(packet, st.dead)
+	end
+end
+
+function fp_on_load(reader)
+	init()
+	local cnt = reader:r_u8()
+	for _ = 1, cnt do
+		local sec = reader:r_stringZ()
+		local sid = reader:r_stringZ()
+		local dead = utils.r_CTime(reader)
+		if dead == 0 then dead = game.CTime() end
+		if state[sec] ~= nil then
+			state[sec].sid = sid
+			state[sec].dead = dead
+		end
+	end
+end
