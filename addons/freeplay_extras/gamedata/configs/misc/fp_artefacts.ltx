@@ -1,0 +1,202 @@
+; Артефакты OGSM Extended 2.0, отсутствующие в оригинале. Адаптация под SRP Freeplay: Eon
+; Подключается из system.ltx после misc\artefacts.ltx (нужен родитель af_base).
+
+[af_mica]:af_base
+$spawn 							= "artefacts\acidic_4_fuzz_kolobok"
+class   						= ARTEFACT
+visual							= dynamics\artefacts\af_mica.ogf
+description						= st_af_mica_descr
+inv_name						= st_af_mica_name
+inv_name_short					= st_af_mica_name
+
+inv_weight						= 0.3
+
+inv_grid_x         				= 0
+inv_grid_y         				= 30
+
+cost							= 5000
+
+jump_height						= .5
+
+particles						= artefact\af_gravi_idle
+det_show_particles				= artefact\af_gravi_show
+det_hide_particles				= artefact\af_gravi_hide
+
+af_rank							= 1
+
+lights_enabled 					= true
+
+trail_light_color 				= 0.4,0.4,0
+trail_light_range 				= 2.0
+
+health_restore_speed			= 0
+radiation_restore_speed			= 0.001
+satiety_restore_speed			= 0
+power_restore_speed				= 0
+bleeding_restore_speed			= 0
+
+additional_inventory_weight		= 0
+additional_inventory_weight2	= 0
+
+hit_absorbation_sect 			= af_mica_absorbation
+
+[af_mica_absorbation]
+burn_immunity 					= 0
+strike_immunity 				= 0
+shock_immunity 					= 0
+wound_immunity 					= 0
+radiation_immunity 				= 0
+telepatic_immunity 				= 0.003
+chemical_burn_immunity 			= 0
+explosion_immunity 				= 0
+fire_wound_immunity  			= 0
+
+[af_slug]:af_base
+$spawn 							= "artefacts\acidic_4_fuzz_kolobok"
+class   						= ARTEFACT
+visual							= dynamics\artefacts\af_slug.ogf
+description						= st_af_slug_descr
+inv_name						= st_af_slug_name
+inv_name_short					= st_af_slug_name
+
+inv_weight						= 0.4
+
+inv_grid_x        	 			= 1
+inv_grid_y         				= 30
+
+cost							= 10000
+
+jump_height						= .5
+
+particles						= artefact\af_gravi_idle
+det_show_particles				= artefact\af_gravi_show
+det_hide_particles				= artefact\af_gravi_hide
+
+af_rank							= 2
+
+lights_enabled 					= true
+
+trail_light_color 				= 0.4,0.4,0
+trail_light_range 				= 2.0
+
+health_restore_speed			= 0
+radiation_restore_speed			= 0.002
+satiety_restore_speed			= 0
+power_restore_speed				= 0
+bleeding_restore_speed			= 0
+
+additional_inventory_weight		= 0
+additional_inventory_weight2	= 0
+
+hit_absorbation_sect 			= af_slug_absorbation
+
+[af_slug_absorbation]
+burn_immunity 					= 0
+strike_immunity 				= 0
+shock_immunity 					= 0
+wound_immunity 					= 0
+radiation_immunity 				= 0
+telepatic_immunity 				= 0.006
+chemical_burn_immunity 			= 0
+explosion_immunity 				= 0
+fire_wound_immunity  			= 0
+
+[af_ball]:af_base
+$spawn 							= "artefacts\acidic_4_fuzz_kolobok"
+class   						= ARTEFACT
+visual							= dynamics\artefacts\af_ball.ogf
+description						= st_af_ball_descr
+inv_name						= st_af_ball_name
+inv_name_short					= st_af_ball_name
+
+inv_weight						= 0.5
+
+inv_grid_x         				= 2
+inv_grid_y         				= 30
+
+cost							= 15000
+
+jump_height						= .5
+
+particles						= artefact\af_gravi_idle
+det_show_particles				= artefact\af_gravi_show
+det_hide_particles				= artefact\af_gravi_hide
+
+af_rank							= 3
+
+lights_enabled 					= true
+
+trail_light_color 				= 0.4,0.4,0
+trail_light_range 				= 2.0
+
+health_restore_speed			= 0
+radiation_restore_speed			= 0.003
+satiety_restore_speed			= 0
+power_restore_speed				= 0
+bleeding_restore_speed			= 0
+
+additional_inventory_weight		= 0
+additional_inventory_weight2	= 0
+
+hit_absorbation_sect 			= af_ball_absorbation
+
+[af_ball_absorbation]
+burn_immunity 					= 0
+strike_immunity 				= 0
+shock_immunity 					= 0
+wound_immunity 					= 0
+radiation_immunity 				= 0
+telepatic_immunity 				= 0.010
+chemical_burn_immunity 			= 0
+explosion_immunity 				= 0
+fire_wound_immunity  			= 0
+
+[af_thorn]:af_base
+$spawn 							= "artefacts\acidic_4_fuzz_kolobok"
+class   						= ARTEFACT
+visual							= dynamics\artefacts\af_thorn.ogf
+description						= st_af_thorn_descr
+inv_name						= st_af_thorn_name
+inv_name_short					= st_af_thorn_name
+
+inv_weight						= 0.2
+
+inv_grid_x         				= 3
+inv_grid_y        	 			= 30
+
+cost							= 2500
+
+jump_height						= .5
+
+particles						= artefact\af_thermal_idle
+det_show_particles				= artefact\af_thermal_show
+det_hide_particles				= artefact\af_thermal_hide
+
+af_rank							= 1
+
+lights_enabled 					= true
+
+trail_light_color 				= 0.9,0.4,0.2
+trail_light_range 				= 2.0
+
+health_restore_speed			= 0
+radiation_restore_speed			= 0.001
+satiety_restore_speed			= 0
+power_restore_speed				= 0
+bleeding_restore_speed			= 0
+
+additional_inventory_weight		= 0
+additional_inventory_weight2	= 0
+
+hit_absorbation_sect 			= af_thorn_absorbation
+
+[af_thorn_absorbation]
+burn_immunity 					= 0.003
+strike_immunity 				= 0
+shock_immunity 					= 0
+wound_immunity 					= 0
+radiation_immunity 				= 0
+telepatic_immunity 				= 0
+chemical_burn_immunity 			= 0
+explosion_immunity 				= 0
+fire_wound_immunity  			= 0

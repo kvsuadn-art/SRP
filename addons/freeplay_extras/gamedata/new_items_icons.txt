@@ -1,0 +1,39 @@
+SRP Freeplay: новые предметы аддона freeplay_extras и их иконки
+================================================================
+Иконки инвентаря берутся из gamedata/textures/ui/ui_icon_equipment.dds (в SRP: 1024x2048 пикселей,
+клетка 50x50, то есть 20 столбцов x 40 строк). Положение иконки задают inv_grid_x / inv_grid_y
+(левый верхний угол в клетках) и inv_grid_width / inv_grid_height (размер в клетках) в секции предмета.
+Если нарисуешь иконку в другой клетке, поменяй inv_grid_x/y в файле из столбца "Файл".
+
+Столбцы: секция | файл (внутри addons/freeplay_extras/gamedata/) | клетка x,y и размер w x h в конфиге | иконка
+
+Нужна своя иконка (клетки свободны на листе SRP, сейчас пустые)
+----------------------------------------------------------------
+af_mica       | configs/misc/fp_artefacts.ltx | x=0, y=30, 1x1 | в листе OGSM клетка (6,14)
+af_slug       | configs/misc/fp_artefacts.ltx | x=1, y=30, 1x1 | в листе OGSM клетка (7,14)
+af_ball       | configs/misc/fp_artefacts.ltx | x=2, y=30, 1x1 | в листе OGSM клетка (8,14)
+af_thorn      | configs/misc/fp_artefacts.ltx | x=3, y=30, 1x1 | в листе OGSM клетка (0,15)
+  Лист OGSM: CSOGSM/gamedata/textures/ui/ui_icon_equipment.dds (2048x2048). Клетки SRP (6,14), (7,14),
+  (8,14), (0,15) заняты другими предметами (аптечка, Гроза), поэтому в SRP иконки перенесены в строку 30.
+  Строки 30-35 на листе SRP целиком свободны.
+
+Пока используют чужую иконку (рисовать не обязательно)
+------------------------------------------------------
+ammo_package     | configs/misc/quest_items.ltx | x=10, y=25, 2x2 | иконка кейса agr_quest_duty_case
+products_package | configs/misc/quest_items.ltx | x=10, y=25, 2x2 | иконка кейса agr_quest_duty_case
+  Для своей иконки: свободный блок 2x2, например x=4, y=30 (и x=6, y=30), затем поменять inv_grid_x/y.
+  В OGSM у этих предметов иконка в клетке (0,10), 2x2 (там рюкзак), на листе SRP эта область занята.
+
+doc_1 .. doc_15  | configs/misc/quest_items.ltx | x=2, y=25, 2x1 | общая иконка документа (как у оригинального document)
+fp_dev_console   | configs/misc/fp_dev.ltx       | x=2, y=25, 2x1 | та же иконка документа, служебный предмет
+fp_dev_tools     | configs/misc/fp_dev.ltx       | x=2, y=25, 2x1 | та же иконка документа, служебный предмет
+
+Прочее, что пришло вместе с предметами
+--------------------------------------
+Модели: meshes/dynamics/artefacts/af_ball.ogf, af_mica.ogf, af_slug.ogf, af_thorn.ogf
+Текстуры моделей: textures/artifact/blue_insides.dds, bright_red_skin.dds, brown_skin.dds, dark_red_insides.dds
+  (взяты из OGSM; если в оригинале есть текстуры с такими же именами, они будут перекрыты)
+Названия и описания: configs/text/rus/fp_extras.xml (st_af_*_name / st_af_*_descr, st_ammo_package_*, st_products_package_*)
+Артефакты в детекторах: configs/misc/devices.ltx (af_mica, af_thorn: простой; af_slug: продвинутый; af_ball: элитный)
+Торговля: configs/misc/trade_generic.ltx и configs/misc/trade/*.ltx (цена как у af_medusa / af_fireball)
+Появление в мире: scripts/fp_anomaly_zone.script (во Фриплее аномальные зоны получают эти артефакты в свой список)

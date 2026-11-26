@@ -1,0 +1,41 @@
+-- SRP Freeplay (Eon): anomaly zone binder with extra artefacts.
+-- Inherits bind_anomaly_zone.anomaly_zone_binder (no function substitution); attached through
+-- script_binding of [anomal_zone] in the addon system.ltx.
+-- In Freeplay (info srp_freeplay or fp_artefacts) it extends the artefact list of a zone with the
+-- artefacts ported from OGSM Extended 2.0 (af_mica, af_slug, af_ball, af_thorn), following the
+-- OGSM zone families: gravitational zones get mica/slug/ball, thermal zones get thorn.
+-- The lists in all.spawn are not touched: the zone's own list is only extended in memory.
+
+local gravi_marks = { af_medusa = true, af_vyvert = true, af_cristall_flower = true, af_gravi = true, af_gold_fish = true }
+local gravi_extra = { "af_mica", "af_slug", "af_ball" }
+local therm_marks = { af_cristall = true, af_fireball = true, af_eye = true, af_fire = true }
+local therm_extra = { "af_thorn" }
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_artefacts")
+end
+
+function bind(obj)
+	obj:bind_object(fp_anomaly_zone_binder(obj))
+end
+
+local function extend(list, marks, extra)
+	local present, match = {}, false
+	for _, name in ipairs(list) do
+		present[name] = true
+		if marks[name] then match = true end
+	end
+	if not match then return end
+	for _, name in ipairs(extra) do
+		if not present[name] then list[#list + 1] = name end
+	end
+end
+
+class "fp_anomaly_zone_binder" (bind_anomaly_zone.anomaly_zone_binder)
+
+function fp_anomaly_zone_binder:__init(obj) super(obj)
+	if is_enabled() then
+		extend(self.artefacts_table, gravi_marks, gravi_extra)
+		extend(self.artefacts_table, therm_marks, therm_extra)
+	end
+end

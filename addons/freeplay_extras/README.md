@@ -112,3 +112,9 @@
 - Диалоги (`rt_dialogs.xml`) доступны только при info `srp_freeplay` или `fp_rt_manager`; привязаны через `<actor_dialog>` в копиях `character_desc_*.xml` аддона (принятое исключение, как и у других диалогов аддона).
 - Рюкзаки `ammo_package`/`products_package` добавлены в `quest_items.ltx` (иконка и модель кейса `agr_quest_duty_case`).
 - Тексты только на русском (в OGSM других языков нет).
+
+## Артефакты OGSM и список иконок
+
+Добавлены артефакты OGSM Extended 2.0, которых нет в оригинале: `af_mica`, `af_slug`, `af_ball`, `af_thorn` (`configs/misc/fp_artefacts.ltx`, модели и текстуры, тексты, списки детекторов, торговля).
+В аномальные зоны они попадают через `scripts/fp_anomaly_zone.script` (наследник `bind_anomaly_zone.anomaly_zone_binder`, подключён в `[anomal_zone]` аддонного `system.ltx`): зоны гравитационного семейства получают mica/slug/ball, термального — thorn, только во Фриплее (info `srp_freeplay` или `fp_artefacts`). Списки в all.spawn не менялись.
+Список новых предметов с клетками иконок для `ui_icon_equipment.dds`: `gamedata/new_items_icons.txt`.
