@@ -1282,4 +1282,10 @@
 	<string id="st_fp_stash_mar_base">
 		<text>Тайник</text>
 	</string>
+	<string id="st_fp_fatigue_tired">
+		<text>Вы устали. Стоит поспать: сил становится меньше с каждым часом.</text>
+	</string>
+	<string id="st_fp_fatigue_exhausted">
+		<text>Вы на пределе сил. Нужно срочно выспаться.</text>
+	</string>
 </string_table>

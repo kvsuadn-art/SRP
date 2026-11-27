@@ -1,0 +1,14 @@
+; Freeplay extras: fatigue. Idea: OGSM Extended 2.0 (ogsm_sleep, xStream, Ab@dDon, DEXXX). Adaptation SRP Freeplay: Eon. Effect: scripts\fp_fatigue.script
+; OGSM numbers: the counter grows by 1 every 6 game minutes; 320 = tired (screen dim), 360 = collapse; 1 hour of sleep removes 120 = 12 hours.
+
+[settings]
+tired_hours = 32          ; game hours without rest: the screen dims, a tip shows
+exhausted_hours = 36      ; stronger effect (OGSM faints here; not taken)
+recover_gap = 5           ; the effect goes off at tired_hours - recover_gap
+rest_per_hour = 12        ; hours of fatigue removed by 1 hour of sleep (OGSM: 12)
+factor_tired = 5.0        ; strength of sleepy.ppe
+factor_exhausted = 8.0
+
+; Using these items pushes the fatigue back by 3, 2 and 1 hours (up to 3 per waking period)
+[energy]
+energy_drink

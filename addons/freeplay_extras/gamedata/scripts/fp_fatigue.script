@@ -1,0 +1,131 @@
+-- fp_fatigue: fatigue of the actor. Idea: OGSM Extended 2.0 (ogsm_sleep: counter "slp", energy drink, sleepy screen),
+-- Copyright 2007-2010 xStream, Ab@dDon, DEXXX. Adaptation SRP Freeplay: Eon
+--
+-- The actor gets tired after tired_hours of game time without rest (misc\fp_fatigue.ltx): the screen goes dim and a tip shows.
+-- Sleeping (fp_sleep) removes rest_per_hour hours of fatigue per hour of sleep; an energy drink pushes the fatigue back by 3, 2, 1
+-- hours (up to 3 drinks per waking period, as in OGSM). Switch: info portion srp_freeplay or fp_fatigue; off: fp_fatigue_off.
+-- Not taken from OGSM: forced fainting at 36 h (the screen effect only gets stronger) and the "men" timer after a drink.
+-- Savegame: one u32 (game minute of the last full rest) and one u8 (drinks); this module must be LAST in
+-- ogse_signals_addons_list so that older saves (no chunk, r_elapsed() == 0) still load.
+-- Cost: one slot every 30 s that compares two numbers; no pstor.
+
+local TAG = "[fp_fatigue] "
+local PP_ID = 76440
+local ini = ini_file("misc\\fp_fatigue.ltx")
+local mgr = nil
+local stamp = nil      -- game minute when the fatigue was zero (fatigue = now - stamp)
+local drinks = 0
+local state = 0        -- 0 rested, 1 tired, 2 exhausted
+local energy = nil
+local pp_ok = nil
+
+function is_enabled()
+	return (has_alife_info("srp_freeplay") or has_alife_info("fp_fatigue")) and not has_alife_info("fp_fatigue_off")
+end
+
+local function now_minutes()
+	return level.get_time_days() * 1440 + level.get_time_hours() * 60 + level.get_time_minutes()
+end
+
+function fatigue_hours()
+	if stamp == nil then stamp = now_minutes() end
+	local f = (now_minutes() - stamp) / 60
+	if f < 0 then f = 0; stamp = now_minutes() end
+	return f
+end
+
+-- the effect file may be absent in the base game: then only the tip is shown
+local function pp_available()
+	if pp_ok == nil then
+		local ok, res = pcall(function() return getFS():exist("$game_anims$", "sleepy.ppe") end)
+		pp_ok = (ok and res ~= nil and res ~= false)
+	end
+	return pp_ok
+end
+
+local function set_pp(on, factor)
+	if not pp_available() then return end
+	level.remove_pp_effector(PP_ID)
+	if on then
+		level.add_pp_effector("sleepy.ppe", PP_ID, true)
+		level.set_pp_effector_factor(PP_ID, factor)
+	end
+end
+
+local function tip(id)
+	news_manager.send_tip(db.actor, game.translate_string(id))
+end
+
+local function apply()
+	local f = fatigue_hours()
+	local tired = ini:r_float("settings", "tired_hours")
+	local exh = ini:r_float("settings", "exhausted_hours")
+	local new = 0
+	if f >= exh then new = 2 elseif f >= tired then new = 1 elseif state > 0 and f > tired - ini:r_float("settings", "recover_gap") then new = state end
+	if new == state then return end
+	state = new
+	if state == 0 then set_pp(false)
+	elseif state == 1 then set_pp(true, ini:r_float("settings", "factor_tired")); tip("st_fp_fatigue_tired")
+	else set_pp(true, ini:r_float("settings", "factor_exhausted")); tip("st_fp_fatigue_exhausted") end
+end
+
+-- called by fp_sleep when the actor wakes up: the sleep of "hours" game hours has just passed
+function on_rest(hours)
+	if not is_enabled() then return end
+	local f = fatigue_hours() - hours
+	if f < 0 then f = 0 end
+	f = f - ini:r_float("settings", "rest_per_hour") * hours
+	if f < 0 then f = 0 end
+	stamp = now_minutes() - math.floor(f * 60)
+	drinks = 0
+	apply()
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_update", fun = on_update })
+	m:subscribe({ signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ signal = "on_save", fun = on_save })
+	m:subscribe({ signal = "on_load", fun = on_load })
+end
+
+function on_item_use(obj)
+	if not is_enabled() then return end
+	if energy == nil then
+		energy = {}
+		for i = 0, ini:line_count("energy") - 1 do
+			local _, name = ini:r_line("energy", i, "", "")
+			energy[name] = true
+		end
+	end
+	if not energy[obj:section()] then return end
+	if drinks >= 3 then return end
+	local gain = 3 - drinks
+	drinks = drinks + 1
+	fatigue_hours()
+	stamp = math.min(now_minutes(), stamp + gain * 60)
+	apply()
+end
+
+function on_update(delta)
+	if mgr then mgr:reschedule(30000) end
+	if not is_enabled() or db.actor == nil or not db.actor:alive() then return end
+	local ok, err = pcall(apply)
+	if not ok then dbglog("%s", TAG .. "error: " .. tostring(err)) end
+end
+
+-- Format: u32 stamp, u8 drinks
+function on_save(packet)
+	packet:w_u32(stamp or now_minutes())
+	packet:w_u8(drinks)
+end
+
+function on_load(reader)
+	if reader:r_elapsed() >= 5 then
+		stamp = reader:r_u32()
+		drinks = reader:r_u8()
+	else
+		stamp, drinks = nil, 0
+	end
+	state = 0
+end

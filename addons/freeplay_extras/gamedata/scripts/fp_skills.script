@@ -26,9 +26,22 @@ local function init()
 	if inited then return end
 	inited = true
 	if ini:line_exist("settings", "wear_save") then wear_save = ini:r_float("settings", "wear_save") end
+	local sini = system_ini()
 	for i = 0, ini:line_count("books") - 1 do
 		local _, book, wpn = ini:r_line("books", i, "", "")
-		weapon_info[wpn] = book
+		-- stub: a line that points to a section missing from the game (weapon pack not installed, typo) is skipped, never an error
+		if sini:section_exist(book) and sini:section_exist(wpn) then
+			weapon_info[wpn] = book
+		else
+			dbglog("%s", TAG .. "skipped: " .. tostring(book) .. " = " .. tostring(wpn) .. " (section does not exist)")
+		end
+	end
+	-- [aliases]: variant weapon section = base weapon section (the variant gets the bonus of the base weapon's book)
+	if ini:section_exist("aliases") then
+		for i = 0, ini:line_count("aliases") - 1 do
+			local _, variant, base = ini:r_line("aliases", i, "", "")
+			if weapon_info[base] and sini:section_exist(variant) then weapon_info[variant] = weapon_info[base] end
+		end
 	end
 end
 
@@ -55,7 +68,8 @@ function on_item_use(obj)
 	local sect = obj:section()
 	if not ini:line_exist("books", sect) then return end
 	local wpn = ini:r_string("books", sect)
-	local name = game.translate_string(system_ini():r_string(sect, "inv_name"))
+	local name = sect
+	if system_ini():line_exist(sect, "inv_name") then name = game.translate_string(system_ini():r_string(sect, "inv_name")) end
 	if has_alife_info(sect) then
 		news_manager.send_tip(db.actor, game.translate_string("st_fp_skill_known") .. " " .. name)
 	else
@@ -67,6 +81,11 @@ end
 function on_update(delta)
 	if mgr then mgr:reschedule(CHECK_MS) end
 	if not is_enabled() then return end
+	local ok, err = pcall(update_wear)
+	if not ok then dbglog("%s", TAG .. "error: " .. tostring(err)) end
+end
+
+function update_wear()
 	init()
 	local act = db.actor
 	if not (act and act:alive()) then return end

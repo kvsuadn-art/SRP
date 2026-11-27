@@ -1,65 +1,53 @@
-SRP Freeplay: новые предметы аддона freeplay_extras и их иконки
-================================================================
-Иконки инвентаря берутся из gamedata/textures/ui/ui_icon_equipment.dds (в SRP: 1024x2048 пикселей,
-клетка 50x50, то есть 20 столбцов x 40 строк). Положение иконки задают inv_grid_x / inv_grid_y
-(левый верхний угол в клетках) и inv_grid_width / inv_grid_height (размер в клетках) в секции предмета.
-Если нарисуешь иконку в другой клетке, поменяй inv_grid_x/y в файле из столбца "Файл".
+ИКОНКИ НОВЫХ ПРЕДМЕТОВ (аддон freeplay_extras)
+Файл для правки иконок. Иконки лежат в gamedata/textures/ui/ui_icon_equipment.dds (клетка 50x50 px, x вправо, y вниз, ширина/высота в клетках).
+ВАЖНО: ни одна иконка из других модов физически НЕ скопирована в атлас SRP. Везде, где нужна своя иконка, указана клетка в атласе мода-источника,
+откуда её можно взять, и клетка, которая сейчас прописана в секции (inv_grid_x / inv_grid_y), то есть куда иконку надо положить.
+Статусы: ЗАГЛУШКА = секция показывает чужую иконку (оригинальную из SRP); СВОЯ КЛЕТКА = клетка отведена, но в атласе SRP она пуста или занята не тем; НАСЛЕДУЕТ = иконка родителя.
 
-Столбцы: секция | файл (внутри addons/freeplay_extras/gamedata/) | клетка x,y и размер w x h в конфиге | иконка
+== Костюмы OGSM (fp_outfit.ltx): все ЗАГЛУШКА. Нужно нарисовать/взять из атласа OGSM и положить в клетку 'под иконку' ==
+секция | название | сейчас показывает иконку (клетка SRP, размер) | оригинальная иконка в атласе OGSM
+killer_outfit | Комбинезон наёмника | как у stalker_outfit: (6,15) 2x3 | OGSM (11,15) 2x3
+monolith_scientific_outfit | Научный комбинезон «Монолита» | как у scientific_outfit: (16,13) 2x3 | OGSM (13,18) 2x3
+red_ecolog_outfit | Комбинезон ССП-99 «Эколог» | как у scientific_outfit: (16,13) 2x3 | OGSM (11,24) 2x3
+green_ecolog_outfit | Комбинезон ССП-99М «ВЕГА» | как у scientific_outfit: (16,13) 2x3 | OGSM (13,24) 2x3
+cs_standart_outfit | Бронекостюм ЧН-2 | как у cs_heavy_outfit: (11,27) 2x3 | OGSM (17,1) 2x3
+bandit_heavy_outfit | Бандитский бронекостюм | как у bandit_outfit: (12,0) 2x2 | OGSM (21,7) 2x3
+dolg_scientific_outfit | ПСЗ-9Мд «Универсальная защита» | как у scientific_outfit: (16,13) 2x3 | OGSM (13,9) 2x3
+dolg_heavy_extra_outfit | СКАТ-9 «Долг» | как у dolg_heavy_outfit: (16,16) 2x3 | OGSM (15,9) 2x3
+dolg_exo_outfit | Экзоскелет «Долг» | как у exo_outfit: (14,13) 2x3 | OGSM (19,9) 2x3
+svoboda_light2_outfit | Укреплённый комбинезон «Ветер свободы» | как у svoboda_light_outfit: (12,13) 2x3 | OGSM (13,12) 2x3
+svoboda_scientific_outfit | Научный комбинезон «Свободы» | как у scientific_outfit: (16,13) 2x3 | OGSM (15,12) 2x3
+soldier_outfit_grey | Армейский бронежилет | как у military_outfit: (18,17) 2x3 | OGSM (11,21) 2x3
+soldier_outfit_brown | Улучшенный армейский бронежилет | как у military_outfit: (18,17) 2x3 | OGSM (13,21) 2x3
+military_extra_outfit | Бронекостюм «СКАТ-9М» | как у military_outfit: (18,17) 2x3 | OGSM (19,21) 2x3
+Чтобы поставить свою иконку: положить её в свободную клетку и в секции fp_outfit.ltx поправить inv_grid_x / inv_grid_y (и width/height при другом размере).
 
-Нужна своя иконка (клетки свободны на листе SRP, сейчас пустые)
-----------------------------------------------------------------
-af_mica       | configs/misc/fp_artefacts.ltx | x=0, y=30, 1x1 | в листе OGSM клетка (6,14)
-af_slug       | configs/misc/fp_artefacts.ltx | x=1, y=30, 1x1 | в листе OGSM клетка (7,14)
-af_ball       | configs/misc/fp_artefacts.ltx | x=2, y=30, 1x1 | в листе OGSM клетка (8,14)
-af_thorn      | configs/misc/fp_artefacts.ltx | x=3, y=30, 1x1 | в листе OGSM клетка (0,15)
-  Лист OGSM: CSOGSM/gamedata/textures/ui/ui_icon_equipment.dds (2048x2048). Клетки SRP (6,14), (7,14),
-  (8,14), (0,15) заняты другими предметами (аптечка, Гроза), поэтому в SRP иконки перенесены в строку 30.
-  Строки 30-35 на листе SRP целиком свободны.
+== Артефакты OGSM (fp_artefacts.ltx): СВОЯ КЛЕТКА, иконка в атласе SRP, скорее всего, не нарисована (не проверялось) ==
+af_mica | сейчас (0,30) | OGSM (6,14)
+af_slug | сейчас (1,30) | OGSM (7,14)
+af_ball | сейчас (2,30) | OGSM (8,14)
+af_thorn | сейчас (3,30) | OGSM (0,15)
 
-Части мутантов, нужна своя иконка (клетки свободны на листе SRP)
-----------------------------------------------------------------
-mutant_tushkano_head      | configs/misc/fp_monster_items.ltx | x=4,  y=30, 1x1 | в листе OGSM клетка (4,22)
-mutant_izlom_hand         | configs/misc/fp_monster_items.ltx | x=5,  y=30, 1x1 | в листе OGSM клетка (4,21)
-mutant_cat_tail           | configs/misc/fp_monster_items.ltx | x=6,  y=30, 1x1 | в листе OGSM клетка (6,21)
-mutant_poltergeist_hand   | configs/misc/fp_monster_items.ltx | x=7,  y=30, 1x1 | в листе OGSM клетка (8,21)
-mutant_chimera_nail       | configs/misc/fp_monster_items.ltx | x=8,  y=30, 1x1 | в листе OGSM клетка (1,22)
-mutant_controller_hand    | configs/misc/fp_monster_items.ltx | x=9,  y=30, 1x1 | в листе OGSM клетка (2,22)
-mutant_pseudogigant_nail  | configs/misc/fp_monster_items.ltx | x=10, y=30, 1x1 | в листе OGSM клетка (3,22)
-  Модели: meshes/dynamics/equipments/item_*.ogf (7 штук), текстура textures/act/act_izlom.dds (+.thm).
-  Остальные текстуры частей (act_cat, act_himera, act_poltergeyst, act_controller, act_psevdogigant,
-  act_rat01) в OGSM не лежат: они должны быть в оригинальных архивах игры. Если части в игре "белые" или
-  без текстуры, дай знать.
-  Тексты: configs/text/rus/fp_extras.xml (mutant_*, mutant_*_description).
+== Части мутантов OGSM (fp_monster_items.ltx), 1x1: СВОЯ КЛЕТКА, иконка в атласе SRP, скорее всего, не нарисована (не проверялось) ==
+mutant_tushkano_head | сейчас (4,30) | OGSM (4,22)
+mutant_izlom_hand | сейчас (5,30) | OGSM (4,21)
+mutant_cat_tail | сейчас (6,30) | OGSM (6,21)
+mutant_poltergeist_hand | сейчас (7,30) | OGSM (8,21)
+mutant_chimera_nail | сейчас (8,30) | OGSM (1,22)
+mutant_controller_hand | сейчас (9,30) | OGSM (2,22)
+mutant_pseudogigant_nail | сейчас (10,30) | OGSM (3,22)
 
-Пока используют чужую иконку (рисовать не обязательно)
-------------------------------------------------------
-ammo_package     | configs/misc/quest_items.ltx | x=10, y=25, 2x2 | иконка кейса agr_quest_duty_case
-products_package | configs/misc/quest_items.ltx | x=10, y=25, 2x2 | иконка кейса agr_quest_duty_case
-  Для своей иконки: свободный блок 2x2, например x=0, y=32 (и x=2, y=32), затем поменять inv_grid_x/y.
-  В OGSM у этих предметов иконка в клетке (0,10), 2x2 (там рюкзак), на листе SRP эта область занята.
+== Книги навыков оружия SGM (fp_skill_items.ltx): ЗАГЛУШКА (2,25) 2x1, общая с документами ==
+skill_book (родитель) и 34 секции skill_book_<оружие>: все показывают одну иконку. Источник идеи: SGM; в SGM у книг свои иконки в атласе SGM (sgm/gamedata/textures/ui/ui_icon_equipment.dds), клетки в конфиге SGM не указаны: искать в атласе SGM.
 
-doc_1 .. doc_15  | configs/misc/quest_items.ltx | x=2, y=25, 2x1 | общая иконка документа (как у оригинального document)
-fp_dev_console   | configs/misc/fp_dev.ltx       | x=2, y=25, 2x1 | та же иконка документа, служебный предмет
-fp_dev_tools     | configs/misc/fp_dev.ltx       | x=2, y=25, 2x1 | та же иконка документа, служебный предмет
+== Прочее, все ЗАГЛУШКА ==
+medal_rank_100 ... medal_rank_1200 (8 штук, fp_medals.ltx) | сейчас (10,25) 2x2 | общая с ammo_package; SGM: медаль (62,11) в атласе SGM
+sleeping_bag (fp_sleep.ltx) | сейчас (10,25) 2x2 | общая с ammo_package; в SGM/OGSM своей нет
+fp_impounded_goods, fp_outpost_pda, fp_dnk_sample (quest_items.ltx) | сейчас (10,25) 2x2 | общая с ammo_package
+fp_deserve_case и 9 штук dv_*_case (флешки лидеров, fp_deserves.ltx) | сейчас (11,23) 1x1 | общая значок флешки, SGM
+fp_dev_console, fp_dev_tools (fp_dev.ltx) | сейчас (2,25) 2x1 | общая с документами, инструменты разработчика
 
-Прочее, что пришло вместе с предметами
---------------------------------------
-Модели: meshes/dynamics/artefacts/af_ball.ogf, af_mica.ogf, af_slug.ogf, af_thorn.ogf
-Текстуры моделей: textures/artifact/blue_insides.dds, bright_red_skin.dds, brown_skin.dds, dark_red_insides.dds
-  (взяты из OGSM; если в оригинале есть текстуры с такими же именами, они будут перекрыты)
-Названия и описания: configs/text/rus/fp_extras.xml (st_af_*_name / st_af_*_descr, st_ammo_package_*, st_products_package_*)
-Артефакты в детекторах: configs/misc/devices.ltx (af_mica, af_thorn: простой; af_slug: продвинутый; af_ball: элитный)
-Торговля: configs/misc/trade_generic.ltx и configs/misc/trade/*.ltx (цена как у af_medusa / af_fireball)
-Выпадение частей из мутантов: configs/creatures/m_*.ltx (Spawn_Inventory_Item_Section/Probability; в оригинале вероятность 0.0)
-Появление в мире: scripts/fp_anomaly_zone.script (во Фриплее аномальные зоны получают эти артефакты в свой список)
+== НАСЛЕДУЕТ иконку оригинала (своя не нужна) ==
+fp_mil_rpg7 (от wpn_rpg7), wpn_quest_svu (от wpn_svu), fp_master_outfit (от svoboda_light_outfit)
 
-Книги навыков (fp_skills) — 32 предмета skill_book_*  | configs/misc/fp_skill_items.ltx
---------------------------------------------------------------------------------------
-Все используют общую иконку документа: x=2, y=25, 2x1 (inv_grid_x/y в базовой секции [skill_book]).
-Если нужна своя иконка — достаточно поменять inv_grid_x/y в [skill_book] (одна для всех) или дописать ключи в нужные секции.
-Секции: skill_book_ak74, ak74u, pkm, abakan, beretta, bm16, colt1911, desert_eagle, fn2000, fort, g36, gauss, groza, hpsa, l85, lr300, mp5, pb, pm,
-        rg-6, rpg7, sig220, sig550, spas12, svd, svu, toz34, usp, val, vintorez, walther, wincheaster1300
-Тексты: configs/text/rus/fp_extras.xml (st_skill_book_*_title / _descr); конфиг соответствия оружию: configs/misc/fp_skills.ltx
-
-shilov_rukzak: иконка-заглушка (10,25) 2x2 (общая с ammo_package); заменить своей.
+Документы doc_1..doc_15 (quest_items.ltx) показывают общую иконку (2,25) 2x1. fp_base_stash и ящики не имеют иконки инвентаря.

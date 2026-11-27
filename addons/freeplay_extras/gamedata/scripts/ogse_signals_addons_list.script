@@ -18,4 +18,5 @@ addons = {
 	"fp_items",
 	"fp_stash", "fp_cleaner",
 	"ogsm_rare_items_manager",
+	"fp_fatigue", -- must stay last: its save chunk is read only if present (older saves)
 }

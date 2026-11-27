@@ -19,6 +19,7 @@ local idle_ticks = 0
 local wake_at = 0
 local prev_factor = 8
 local radius_sqr = nil
+local slept_hours = 0
 
 function is_enabled()
 	return has_alife_info("srp_freeplay") or has_alife_info("fp_sleep")
@@ -74,6 +75,7 @@ function on_item_use(obj)
 	local act = db.actor
 	local hours = math.random(ini:r_u32("settings", "min_hours"), ini:r_u32("settings", "max_hours"))
 	sleeping = true
+	slept_hours = hours
 	prev_factor = level.get_time_factor()
 	wake_at = game.time() + hours * 3600 * 1000
 	if act.health < 1 then act.health = 1 end
@@ -93,6 +95,7 @@ local function wake_up()
 	level.show_indicators()
 	level.add_cam_effector("camera_effects\\fusker.anm", 76431, false, "")
 	tip("st_fp_sleep_woke")
+	if fp_fatigue ~= nil then fp_fatigue.on_rest(slept_hours) end
 end
 
 -- the slot runs every second (reschedule is per slot, so a longer idle period would make the wake-up late: 5 s = 2 game hours at x1700)
