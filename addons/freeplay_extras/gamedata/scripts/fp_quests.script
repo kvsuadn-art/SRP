@@ -7,7 +7,8 @@
 --   capture - a smart terrain held by the enemy faction must stop belonging to it (checked every 5 s,
 --             only while such a quest is active), then report to the giver;
 --   bonus   - no task: a dialog reward available once all quests in 'requires' are rewarded.
--- Optional 'faction' in a quest (stalker/csky): outside Freeplay the actor must belong to it.
+-- Optional 'faction' in a quest (stalker/csky): the actor must have joined it (also in Freeplay).
+-- The module switches itself on (info fp_quests) at the first update: quests are an extension of both modes.
 -- Dialog ids: <quest>_give (start), <quest>_complete (hand over). Stage flags are info portions:
 -- <quest>_start, <quest>_complete (item found), <quest>_reward (finished) - same names as in SGM.
 -- Switch: info srp_freeplay or fp_quests. Savegame: u8 count; per started quest: name + u16 item id.
@@ -20,15 +21,6 @@ local items = {}   -- quest -> server id of the spawned quest item
 
 function is_enabled()
 	return has_alife_info("srp_freeplay") or has_alife_info("fp_quests")
-end
-
--- Freeplay: always; otherwise only for a stalker actor (as in SGM)
-function gate_stalker()
-	return has_alife_info("srp_freeplay") or dialogs.actor_in_stalker()
-end
-
-function gate_dialog()
-	return is_enabled() and gate_stalker()
 end
 
 local function cfg(q)
@@ -64,8 +56,8 @@ end
 
 local smart_held
 
+-- a quest with 'faction' is only for an actor who has joined that faction (in any mode)
 local function gate(c)
-	if has_alife_info("srp_freeplay") then return true end
 	return c.faction == nil or db.actor:character_community() == "actor_" .. c.faction
 end
 
@@ -178,7 +170,8 @@ end
 
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
-function esc_capture_army_blockpost_available() return smart_held("esc_capture_army_blockpost") end
+function esc_capture_army_blockpost_available() return available("esc_capture_army_blockpost") end
+function esc_shilov_find_rukzak_available() return available("esc_shilov_find_rukzak") end
 function mar_capture_pumping_station_available() return available("mar_capture_pumping_station") end
 function mar_capture_church_available() return available("mar_capture_church") end
 function mar_capture_boat_station_available() return available("mar_capture_boat_station") end
@@ -199,7 +192,8 @@ end
 local capture_list = nil
 function fp_on_update(delta)
 	if mgr then mgr:reschedule(5000) end
-	if not is_enabled() or db.actor == nil then return end
+	if db.actor == nil then return end
+	if not has_alife_info("fp_quests") then db.actor:give_info_portion("fp_quests") end
 	if capture_list == nil then
 		capture_list = {}
 		for i = 0, ini:line_count("quests") - 1 do

@@ -2,7 +2,7 @@
 <!-- Dialogs of fp_quests (quests ported from SGM ideas). Adaptation SRP Freeplay: Eon. Dialog id = <quest>_give / <quest>_complete -->
 <game_dialogs>
 	<dialog id="esc_shilov_find_rukzak_give">
-		<precondition>fp_quests.gate_dialog</precondition>
+		<precondition>fp_quests.esc_shilov_find_rukzak_available</precondition>
 		<dont_has_info>esc_shilov_find_rukzak_start</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -26,7 +26,6 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_shilov_find_rukzak_complete">
-		<precondition>fp_quests.gate_dialog</precondition>
 		<precondition>fp_quests.has_esc_shilov_find_rukzak_item</precondition>
 		<has_info>esc_shilov_find_rukzak_start</has_info>
 		<dont_has_info>esc_shilov_find_rukzak_reward</dont_has_info>
@@ -42,7 +41,6 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_capture_army_blockpost_give">
-		<precondition>fp_quests.gate_dialog</precondition>
 		<precondition>fp_quests.esc_capture_army_blockpost_available</precondition>
 		<dont_has_info>esc_capture_army_blockpost_start</dont_has_info>
 		<phrase_list>
@@ -67,7 +65,6 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_capture_army_blockpost_complete">
-		<precondition>fp_quests.gate_dialog</precondition>
 		<has_info>esc_capture_army_blockpost_complete</has_info>
 		<dont_has_info>esc_capture_army_blockpost_reward</dont_has_info>
 		<phrase_list>
