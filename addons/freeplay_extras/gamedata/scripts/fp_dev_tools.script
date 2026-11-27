@@ -84,25 +84,46 @@ local mgr = nil
 
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_save", fun = on_save })
-	m:subscribe({ signal = "on_load", fun = on_load })
 	m:subscribe({ signal = "on_net_spawn", fun = on_net_spawn })
 	m:subscribe({ signal = "on_update", fun = on_update })
 end
 
-function on_save(packet)
-	packet:w_stringZ(pending)
+-- The target is kept as an info portion fp_tp_<index of the key in the sorted list of guide points> (savegame-safe: no
+-- chunk of its own, so saves made by other versions keep loading).
+local function keys()
+	local t = {}
+	for k in pairs(guiders_table.teleport_points) do t[#t + 1] = k end
+	table.sort(t)
+	return t
 end
 
-function on_load(reader)
-	pending = reader:r_stringZ()
+local function get_pending()
+	local t = keys()
+	for i = 1, math.min(#t, 128) do
+		if has_alife_info("fp_tp_" .. (i - 1)) then return t[i], i - 1 end
+	end
+	return ""
+end
+
+local function set_pending(key)
+	local t = keys()
+	for i = 1, math.min(#t, 128) do
+		local id = "fp_tp_" .. (i - 1)
+		if t[i] == key then
+			if not has_alife_info(id) then db.actor:give_info_portion(id) end
+		elseif has_alife_info(id) then
+			db.actor:disable_info_portion(id)
+		end
+	end
+	pending = key
 end
 
 function on_net_spawn()
 	entry_time = time_global()
+	pending = get_pending()
 	if pending ~= "" then
 		local d = guiders_table.teleport_points[pending]
-		if not (d and d.level == level.name()) then pending = "" end   -- stale target (the level change did not happen)
+		if not (d and d.level == level.name()) then set_pending("") end   -- stale target (the level change did not happen)
 	end
 end
 
@@ -120,17 +141,17 @@ function on_update(delta)
 	if pending == "" or not (db.actor and db.actor:alive()) then return end
 	local key = pending
 	local d = guiders_table.teleport_points[key]
-	if not d then pending = ""; return end
+	if not d then set_pending(""); return end
 	if d.level == level.name() then
 		if time_global() - entry_time < ARRIVE_WAIT then return end
-		pending = ""
+		set_pending("")
 		guiders.teleported_to_another_level = false   -- the guides' own second step has nothing to do here
 		guiders.level_changed = false
 		jump_to(key)
 		dbglog("%s", TAG .. "arrived, second step to " .. key)
 	elseif started > 0 and time_global() - started > FAIL_WAIT then
 		-- the level did not change (level changer closed): give the control back
-		pending = ""
+		set_pending("")
 		started = 0
 		guiders.teleported_to_another_level = false
 		guiders.teleport_end()
@@ -152,7 +173,7 @@ local function teleport(key)
 			tip("Нет перехода " .. cur .. " -> " .. d.level)
 			return false
 		end
-		pending = key
+		set_pending(key)
 		started = time_global()
 		guiders.level_changed = true
 		guiders.start_teleport(cross, nil)
