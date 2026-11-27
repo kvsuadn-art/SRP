@@ -15,6 +15,7 @@ local FADE_ID = 76424
 local ini = ini_file("misc\\fp_sleep.ltx")
 local mgr = nil
 local sleeping = false
+local idle_ticks = 0
 local wake_at = 0
 local prev_factor = 8
 local radius_sqr = nil
@@ -82,7 +83,6 @@ function on_item_use(obj)
 	level.add_pp_effector("mar_fade.ppe", FADE_ID, false)
 	level.set_time_factor(ini:r_float("settings", "time_factor"))
 	level.hide_indicators_safe()
-	if mgr then mgr:reschedule(SLEEP_MS) end
 end
 
 local function wake_up()
@@ -93,14 +93,12 @@ local function wake_up()
 	level.show_indicators()
 	level.add_cam_effector("camera_effects\\fusker.anm", 76431, false, "")
 	tip("st_fp_sleep_woke")
-	if mgr then mgr:reschedule(IDLE_MS) end
 end
 
+-- the slot runs every second (reschedule is per slot, so a longer idle period would make the wake-up late: 5 s = 2 game hours at x1700)
 function on_update(delta)
-	if not is_enabled() then
-		if mgr then mgr:reschedule(IDLE_MS) end
-		return
-	end
+	if mgr then mgr:reschedule(SLEEP_MS) end
+	if not is_enabled() then return end
 	local act = db.actor
 	if not (act and act:alive()) then
 		if sleeping then
@@ -109,15 +107,17 @@ function on_update(delta)
 			level.set_time_factor(prev_factor)
 			level.enable_input()
 		end
-		if mgr then mgr:reschedule(IDLE_MS) end
 		return
 	end
 	if sleeping then
-		if game.time() >= wake_at then wake_up() else if mgr then mgr:reschedule(SLEEP_MS) end end
+		if game.time() >= wake_at then wake_up() end
 		return
 	end
-	if mgr then mgr:reschedule(IDLE_MS) end
-	if act:object("sleeping_bag") == nil then
-		dialogs.relocate_item_section_to_actor(nil, nil, "sleeping_bag", 1)
+	idle_ticks = idle_ticks + 1
+	if idle_ticks >= IDLE_MS / SLEEP_MS then
+		idle_ticks = 0
+		if act:object("sleeping_bag") == nil then
+			dialogs.relocate_item_section_to_actor(nil, nil, "sleeping_bag", 1)
+		end
 	end
 end

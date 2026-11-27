@@ -1279,4 +1279,7 @@
 	<string id="st_fp_sleep_woke">
 		<text>Вы выспались.</text>
 	</string>
+	<string id="st_fp_stash_mar_base">
+		<text>Тайник</text>
+	</string>
 </string_table>

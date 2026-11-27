@@ -31,6 +31,10 @@
 	<info_portion id="fp_medal_1100"/>
 	<info_portion id="fp_medal_1200"/>
 	<info_portion id="fp_sleep"/>
+	<info_portion id="fp_items"/>
+	<info_portion id="fp_items_off"/>
+	<info_portion id="fp_stash"/>
+	<info_portion id="fp_stash_done"/>
 	<info_portion id="fp_quests"/>
 	<info_portion id="esc_shilov_find_rukzak_start"/>
 	<info_portion id="esc_shilov_find_rukzak_complete"/>

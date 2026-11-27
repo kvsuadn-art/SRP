@@ -1,0 +1,40 @@
+-- fp_stash: stashes restored in the world (misc\fp_stash.ltx). Idea: the rucksack in the start room of the Clear Sky base,
+-- a decoration in the original game; the base has no place to leave things. Adaptation SRP Freeplay: Eon
+--
+-- Once (info fp_stash_done) a usable box with the same model is created at the place of the decorative object, which is removed,
+-- and a map spot is added. Switch: info portion srp_freeplay or fp_stash. Savegame: nothing of its own (the box is a normal object).
+
+local ini = ini_file("misc\\fp_stash.ltx")
+local mgr = nil
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_stash")
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+function on_update(delta)
+	if not is_enabled() or has_alife_info("fp_stash_done") then
+		if mgr then mgr:reschedule(60000) end
+		return
+	end
+	if mgr then mgr:reschedule(5000) end
+	if db.actor == nil or alife() == nil then return end
+	for i = 0, ini:line_count("list") - 1 do
+		local _, name = ini:r_line("list", i, "", "")
+		local x, y, z, lv, gv = string.match(ini:r_string(name, "pos"),
+			"([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
+		if ini:line_exist(name, "replaces") then
+			local old = alife():object(ini:r_string(name, "replaces"))
+			if old then alife():release(old, true) end
+		end
+		local se = alife():create(ini:r_string(name, "section"), vector():set(tonumber(x), tonumber(y), tonumber(z)), tonumber(lv), tonumber(gv))
+		if se and level.map_has_object_spot(se.id, "treasure") == 0 then
+			level.map_add_object_spot_ser(se.id, "treasure", game.translate_string(ini:r_string(name, "title")))
+		end
+	end
+	db.actor:give_info_portion("fp_stash_done")
+end
