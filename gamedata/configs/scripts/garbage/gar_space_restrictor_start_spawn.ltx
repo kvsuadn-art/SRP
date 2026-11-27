@@ -5,7 +5,18 @@ active = sr_idle@bandit_base_box
 on_info = sr_idle@story_messenger %=spawn_object_in(af_night_star:gar_treasure_quest_bandit_base) =spawn_object_in(af_electra_moonlight:gar_treasure_quest_bandit_base)%
 
 [sr_idle@story_messenger]
-on_info = {+gar_story_searched_digger_body} sr_idle@story_messenger_dogs_spawn %=create_squad(gar_digger_messenger_man:gar_smart_terrain_8_5)%
+on_info = {+srp_freeplay} sr_idle@fp_messenger %=create_squad(gar_digger_messenger_man:gar_smart_terrain_8_5)%, {+gar_story_searched_digger_body} sr_idle@story_messenger_dogs_spawn %=create_squad(gar_digger_messenger_man:gar_smart_terrain_8_5)% ; Freeplay
+
+; Freeplay: standalone digger messenger scene (no story infos, smart 8_5 is not cleared)
+[sr_idle@fp_messenger]
+on_info = {+gar_story_spawn_messenger_dogs} sr_idle@fp_messenger_dogs_exist %=create_squad(gar_digger_messenger_dogs:gar_smart_terrain_6_5)%
+
+[sr_idle@fp_messenger_dogs_exist]
+on_info = {=squad_exist(gar_digger_messenger_dogs)} sr_idle@fp_messenger_dogs_fight
+
+; backup: gar_story_kill_dogs (defend_smart_delay) may not be issued; set the flag on squad death
+[sr_idle@fp_messenger_dogs_fight]
+on_info = {!squad_exist(gar_digger_messenger_dogs)} sr_idle@end_section %+gar_story_messenger_dogs_dead%
 
 [sr_idle@story_messenger_dogs_spawn]
 on_info = {+gar_story_spawn_messenger_dogs} sr_idle@story_messenger_dogs_exist %=create_squad(gar_digger_messenger_dogs:gar_smart_terrain_6_5)%

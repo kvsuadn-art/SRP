@@ -17,7 +17,8 @@ path_walk = digger_messenger_safe_place_walk
 path_look = digger_messenger_safe_place_shoot
 combat_ignore_cond = true
 on_info = {+gar_story_messenger_dogs_dead} remark@no_dogs
-on_actor_dist_le_nvis = 40 | walker@start
+on_actor_dist_le_nvis = 50 | {+srp_freeplay} walker@fp_start ; Freeplay
+on_actor_dist_le_nvis2 = 40 | walker@start
 meet = no_meet
 out_restr = gar_space_restrictor_messenger_block
 wounded = wounded
@@ -27,6 +28,17 @@ path_walk = digger_messenger_safe_place_walk
 path_look = digger_messenger_safe_place_look
 combat_ignore_cond = true
 on_actor_dist_le_nvis = 15 | {-gar_story_digger_killed_or_hostile} %=play_sound(gar_digger_messenger_warning:stalker:gar_digger_messenger_man_name) +gar_story_spawn_messenger_dogs%, walker@time %+gar_story_spawn_messenger_dogs%
+on_signal = sound_end | walker@time
+meet = no_meet
+out_restr = gar_space_restrictor_messenger_block
+wounded = wounded
+
+; Freeplay: dogs attack as soon as the actor is within 50 m, so the fight is heard from a distance
+[walker@fp_start]
+path_walk = digger_messenger_safe_place_walk
+path_look = digger_messenger_safe_place_look
+combat_ignore_cond = true
+on_info = {-gar_story_spawn_messenger_dogs -gar_story_digger_killed_or_hostile} %=play_sound(gar_digger_messenger_warning:stalker:gar_digger_messenger_man_name) +gar_story_spawn_messenger_dogs%, {-gar_story_spawn_messenger_dogs} walker@time %+gar_story_spawn_messenger_dogs%
 on_signal = sound_end | walker@time
 meet = no_meet
 out_restr = gar_space_restrictor_messenger_block
@@ -79,7 +91,7 @@ wounded = wounded
 target = actor
 anim = wait
 on_actor_dist_le_nvis = 4 | {-gar_story_digger_killed_or_hostile} %=play_sound(gar_digger_messenger_thanks:stalker:gar_digger_messenger_man_name)%, walker@no_dogs_stay
-on_signal = sound_end | walker@no_dogs_stay %+gar_story_got_info_from_digger%
+on_signal = sound_end | {+srp_freeplay} walker@no_dogs_stay, walker@no_dogs_stay %+gar_story_got_info_from_digger% ; Freeplay: no story info
 meet = no_meet
 wounded = wounded
 
