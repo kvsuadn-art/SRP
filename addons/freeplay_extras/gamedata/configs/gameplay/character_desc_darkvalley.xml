@@ -163,8 +163,6 @@
 		<actor_dialog>val_barmen_about_barmen</actor_dialog>
 		<actor_dialog>val_barmen_about_zone</actor_dialog>
 		<actor_dialog>val_freedom_barmen_questions_dialog_complete</actor_dialog>
-		<actor_dialog>val_sos_rescue_bus_give</actor_dialog>
-		<actor_dialog>val_sos_rescue_bus_complete</actor_dialog>
 		<actor_dialog>val_freedom_barmen_questions_dialog</actor_dialog>
 		<actor_dialog>treasure_dialog</actor_dialog>
 		<actor_dialog>tm_reward_task</actor_dialog>
@@ -572,6 +570,30 @@
 #include "gameplay\character_criticals_4.xml"
 #include "gameplay\character_dialogs.xml"
 
+	</specific_character>
+
+	<!-- New Freedom commander (replaces the story commander): giver of val_sos_rescue_bus. Adaptation SRP Freeplay: Eon -->
+	<specific_character id="fp_freedom_commander" team_default = "1">
+		<name>fp_freedom_commander_name</name>
+		<icon>ui_npc_u_freedom_3</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<class>fp_freedom_commander</class>
+		<community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_01\freedom\</snd_config>
+		<rank>600</rank>
+		<reputation>0</reputation>
+		<money min="5000" max="10000" infinitive="0"/>
+		<visual>actors\stalker_freedom\stalker_freedom_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_sig550 \n
+			ammo_5.56x45_ss190 = 5 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+#include "gameplay\character_criticals_1.xml"
+		<actor_dialog>val_sos_rescue_bus_give</actor_dialog>
+		<actor_dialog>val_sos_rescue_bus_complete</actor_dialog>
 	</specific_character>
 
 	<!-- Bus bandits and the Freedom hostage: fp_quests val_sos_rescue_bus. Adaptation SRP Freeplay: Eon -->

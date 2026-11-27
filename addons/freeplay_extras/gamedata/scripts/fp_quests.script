@@ -26,6 +26,7 @@ local TAG = "[fp_quests] "
 local ini = ini_file("misc\\fp_quests.ltx")
 local mgr = nil
 local data = {}    -- quest -> parsed config
+local spawn_list = nil
 local givers = {}  -- quest -> server id of the giver NPC, kept only for quests with giver = profile:<name>
 local items = {}   -- quest -> list of server ids (fetch: the quest item, kill: the targets of the current wave)
 
@@ -41,6 +42,20 @@ local function cfg(q)
 	c.type = ini:line_exist(q, "type") and ini:r_string(q, "type") or "fetch"
 	c.giver = ini:r_string(q, "giver")
 	c.faction = ini:line_exist(q, "faction") and ini:r_string(q, "faction") or nil
+	-- 'giver = spawn:<section>': a new NPC created once at 'giver_pos' (x,y,z,lv,gv); its id is kept in items["giver.<section>"]
+	c.giver_spawn = string.match(c.giver, "^spawn:(.+)$")
+	if c.giver_spawn then
+		local x, y, z, lv, gv = string.match(ini:r_string(q, "giver_pos"), "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
+		c.giver_at = vector():set(tonumber(x), tonumber(y), tonumber(z))
+		c.giver_lv, c.giver_gv = tonumber(lv), tonumber(gv)
+	end
+	-- 'lend' = a weapon given at the start if the actor has none of 'lend_skip' (comma list) and taken back at the reward; 'lend_ammo' goes along
+	if ini:line_exist(q, "lend") then
+		c.lend = ini:r_string(q, "lend")
+		c.lend_ammo = ini:line_exist(q, "lend_ammo") and ini:r_string(q, "lend_ammo") or nil
+		c.lend_skip = {}
+		for s in string.gmatch(ini:r_string(q, "lend_skip"), "[^,%s]+") do c.lend_skip[#c.lend_skip + 1] = s end
+	end
 	if c.type == "bonus" then
 		c.requires = {}
 		for s in string.gmatch(ini:r_string(q, "requires"), "[^,%s]+") do c.requires[#c.requires + 1] = s end
@@ -111,6 +126,10 @@ end
 -- a giver that is not a fixed object (e.g. a squad member found by profile) is remembered when the quest starts
 local function giver_id(c, q)
 	if givers[q] ~= nil then return givers[q] end
+	if c.giver_spawn then
+		local t = items["giver." .. c.giver_spawn]
+		return t and t[1] or nil
+	end
 	local s = alife():object(c.giver)
 	return s and s.id or nil
 end
@@ -178,6 +197,14 @@ function start(actor, npc, dialog_id, phrase_id)
 		end
 	end
 	if string.find(c.giver, "^profile:") and npc ~= nil then givers[q] = npc:id() end
+	if c.lend then
+		local has = false
+		for _, s in ipairs(c.lend_skip) do if actor:object(s) ~= nil then has = true end end
+		if not has then
+			dialogs.relocate_item_section_to_actor(nil, nil, c.lend, 1)
+			if c.lend_ammo then dialogs.relocate_item_section_to_actor(nil, nil, c.lend_ammo, 2) end
+		end
+	end
 	db.actor:give_info_portion(q .. "_start")
 	give_task(q)
 end
@@ -204,6 +231,7 @@ function finish(actor, npc, dialog_id, phrase_id)
 	if c.loot ~= nil then
 		for _ = 1, (c.count or 1) do dialogs.relocate_item_section_from_actor(actor, npc, c.loot) end
 	end
+	if c.lend and actor:object(c.lend) ~= nil then dialogs.relocate_item_section_from_actor(actor, npc, c.lend) end
 	local money = c.money
 	if c.ally and has_alife_info(q .. "_alive") then money = money + c.bonus_money end
 	if money > 0 then dialogs.relocate_money(npc, money, "in") end
@@ -286,6 +314,22 @@ function fp_on_update(delta)
 	if mgr then mgr:reschedule(5000) end
 	if db.actor == nil then return end
 	if not has_alife_info("fp_quests") then db.actor:give_info_portion("fp_quests") end
+	-- givers that are new NPCs: created once (in Freeplay, or in Story after the story_info of the quest), never respawned
+	if spawn_list == nil then
+		spawn_list = {}
+		for i = 0, ini:line_count("quests") - 1 do
+			local _, q = ini:r_line("quests", i, "", "")
+			local c = cfg(q)
+			if c ~= nil and c.giver_spawn then spawn_list[#spawn_list + 1] = c end
+		end
+	end
+	for _, c in ipairs(spawn_list) do
+		local key = "giver." .. c.giver_spawn
+		if items[key] == nil and (has_alife_info("srp_freeplay") or (c.story_info and has_alife_info(c.story_info))) then
+			local se = alife():create(c.giver_spawn, c.giver_at, c.giver_lv, c.giver_gv)
+			if se then items[key] = { se.id } end
+		end
+	end
 	if capture_list == nil then
 		capture_list = {}
 		for i = 0, ini:line_count("quests") - 1 do

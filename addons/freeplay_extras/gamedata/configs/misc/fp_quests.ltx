@@ -185,22 +185,28 @@ reward_money = 6000
 reward_items = medkit_army, medkit_army, skill_book_lr300
 
 ; Cordon: kill the army colonel who commands the blockpost (SGM: esc_kill_blockpost_leader, giver Bogdanov, a new NPC).
-; Freeplay: the giver is the existing stalker leader; the SGM penalty to stalker goodwill (-2500) and the SVU requirement are dropped.
+; Freeplay: the giver is the existing stalker leader. The SGM penalty to stalker goodwill (-2500) is dropped.
+; As in SGM the quest SVU (wpn_quest_svu + ammo) is lent at the start, but only if the actor has no SVU/SVD of his own; it is taken back at the reward.
 [esc_kill_blockpost_leader]
 type = kill
 giver = esc_stalker_leader
+lend = wpn_quest_svu
+lend_ammo = ammo_7.62x54_7h14
+lend_skip = wpn_svu, wpn_quest_svu, wpn_svd
 npc = fp_army_colonel
 spawn = -150.523,-30.436,-350.477,101915,564
 reward_money = 5000
 reward_items = skill_book_fort
 
 ; Dark Valley: Freedom men are held on a bus by bandits (SGM: val_sos_*, giver is the new NPC 'squads commander').
-; Temporary giver: the Freedom barman (replace in this one line). Kill both bandits; 'bonus_money' if the hostage survives.
+; Open to everyone, no faction: the actor is a neutral outsider, so the bandits are less wary of him than of Freedom men.
+; The giver is the new Freedom commander (profile fp_freedom_commander) who replaces the story commander; he is created once.
+; Kill both bandits; 'bonus_money' if the hostage survives.
 [val_sos_rescue_bus]
 type = kill
-faction = freedom
 story_info = val_pursuit_comendant_complete
-giver = val_freedom_barmen
+giver = spawn:fp_freedom_commander
+giver_pos = 44.0,0.037,41.9,206271,795
 npc = fp_bus_killer
 count = 2
 spawn = 59.798,0.201,-187.310,222893,959

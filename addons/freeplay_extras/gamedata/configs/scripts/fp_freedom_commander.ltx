@@ -1,0 +1,16 @@
+[logic]
+active = remark@idle
+level_spot = quest_npc
+
+[remark@idle]
+anim = wait
+meet = meet@main
+
+[meet@main]
+meet_state = 3 | wait@nil
+meet_state_wpn = 3 | wait@nil
+use = true
+use_wpn = true
+victim = 10 | actor
+victim_wpn = 10 | actor
+quest_npc = true
