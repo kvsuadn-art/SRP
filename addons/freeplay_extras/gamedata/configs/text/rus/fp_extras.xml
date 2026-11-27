@@ -580,4 +580,34 @@
 	<string id="esc_shilov_find_rukzak_dialog_6">
 		<text>Отличная работа, сталкер!</text>
 	</string>
+	<string id="esc_capture_army_blockpost">
+		<text>Захватить военный блокпост</text>
+	</string>
+	<string id="esc_capture_army_blockpost_text">
+		<text>Военные закрепились на главном блокпосту на юге Кордона и мешают сталкерам. Нужно выбить их оттуда: блокпост не должен остаться за военными.</text>
+	</string>
+	<string id="esc_capture_army_blockpost_back">
+		<text>Доложить о захвате блокпоста</text>
+	</string>
+	<string id="esc_capture_army_blockpost_back_text">
+		<text>Блокпост больше не принадлежит военным. Нужно вернуться на базу сталкеров и доложить лидеру.</text>
+	</string>
+	<string id="esc_capture_army_blockpost_dialog_1">
+		<text>Есть работа для сталкера?</text>
+	</string>
+	<string id="esc_capture_army_blockpost_dialog_2">
+		<text>Военные засели на главном блокпосту и держат весь юг Кордона. Нам нужно, чтобы их там не было. Выбей их, и я хорошо заплачу. Справишься?</text>
+	</string>
+	<string id="esc_capture_army_blockpost_dialog_3">
+		<text>Справлюсь.</text>
+	</string>
+	<string id="esc_capture_army_blockpost_dialog_4">
+		<text>Не сейчас.</text>
+	</string>
+	<string id="esc_capture_army_blockpost_dialog_5">
+		<text>Блокпост наш. Военных там больше нет.</text>
+	</string>
+	<string id="esc_capture_army_blockpost_dialog_6">
+		<text>Отлично сработано! Вот твоя плата и кое-что из снаряжения в придачу.</text>
+	</string>
 </string_table>

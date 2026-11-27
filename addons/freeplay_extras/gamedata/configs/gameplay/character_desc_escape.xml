@@ -64,6 +64,8 @@
 		<actor_dialog>esc_leader_what_happens</actor_dialog>
 		<actor_dialog>esc_leader_about_home</actor_dialog>
 		<actor_dialog>esc_leader_about_prisoner</actor_dialog>
+		<actor_dialog>esc_capture_army_blockpost_give</actor_dialog>
+		<actor_dialog>esc_capture_army_blockpost_complete</actor_dialog>
 		<actor_dialog>treasure_dialog</actor_dialog>
 
 #include "gameplay\character_criticals_4.xml"

@@ -2,8 +2,10 @@
 -- Adaptation SRP Freeplay: Eon
 --
 -- Not a port of the SGM task layer: quests are re-implemented on stock engine tasks (CGameTask, as in
--- ogsm_rt_manager) and dialogs; data is in misc\fp_quests.ltx. Supported quest type: "fetch"
--- (a quest item is spawned at a place, the actor brings it to the giver for a reward).
+-- ogsm_rt_manager) and dialogs; data is in misc\fp_quests.ltx. Quest types:
+--   fetch   - a quest item is spawned at a place, the actor brings it to the giver for a reward;
+--   capture - a smart terrain held by the enemy faction must stop belonging to it (checked every 5 s,
+--             only while such a quest is active), then report to the giver.
 -- Dialog ids: <quest>_give (start), <quest>_complete (hand over). Stage flags are info portions:
 -- <quest>_start, <quest>_complete (item found), <quest>_reward (finished) - same names as in SGM.
 -- Switch: info srp_freeplay or fp_quests. Savegame: u8 count; per started quest: name + u16 item id.
@@ -32,12 +34,18 @@ local function cfg(q)
 	if c ~= nil then return c end
 	if not ini:section_exist(q) then return nil end
 	c = {}
+	c.type = ini:line_exist(q, "type") and ini:r_string(q, "type") or "fetch"
 	c.giver = ini:r_string(q, "giver")
-	c.item = ini:r_string(q, "item")
-	local pos = ini:r_string(q, "spawn")
-	local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
-	c.pos = vector():set(tonumber(x), tonumber(y), tonumber(z))
-	c.lv, c.gv = tonumber(lv), tonumber(gv)
+	if c.type == "capture" then
+		c.smart = ini:r_string(q, "smart")
+		c.enemy = ini:r_string(q, "enemy")
+	else
+		c.item = ini:r_string(q, "item")
+		local pos = ini:r_string(q, "spawn")
+		local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
+		c.pos = vector():set(tonumber(x), tonumber(y), tonumber(z))
+		c.lv, c.gv = tonumber(lv), tonumber(gv)
+	end
 	c.money = ini:line_exist(q, "reward_money") and ini:r_u32(q, "reward_money") or 0
 	c.rewards = {}
 	if ini:line_exist(q, "reward_items") then
@@ -54,6 +62,13 @@ end
 local function giver_id(c)
 	local s = alife():object(c.giver)
 	return s and s.id or nil
+end
+
+local function smart_id(c)
+	if c.smart == nil then return nil end
+	local board = sim_board.get_sim_board()
+	local sm = board and board.smarts_by_names[c.smart]
+	return sm and sm.id or nil
 end
 
 local function task_id(q) return "fpq_" .. q end
@@ -84,7 +99,7 @@ local function give_task(q)
 	task:add_complete_func("fp_quests.task_complete")
 	task:set_map_hint(q)
 	task:set_map_location("secondary_task_location")
-	task:set_map_object_id(items[q] or giver_id(c) or 0)
+	task:set_map_object_id(items[q] or smart_id(c) or giver_id(c) or 0)
 	db.actor:give_task(task, 0, false)
 	if has_alife_info(q .. "_complete") then set_task_stage(q, true) end
 end
@@ -100,7 +115,7 @@ function start(actor, npc, dialog_id, phrase_id)
 	local q = quest_of(dialog_id)
 	local c = cfg(q)
 	if c == nil then printf(TAG .. "no config for '%s'", tostring(q)) return end
-	if items[q] == nil then
+	if c.type == "fetch" and items[q] == nil then
 		local se = alife():create(c.item, c.pos, c.lv, c.gv)
 		items[q] = se and se.id or nil
 	end
@@ -117,22 +132,56 @@ function finish(actor, npc, dialog_id, phrase_id)
 	local q = quest_of(dialog_id)
 	local c = cfg(q)
 	if c == nil then return end
-	dialogs.relocate_item_section_from_actor(actor, npc, c.item)
+	if c.item ~= nil then dialogs.relocate_item_section_from_actor(actor, npc, c.item) end
 	if c.money > 0 then dialogs.relocate_money(npc, c.money, "in") end
 	for _, s in ipairs(c.rewards) do dialogs.relocate_item_section_to_actor(actor, npc, s, 1) end
 	db.actor:give_info_portion(q .. "_reward")
 	items[q] = nil
 end
 
+-- capture quests: precondition for the "give" dialog (the enemy still holds the smart)
+function smart_held(q)
+	local c = cfg(q)
+	if c == nil then return false end
+	local board = sim_board.get_sim_board()
+	local sm = board and board.smarts_by_names[c.smart]
+	return sm ~= nil and sm.player_name == c.enemy
+end
+
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
+function esc_capture_army_blockpost_available() return smart_held("esc_capture_army_blockpost") end
 
 -------------------------------------------------------------- signals
 function attach(m)
 	mgr = m
+	m:subscribe({ signal = "on_update", fun = fp_on_update })
 	m:subscribe({ signal = "on_item_take", fun = fp_on_item_take })
 	m:subscribe({ signal = "on_save", fun = fp_on_save })
 	m:subscribe({ signal = "on_load", fun = fp_on_load })
+end
+
+-- capture quests: the list is read from the config, the state is in info portions (nothing extra in the save)
+local capture_list = nil
+function fp_on_update(delta)
+	if mgr then mgr:reschedule(5000) end
+	if not is_enabled() or db.actor == nil then return end
+	if capture_list == nil then
+		capture_list = {}
+		for i = 0, ini:line_count("quests") - 1 do
+			local _, q = ini:r_line("quests", i, "", "")
+			local c = cfg(q)
+			if c ~= nil and c.type == "capture" then capture_list[#capture_list + 1] = q end
+		end
+	end
+	for _, q in ipairs(capture_list) do
+		if has_alife_info(q .. "_start") and not has_alife_info(q .. "_complete") then
+			if not smart_held(q) then
+				db.actor:give_info_portion(q .. "_complete")
+				set_task_stage(q, true)
+			end
+		end
+	end
 end
 
 function fp_on_item_take(obj)

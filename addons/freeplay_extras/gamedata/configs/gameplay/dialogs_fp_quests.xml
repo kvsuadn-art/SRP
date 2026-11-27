@@ -41,4 +41,44 @@
 			</phrase>
 		</phrase_list>
 	</dialog>
+	<dialog id="esc_capture_army_blockpost_give">
+		<precondition>fp_quests.gate_dialog</precondition>
+		<precondition>fp_quests.esc_capture_army_blockpost_available</precondition>
+		<dont_has_info>esc_capture_army_blockpost_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>esc_capture_army_blockpost_dialog_1</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>esc_capture_army_blockpost_dialog_2</text>
+				<next>100</next>
+				<next>200</next>
+			</phrase>
+			<phrase id="100">
+				<text>esc_capture_army_blockpost_dialog_3</text>
+				<action>fp_quests.start</action>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="200">
+				<text>esc_capture_army_blockpost_dialog_4</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="esc_capture_army_blockpost_complete">
+		<precondition>fp_quests.gate_dialog</precondition>
+		<has_info>esc_capture_army_blockpost_complete</has_info>
+		<dont_has_info>esc_capture_army_blockpost_reward</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>esc_capture_army_blockpost_dialog_5</text>
+				<action>fp_quests.finish</action>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>esc_capture_army_blockpost_dialog_6</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
 </game_dialogs>
