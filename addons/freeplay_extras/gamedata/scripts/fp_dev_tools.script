@@ -3,13 +3,13 @@
 -- area (describe) and runs the chosen entry with the same "Получить" button (run).
 -- Teleport targets are taken from SRP's own guide data (guiders_table): the cross-level points
 -- (cross_level_teleport) and the guide points of the current level (teleport_points). The jump itself is
--- the one SRP guides use: fade, db.actor:set_actor_position(patrol point). Own fade code (guiders.start_teleport is not
--- used: it calls level.show_weapon, which the engine export list of this build does not have).
+-- the one SRP guides use: db.actor:set_actor_position(patrol point). guiders.start_teleport is not used (its fade chain
+-- and level.show_weapon are not needed for a tool, the first version without them worked).
 -- Adaptation for SRP Freeplay: Eon
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b4"
+local BUILD = "2026-11-28 b5"
 
 local tools = {
 	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
@@ -131,43 +131,11 @@ function on_net_spawn()
 	end
 end
 
--- own fade + move (the guides' sequence without level.show_weapon)
-local jump = nil
-local jump_time = 0
-
+-- Direct move, as in the first (working) version: set_actor_position at once, no effector chain that could
+-- fail to come back while the tool window is closing. The fade is only cosmetic.
 local function give_back_control()
 	pcall(level.enable_input)
 	pcall(level.show_indicators)
-end
-
-local function fade_in()
-	pcall(level.add_pp_effector, "peace_unfade.ppe", 160608, false)
-end
-
-local function do_jump()
-	if not jump then return end
-	local j = jump
-	jump = nil
-	local act = db.actor
-	if not act then return end
-	local pnt = patrol(j.point)
-	act:set_actor_position(pnt:point(0))
-	if j.look then
-		local ok, dir = pcall(function() return patrol(j.look):point(0):sub(pnt:point(0)) end)
-		if ok and dir then act:set_actor_direction(-dir:getH()) end
-	end
-	fade_in()
-	if j.cross then
-		started = time_global()      -- waiting for the engine's level change
-	else
-		give_back_control()
-	end
-	dbglog("%s", TAG .. "moved to " .. j.point .. (j.cross and " (level changer)" or ""))
-end
-
--- called by the camera effector when the fade-out is over (the name is given to the engine as a string)
-function fade_cb()
-	do_jump()
 end
 
 local function begin_jump(point, look, cross)
@@ -176,15 +144,16 @@ local function begin_jump(point, look, cross)
 		dbglog("%s", TAG .. "patrol point missing: " .. tostring(point))
 		return false
 	end
-	jump = { point = point, look = look, cross = cross }
-	jump_time = time_global()
-	pcall(level.disable_input)
-	pcall(level.hide_indicators_safe)
-	local hud = get_hud()
-	pcall(function() hud:HideActorMenu() end)
-	pcall(function() hud:HidePdaMenu() end)
-	level.add_cam_effector("camera_effects\\empty.anm", 160608, false, "fp_dev_tools.fade_cb")
-	level.add_pp_effector("peace_fade.ppe", 160608, false)
+	local act = db.actor
+	local pnt = patrol(point)
+	act:set_actor_position(pnt:point(0))
+	if look and level.patrol_path_exists(look) then
+		local dir = patrol(look):point(0):sub(pnt:point(0))
+		act:set_actor_direction(-dir:getH())
+	end
+	pcall(level.add_pp_effector, "peace_unfade.ppe", 160608, false)
+	if cross then started = time_global() end   -- waiting for the engine's level change
+	dbglog("%s", TAG .. "moved to " .. point .. (cross and " (level changer)" or ""))
 	return true
 end
 
@@ -200,17 +169,12 @@ end
 function on_update(delta)
 	mgr:reschedule(1000)
 	if not (db.actor and db.actor:alive()) then return end
-	-- the effector callback did not come: do the move anyway
-	if jump and time_global() - jump_time > 5000 then
-		dbglog("%s", TAG .. "fade callback timeout, moving directly")
-		do_jump()
-	end
 	if pending == "" then return end
 	local key = pending
 	local d = guiders_table.teleport_points[key]
 	if not d then set_pending(""); return end
 	if d.level == level.name() then
-		if jump or time_global() - entry_time < ARRIVE_WAIT then return end
+		if time_global() - entry_time < ARRIVE_WAIT then return end
 		set_pending("")
 		started = 0
 		jump_to(key)
