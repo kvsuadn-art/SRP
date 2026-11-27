@@ -1,0 +1,101 @@
+; Freeplay extras: sleep in known places. Idea, points and zones: SGM (Sigerous Mod 3.10, GeJorge, sgm_sleep_places / sgm_callbacks).
+; Adaptation SRP Freeplay: Eon. Beds and mattresses are not objects of the game or of all.spawn, so SGM's author walked to them
+; and recorded the coordinates by hand; they are kept as they are. A place is allowed if the actor is within radius_sqr (squared
+; metres, 20 = about 4.5 m, as in SGM's code) of a point of the current level, or inside a zone (space restrictor) listed for it,
+; or the whole level is listed in [levels]. Effect: scripts\fp_sleep.script.
+
+[settings]
+radius_sqr = 20
+night_from = 21
+night_to = 6
+min_hours = 1
+max_hours = 6
+time_factor = 1700
+
+[levels]
+limansk
+hospital
+
+[points_marsh]
+p1 = 411.574,3.53,238.366
+p2 = 298.473,0.687,-160.933
+p3 = 40.156,2.912,-245.449
+p4 = 433.925,3.335,261.548
+
+[points_garbage]
+p1 = 100.692,3.773,172.169
+p2 = 103.028,8.199,177.536
+p3 = 43.190,0.911,240.545
+p4 = -96.77,1.826,-25.540
+p5 = -77.601,1.8067,7.837
+p6 = -96.444,0.741,21.738
+p7 = -100.337,1.765,11.879
+p8 = -92.541,1.751,12.050
+
+[points_escape]
+p1 = -14.186,0.863,256.845
+p2 = -186.819,-19.503,-134.689
+p3 = 140.359,0.218,337.901
+p4 = 110.769,-2.858,1.630
+p5 = 0.668,0.992,259.383
+p6 = 136.311,0.252,337.429
+p7 = -205.443,-22.557,-128.303
+p8 = -211.908,-23.193,-123.503
+p9 = -82.181,-4.936,-77.072
+p10 = -222.228,-19.845,-163.685
+p11 = -241.842,-20.040,-155.454
+p12 = 30.746,16.638,679.895
+
+[points_darkvalley]
+p1 = -155.682,1.747,-180.678
+p2 = -130.834,0.666,-470.275
+p3 = -127.683,0.909,-505.732
+
+[points_agroprom]
+p1 = -132.616,-0.002,-157.833
+p2 = -150.930,1.092,-173.288
+p3 = -179.592,0.141,-171.818
+
+[points_red_forest]
+p1 = -117.904,0.467,-255.506
+p2 = 27.0004,4.013,25.080
+p3 = -150.723,2.426,-26.074
+
+[points_military]
+p1 = -71.261,8.360,-29.643
+p2 = -319.017,-22.416,219.865
+p3 = -330.492,-4.595,132.409
+p4 = -18.262,-7.368,-17.818
+p5 = -23.569,-7.371,-29.207
+
+; space restrictors that are sleeping zones: level = zone name
+[zones]
+marsh = mar_space_restrictor_csky_base_noweapon
+darkvalley = val_space_restrictor
+agroprom = agr_no_wpn_zone_3
+yantar = yan_space_restrictor_no_weapon_actor_base_cut2
+
+; the sleeping bag (SGM: sleeping_bag). Used like food; the module checks the place and the time of day.
+[sleeping_bag]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn = "device\skill_book"
+class = II_FOOD
+cform = skeleton
+visual = dynamics\equipments\documents_2.ogf
+description = sleeping_bag_descr
+inv_name = sleeping_bag_title
+inv_name_short = sleeping_bag_title
+cost = 0
+inv_weight = 0
+can_trade = false
+inv_grid_width = 2
+inv_grid_height = 2
+inv_grid_x = 10
+inv_grid_y = 25
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1

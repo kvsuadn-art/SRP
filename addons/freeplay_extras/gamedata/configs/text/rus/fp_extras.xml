@@ -1264,4 +1264,19 @@
 	<string id="st_fp_deserve_tip">
 		<text>Найден тайник</text>
 	</string>
+	<string id="sleeping_bag_title">
+		<text>«Спальный мешок»</text>
+	</string>
+	<string id="sleeping_bag_descr">
+		<text>Самый обыкновенный спальный мешок. Используется для сна в безопасных местах ночью: с 21:00 до 6:00.</text>
+	</string>
+	<string id="st_fp_sleep_no_place">
+		<text>Здесь не заночевать, слишком опасно. Нужно найти безопасное место для ночлега.</text>
+	</string>
+	<string id="st_fp_sleep_not_tired">
+		<text>Спать не хочется. Обычное время сна: с 21:00 до 6:00.</text>
+	</string>
+	<string id="st_fp_sleep_woke">
+		<text>Вы выспались.</text>
+	</string>
 </string_table>

@@ -14,5 +14,6 @@ addons = {
 	"fp_quests",
 	"fp_medals",
 	"fp_deserves",
+	"fp_sleep",
 	"ogsm_rare_items_manager",
 }

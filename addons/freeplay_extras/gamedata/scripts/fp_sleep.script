@@ -1,0 +1,123 @@
+-- fp_sleep: sleep in known places. Idea, points and zones: SGM (Sigerous Mod 3.10, GeJorge, sgm_sleep_places, sgm_callbacks, sgm_effects).
+-- Adaptation SRP Freeplay: Eon
+--
+-- The sleeping bag (item "sleeping_bag", misc\fp_sleep.ltx) is "used": if the actor is in a sleeping place (hand-made points
+-- and zones of the config) and it is night, he sleeps 1-6 hours: the screen fades, time runs fast, health, power and psy-health
+-- are restored. Unlike SGM nothing runs per frame: the place is checked at the moment of use (SGM polled 38 distances 
+-- every update and showed a HUD static), the poller runs only while the actor sleeps (1 s).
+-- Switch: info portion srp_freeplay or fp_sleep. Savegame: nothing of its own. Not handled: a save made during sleep keeps the
+-- fast time factor (input is disabled, so only an autosave can catch it).
+
+local TAG = "[fp_sleep] "
+local IDLE_MS = 5000
+local SLEEP_MS = 1000
+local FADE_ID = 76424
+local ini = ini_file("misc\\fp_sleep.ltx")
+local mgr = nil
+local sleeping = false
+local wake_at = 0
+local prev_factor = 8
+local radius_sqr = nil
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_sleep")
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+local function tip(id)
+	news_manager.send_tip(db.actor, game.translate_string(id))
+end
+
+-- the actor is at a point of the current level, inside a zone or on a listed level
+local function in_sleep_place()
+	local level_name = level.name()
+	for i = 0, ini:line_count("levels") - 1 do
+		local _, name = ini:r_line("levels", i, "", "")
+		if name == level_name then return true end
+	end
+	if ini:line_exist("zones", level_name) then
+		local zone = db.zone_by_name[ini:r_string("zones", level_name)]
+		if zone ~= nil and zone:inside(db.actor:position()) then return true end
+	end
+	local sect = "points_" .. level_name
+	if ini:section_exist(sect) then
+		radius_sqr = radius_sqr or ini:r_float("settings", "radius_sqr")
+		local pos = db.actor:position()
+		for i = 0, ini:line_count(sect) - 1 do
+			local _, _, v = ini:r_line(sect, i, "", "")
+			local x, y, z = string.match(v, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)")
+			if pos:distance_to_sqr(vector():set(tonumber(x), tonumber(y), tonumber(z))) < radius_sqr then return true end
+		end
+	end
+	return false
+end
+
+local function is_night()
+	local h = level.get_time_hours()
+	return h >= ini:r_u32("settings", "night_from") or h < ini:r_u32("settings", "night_to")
+end
+
+function on_item_use(obj)
+	if not is_enabled() or sleeping then return end
+	if obj:section() ~= "sleeping_bag" then return end
+	local hud = get_hud()
+	hud:HideActorMenu()
+	hud:HidePdaMenu()
+	if not in_sleep_place() then tip("st_fp_sleep_no_place") return end
+	if not is_night() then tip("st_fp_sleep_not_tired") return end
+	local act = db.actor
+	local hours = math.random(ini:r_u32("settings", "min_hours"), ini:r_u32("settings", "max_hours"))
+	sleeping = true
+	prev_factor = level.get_time_factor()
+	wake_at = game.time() + hours * 3600 * 1000
+	if act.health < 1 then act.health = 1 end
+	if act.power < 1 then act.power = 1 end
+	act.psy_health = 1
+	level.disable_input()
+	level.add_pp_effector("mar_fade.ppe", FADE_ID, false)
+	level.set_time_factor(ini:r_float("settings", "time_factor"))
+	level.hide_indicators_safe()
+	if mgr then mgr:reschedule(SLEEP_MS) end
+end
+
+local function wake_up()
+	sleeping = false
+	level.remove_pp_effector(FADE_ID)
+	level.set_time_factor(prev_factor)
+	level.enable_input()
+	level.show_indicators()
+	level.add_cam_effector("camera_effects\\fusker.anm", 76431, false, "")
+	tip("st_fp_sleep_woke")
+	if mgr then mgr:reschedule(IDLE_MS) end
+end
+
+function on_update(delta)
+	if not is_enabled() then
+		if mgr then mgr:reschedule(IDLE_MS) end
+		return
+	end
+	local act = db.actor
+	if not (act and act:alive()) then
+		if sleeping then
+			sleeping = false
+			level.remove_pp_effector(FADE_ID)
+			level.set_time_factor(prev_factor)
+			level.enable_input()
+		end
+		if mgr then mgr:reschedule(IDLE_MS) end
+		return
+	end
+	if sleeping then
+		if game.time() >= wake_at then wake_up() else if mgr then mgr:reschedule(SLEEP_MS) end end
+		return
+	end
+	if mgr then mgr:reschedule(IDLE_MS) end
+	if act:object("sleeping_bag") == nil then
+		dialogs.relocate_item_section_to_actor(nil, nil, "sleeping_bag", 1)
+	end
+end
