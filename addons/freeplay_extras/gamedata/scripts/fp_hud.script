@@ -1,0 +1,114 @@
+-- fp_hud: two HUD elements. Idea and sprites: SGM (Sigerous Mod 3.10, GeJorge, sgm_huds, sgm_sleep_places).
+-- Adaptation SRP Freeplay: Eon
+--
+-- 1) Weapon parameters (top right): the active pistol/rifle shows damage and range, a grenade shows blast radius and splinter radius.
+-- 2) A sleeping bag icon while the actor stands in a sleeping place (fp_sleep).
+-- Unlike SGM: nothing is read blindly (a weapon without hit_power/fire_distance just shows no panel, no error), the text is rewritten
+-- only when it changes, the sleeping place is checked every 3 s, no pstor, no save data. Textures: ui\fp_hud.dds (cut from SGM's atlas).
+-- Switch: info portion srp_freeplay or fp_hud; off: fp_hud_off. Statics: configs\ui\ui_custom_msgs.xml (addon copy).
+
+local TAG = "[fp_hud] "
+local TICK_MS = 500
+local SLEEP_CHECK_TICKS = 6
+local mgr = nil
+local wpn_key = nil      -- what the panel shows now: "<id>|<slot>|<silencer>"
+local sleep_shown = false
+local ticks = 0
+
+function is_enabled()
+	return (has_alife_info("srp_freeplay") or has_alife_info("fp_hud")) and not has_alife_info("fp_hud_off")
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+local function num(sect, key)
+	local ini = system_ini()
+	if ini:section_exist(sect) and ini:line_exist(sect, key) then return ini:r_float(sect, key) end
+	return nil
+end
+
+local function remove_weapon_panel()
+	local hud = get_hud()
+	if hud:GetCustomStatic("fp_hud_wpn") ~= nil then hud:RemoveCustomStatic("fp_hud_wpn") end
+	if hud:GetCustomStatic("fp_hud_wpn2") ~= nil then hud:RemoveCustomStatic("fp_hud_wpn2") end
+	wpn_key = nil
+end
+
+local function remove_sleep_icon()
+	local hud = get_hud()
+	if hud:GetCustomStatic("fp_hud_sleep") ~= nil then hud:RemoveCustomStatic("fp_hud_sleep") end
+	sleep_shown = false
+end
+
+local function silencer_attached(item)
+	local ok, res = pcall(function() return item:weapon_is_silencer() end)
+	return ok and res == true
+end
+
+-- returns the two lines of the panel or nil when the item has no data to show
+local function panel_text(item, slot)
+	local sect = item:section()
+	local fmt = string.format
+	if slot == 3 then
+		local blast, frags = num(sect, "blast_r"), num(sect, "frags_r")
+		if blast == nil or frags == nil then return nil end
+		local m = game.translate_string("st_fp_hud_m")
+		return game.translate_string("st_fp_hud_blast") .. "[" .. fmt("%g", blast) .. m .. "]",
+			game.translate_string("st_fp_hud_frags") .. "[" .. fmt("%g", frags) .. m .. "]"
+	end
+	local built_in = (num(sect, "silencer_status") == 1)
+	local sil = built_in or silencer_attached(item)
+	local hp = (sil and num(sect, "silencer_hit_power")) or num(sect, "hit_power")
+	local dist = (sil and num(sect, "silencer_fire_distance")) or num(sect, "fire_distance")
+	if hp == nil or dist == nil then return nil end
+	return game.translate_string("st_fp_hud_damage") .. "[" .. fmt("%d", math.floor(hp * 100)) .. "]",
+		game.translate_string("st_fp_hud_distance") .. "[" .. fmt("%g", dist) .. game.translate_string("st_fp_hud_m") .. "]"
+end
+
+local function update_weapon(act)
+	local item = act:active_item()
+	local slot = act:active_slot()
+	if item == nil or (slot ~= 1 and slot ~= 2 and slot ~= 3) then remove_weapon_panel() return end
+	local sil = (slot ~= 3) and silencer_attached(item) or false
+	local key = item:id() .. "|" .. slot .. "|" .. tostring(sil)
+	if key == wpn_key then return end
+	local l1, l2 = panel_text(item, slot)
+	if l1 == nil then remove_weapon_panel() wpn_key = key return end
+	local hud = get_hud()
+	hud:AddCustomStatic("fp_hud_wpn", true)
+	hud:GetCustomStatic("fp_hud_wpn"):wnd():SetTextST(l1)
+	hud:AddCustomStatic("fp_hud_wpn2", true)
+	hud:GetCustomStatic("fp_hud_wpn2"):wnd():SetTextST(l2)
+	wpn_key = key
+end
+
+local function update_sleep(act)
+	local place = fp_sleep.is_enabled() and not fp_sleep.is_sleeping() and fp_sleep.in_place()
+	if place and not sleep_shown then
+		get_hud():AddCustomStatic("fp_hud_sleep", true)
+		sleep_shown = true
+	elseif not place and sleep_shown then
+		remove_sleep_icon()
+	end
+end
+
+function on_update(delta)
+	if mgr then mgr:reschedule(TICK_MS) end
+	if db.actor == nil then return end
+	if not is_enabled() or not db.actor:alive() then
+		if wpn_key ~= nil then remove_weapon_panel() end
+		if sleep_shown then remove_sleep_icon() end
+		return
+	end
+	local ok, err = pcall(update_weapon, db.actor)
+	if not ok then dbglog("%s", TAG .. "weapon: " .. tostring(err)); remove_weapon_panel() end
+	ticks = ticks + 1
+	if ticks >= SLEEP_CHECK_TICKS then
+		ticks = 0
+		local ok2, err2 = pcall(update_sleep, db.actor)
+		if not ok2 then dbglog("%s", TAG .. "sleep: " .. tostring(err2)) end
+	end
+end

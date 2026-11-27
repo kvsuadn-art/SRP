@@ -1288,4 +1288,19 @@
 	<string id="st_fp_fatigue_exhausted">
 		<text>Вы на пределе сил. Нужно срочно выспаться.</text>
 	</string>
+	<string id="st_fp_hud_damage">
+		<text>Наносимый урон </text>
+	</string>
+	<string id="st_fp_hud_distance">
+		<text>Дальность </text>
+	</string>
+	<string id="st_fp_hud_blast">
+		<text>Радиус взрыва </text>
+	</string>
+	<string id="st_fp_hud_frags">
+		<text>Разлёт осколков </text>
+	</string>
+	<string id="st_fp_hud_m">
+		<text>м</text>
+	</string>
 </string_table>

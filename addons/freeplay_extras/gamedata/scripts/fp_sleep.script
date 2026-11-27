@@ -59,6 +59,10 @@ local function in_sleep_place()
 	return false
 end
 
+-- for fp_hud: the icon of the sleeping place
+function in_place() return in_sleep_place() end
+function is_sleeping() return sleeping end
+
 local function is_night()
 	local h = level.get_time_hours()
 	return h >= ini:r_u32("settings", "night_from") or h < ini:r_u32("settings", "night_to")
