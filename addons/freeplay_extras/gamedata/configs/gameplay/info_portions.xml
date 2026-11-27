@@ -31,6 +31,14 @@
 	<info_portion id="mar_csky_kill_baron_start"/>
 	<info_portion id="mar_csky_kill_baron_complete"/>
 	<info_portion id="mar_csky_kill_baron_reward"/>
+	<info_portion id="agr_kill_wild_giant_start"/>
+	<info_portion id="agr_kill_wild_giant_complete"/>
+	<info_portion id="agr_kill_wild_giant_reward"/>
+	<info_portion id="yan_kill_tunnel_snorks_start"/>
+	<info_portion id="yan_kill_tunnel_snorks_complete"/>
+	<info_portion id="yan_kill_tunnel_snorks_reward"/>
+	<info_portion id="yan_kill_tunnel_snorks_wave2"/>
+	<info_portion id="yan_kill_tunnel_snorks_wave3"/>
 	<info_portion id="mar_capture_pumping_station_start"/>
 	<info_portion id="mar_capture_pumping_station_complete"/>
 	<info_portion id="mar_capture_pumping_station_reward"/>

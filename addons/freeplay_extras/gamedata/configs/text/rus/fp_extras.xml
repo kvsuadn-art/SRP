@@ -769,4 +769,52 @@
 	<string id="mar_csky_kill_baron_dialog_6">
 		<text>Туда ему и дорога. Вот твои деньги и пара книжек в придачу.</text>
 	</string>
+	<string id="agr_kill_wild_giant">
+		<text>Убить дикого гиганта</text>
+	</string>
+	<string id="agr_kill_wild_giant_text">
+		<text>Недалеко от Агропрома бродит одинокий дикий псевдогигант. Он мешает всем, кто ходит по этим местам. Нужно найти и убить его.</text>
+	</string>
+	<string id="agr_kill_wild_giant_back">
+		<text>Вернуться к командиру Долга</text>
+	</string>
+	<string id="agr_kill_wild_giant_back_text">
+		<text>Дикий гигант убит. Осталось вернуться к командиру Долга за наградой.</text>
+	</string>
+	<string id="agr_kill_wild_giant_dialog_1">
+		<text>Какая-нибудь работа для меня найдётся?</text>
+	</string>
+	<string id="agr_kill_wild_giant_dialog_2">
+		<text>Найдётся. Недалеко от наших позиций бродит дикий псевдогигант, и он уже распугал половину сталкеров на подходах. Убей его, и я заплачу. Возьмёшься?</text>
+	</string>
+	<string id="agr_kill_wild_giant_dialog_5">
+		<text>Гигант мёртв.</text>
+	</string>
+	<string id="agr_kill_wild_giant_dialog_6">
+		<text>Хорошая работа. Вот плата и кое-что редкое в придачу.</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks">
+		<text>Зачистить туннель от снорков</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks_text">
+		<text>Учёные просят очистить от снорков туннель на Янтаре. Снорки приходят волнами: следующая стая появляется, когда убита предыдущая.</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks_back">
+		<text>Вернуться к Сахарову</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks_back_text">
+		<text>Снорки в туннеле перебиты. Нужно вернуться к Сахарову за платой.</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks_dialog_1">
+		<text>Вам нужна помощь с чем-нибудь?</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks_dialog_2">
+		<text>Да. В туннеле завелись снорки, и пройти туда научным группам невозможно. Они идут стаями, одну за другой. Расчистишь туннель, получишь деньги. Согласен?</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks_dialog_5">
+		<text>Туннель чист.</text>
+	</string>
+	<string id="yan_kill_tunnel_snorks_dialog_6">
+		<text>Спасибо. Теперь наши смогут пройти. Вот ваша плата.</text>
+	</string>
 </string_table>

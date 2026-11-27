@@ -8,7 +8,9 @@
 --             only while such a quest is active), then report to the giver;
 --   kill    - an NPC (section 'npc') is spawned at 'spawn' when the quest starts; its death completes
 --             the quest (checked every 5 s while the quest is active), then report to the giver;
+--             optional count (NPCs per wave) and waves (the next wave appears when the previous is dead);
 --   bonus   - no task: a dialog reward available once all quests in 'requires' are rewarded.
+-- Optional 'story_info': outside Freeplay the quest opens after this original story info portion.
 -- Optional 'faction' in a quest (stalker/csky): the actor must have joined it (also in Freeplay).
 -- The module switches itself on (info fp_quests) at the first update: quests are an extension of both modes.
 -- Dialog ids: <quest>_give (start), <quest>_complete (hand over). Stage flags are info portions:
@@ -19,7 +21,7 @@ local TAG = "[fp_quests] "
 local ini = ini_file("misc\\fp_quests.ltx")
 local mgr = nil
 local data = {}    -- quest -> parsed config
-local items = {}   -- quest -> server id of the spawned quest item
+local items = {}   -- quest -> list of server ids (fetch: the quest item, kill: the targets of the current wave)
 
 function is_enabled()
 	return has_alife_info("srp_freeplay") or has_alife_info("fp_quests")
@@ -41,12 +43,19 @@ local function cfg(q)
 		c.smart = ini:r_string(q, "smart")
 		c.enemy = ini:r_string(q, "enemy")
 	elseif c.type == "fetch" or c.type == "kill" then
-		if c.type == "fetch" then c.item = ini:r_string(q, "item") else c.npc = ini:r_string(q, "npc") end
+		if c.type == "fetch" then
+			c.item = ini:r_string(q, "item")
+		else
+			c.npc = ini:r_string(q, "npc")
+			c.count = ini:line_exist(q, "count") and ini:r_u32(q, "count") or 1
+			c.waves = ini:line_exist(q, "waves") and ini:r_u32(q, "waves") or 1
+		end
 		local pos = ini:r_string(q, "spawn")
 		local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
 		c.pos = vector():set(tonumber(x), tonumber(y), tonumber(z))
 		c.lv, c.gv = tonumber(lv), tonumber(gv)
 	end
+	c.story_info = ini:line_exist(q, "story_info") and ini:r_string(q, "story_info") or nil
 	c.money = ini:line_exist(q, "reward_money") and ini:r_u32(q, "reward_money") or 0
 	c.rewards = {}
 	if ini:line_exist(q, "reward_items") then
@@ -68,6 +77,8 @@ local function available(q)
 	if not is_enabled() then return false end
 	local c = cfg(q)
 	if c == nil or not gate(c) then return false end
+	-- story_info: outside Freeplay the quest opens after this original story progress
+	if c.story_info ~= nil and not has_alife_info("srp_freeplay") and not has_alife_info(c.story_info) then return false end
 	if c.type == "capture" then return smart_held(q) end
 	if c.type == "bonus" then
 		for _, r in ipairs(c.requires) do
@@ -121,7 +132,7 @@ local function give_task(q)
 	task:add_complete_func("fp_quests.task_complete")
 	task:set_map_hint(q)
 	task:set_map_location("secondary_task_location")
-	task:set_map_object_id(items[q] or smart_id(c) or giver_id(c) or 0)
+	task:set_map_object_id((items[q] and items[q][1]) or smart_id(c) or giver_id(c) or 0)
 	db.actor:give_task(task, 0, false)
 	if has_alife_info(q .. "_complete") then set_task_stage(q, true) end
 end
@@ -138,8 +149,11 @@ function start(actor, npc, dialog_id, phrase_id)
 	local c = cfg(q)
 	if c == nil then printf(TAG .. "no config for '%s'", tostring(q)) return end
 	if (c.type == "fetch" or c.type == "kill") and items[q] == nil then
-		local se = alife():create(c.item or c.npc, c.pos, c.lv, c.gv)
-		items[q] = se and se.id or nil
+		items[q] = {}
+		for _ = 1, (c.count or 1) do
+			local se = alife():create(c.item or c.npc, c.pos, c.lv, c.gv)
+			if se then items[q][#items[q] + 1] = se.id end
+		end
 	end
 	db.actor:give_info_portion(q .. "_start")
 	give_task(q)
@@ -173,6 +187,8 @@ end
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
 function esc_capture_army_blockpost_available() return available("esc_capture_army_blockpost") end
+function agr_kill_wild_giant_available() return available("agr_kill_wild_giant") end
+function yan_kill_tunnel_snorks_available() return available("yan_kill_tunnel_snorks") end
 function mar_csky_kill_baron_available() return available("mar_csky_kill_baron") end
 function esc_shilov_find_rukzak_available() return available("esc_shilov_find_rukzak") end
 function mar_capture_pumping_station_available() return available("mar_capture_pumping_station") end
@@ -193,10 +209,27 @@ end
 
 -- capture/kill quests: the list is read from the config, the state is in info portions (kill: target id in the save)
 local function target_gone(q)
-	local id = items[q]
-	if id == nil then return true end
-	local se = alife():object(id)
-	return se == nil or not se:alive()
+	local ids = items[q]
+	if ids == nil then return true end
+	for _, id in ipairs(ids) do
+		local se = alife():object(id)
+		if se ~= nil and se:alive() then return false end
+	end
+	return true
+end
+
+-- next wave of a kill quest: spawned when the previous one is dead; the wave number is kept in info portions
+local function next_wave(q, c)
+	local w = 1
+	while has_alife_info(q .. "_wave" .. (w + 1)) do w = w + 1 end
+	if w >= c.waves then return false end
+	db.actor:give_info_portion(q .. "_wave" .. (w + 1))
+	items[q] = {}
+	for _ = 1, c.count do
+		local se = alife():create(c.npc, c.pos, c.lv, c.gv)
+		if se then items[q][#items[q] + 1] = se.id end
+	end
+	return true
 end
 
 local capture_list = nil
@@ -216,7 +249,11 @@ function fp_on_update(delta)
 		if has_alife_info(q .. "_start") and not has_alife_info(q .. "_complete") then
 			local c = cfg(q)
 			local done
-			if c.type == "kill" then done = target_gone(q) else done = not smart_held(q) end
+			if c.type == "kill" then
+				done = target_gone(q) and not next_wave(q, c)
+			else
+				done = not smart_held(q)
+			end
 			if done then
 				db.actor:give_info_portion(q .. "_complete")
 				set_task_stage(q, true)
@@ -230,7 +267,7 @@ function fp_on_item_take(obj)
 	local sect = obj:section()
 	for q in pairs(items) do
 		local c = cfg(q)
-		if c ~= nil and c.item == sect and obj:id() == items[q] and not has_alife_info(q .. "_complete") then
+		if c ~= nil and c.item == sect and items[q] ~= nil and obj:id() == items[q][1] and not has_alife_info(q .. "_complete") then
 			db.actor:give_info_portion(q .. "_complete")
 			set_task_stage(q, true)
 		end
@@ -239,11 +276,12 @@ end
 
 function fp_on_save(packet)
 	local list = {}
-	for q, id in pairs(items) do list[#list + 1] = q end
+	for q, ids in pairs(items) do list[#list + 1] = q end
 	packet:w_u8(#list)
 	for _, q in ipairs(list) do
 		packet:w_stringZ(q)
-		packet:w_u16(items[q])
+		packet:w_u8(#items[q])
+		for _, id in ipairs(items[q]) do packet:w_u16(id) end
 	end
 end
 
@@ -251,6 +289,7 @@ function fp_on_load(reader)
 	local n = reader:r_u8()
 	for _ = 1, n do
 		local q = reader:r_stringZ()
-		items[q] = reader:r_u16()
+		items[q] = {}
+		for _ = 1, reader:r_u8() do items[q][#items[q] + 1] = reader:r_u16() end
 	end
 end

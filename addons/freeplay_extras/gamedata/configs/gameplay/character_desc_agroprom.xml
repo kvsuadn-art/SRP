@@ -97,6 +97,8 @@
 		<actor_dialog>agr_duty_base_commander_items_dialog</actor_dialog>
 		<actor_dialog>rt_krilov_task_dialog</actor_dialog>
 		<actor_dialog>rt_krilov_reward_dialog</actor_dialog>
+		<actor_dialog>agr_kill_wild_giant_give</actor_dialog>
+		<actor_dialog>agr_kill_wild_giant_complete</actor_dialog>
 	</specific_character>
 
 	<specific_character id="agr_secret_trader" team_default = "1">
