@@ -1,7 +1,6 @@
 ; Rare goods of the traders (OGSM rare_items, Minister/Kirgudu). Adaptation SRP Freeplay: Eon.
 ; Each trader offers up to 3 random items from his list; the list is re-rolled every 1..3 game days.
-; OGSM lists contained outfits that do not exist in Clear Sky (killer_*, monolith_*, *_extra_*, ecolog, soldier_*,
-; stalker_heavy, dolg_exo/scientific, svoboda_scientific); they are kept below as comments until the OGSM outfits are ported.
+; Outfits ported from OGSM (misc\fp_outfit.ltx) are included. Not taken: killer_* except killer_outfit, monolith_* except monolith_scientific_outfit, all heavy suits of stalkers/killers/monolith.
 
 [settings]
 price_multiplier = 3 ; price = cost * price_multiplier
@@ -20,28 +19,41 @@ yan_stalker_sakharov
 [mar_csky_trader]
 scientific_outfit
 cs_light_outfit
+dolg_scientific_outfit
+svoboda_scientific_outfit
 
 [esc_stalker_trader]
 cs_heavy_outfit
+cs_standart_outfit
 scientific_outfit
 exo_outfit
 military_outfit
 specops_outfit
+soldier_outfit_grey
+soldier_outfit_brown
+military_extra_outfit
 
 [gar_bandit_trader]
 bandit_outfit
 scientific_outfit
+bandit_heavy_outfit
 
 [val_freedom_trader]
 dolg_outfit
 dolg_heavy_outfit
+dolg_scientific_outfit
+dolg_heavy_extra_outfit
+dolg_exo_outfit
 
 [agr_duty_trader]
 svoboda_light_outfit
 svoboda_heavy_outfit
 svoboda_exo_outfit
+svoboda_light2_outfit
+svoboda_scientific_outfit
 specops_outfit
 military_outfit
+military_extra_outfit
 
 [yan_stalker_sakharov]
 red_ecolog_outfit
@@ -52,11 +64,3 @@ scientific_outfit
 exo_outfit
 wpn_desert_eagle
 wpn_fn2000
-
-;;; OGSM originals (need OGSM outfits):
-;mar_csky_trader: scientific_outfit dolg_scientific_outfit svoboda_scientific_outfit killer_scientific_outfit monolith_scientific_outfit red_ecolog_outfit green_ecolog_outfit
-;esc_stalker_trader: cs_heavy_outfit cs_heavy_extra_outfit scientific_outfit stalker_heavy_outfit exo_outfit soldier_outfit_grey soldier_outfit_brown specops_outfit military_outfit military_extra_outfit
-;gar_bandit_trader: killer_outfit killer_scientific_outfit killer_heavy_outfit killer_exo_outfit red_ecolog_outfit green_ecolog_outfit
-;val_freedom_trader: dolg_scientific_outfit dolg_heavy_outfit dolg_heavy_extra_outfit dolg_exo_outfit monolith_outfit monolith_scientific_outfit monolith_heavy_outfit monolith_exo_outfit
-;agr_duty_trader: svoboda_scientific_outfit svoboda_heavy_outfit svoboda_exo_outfit specops_outfit military_outfit military_extra_outfit
-;agr_stalker_base_trader: scientific_outfit stalker_heavy_outfit exo_outfit wpn_desert_eagle wpn_fn2000
