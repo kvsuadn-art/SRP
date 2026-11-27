@@ -1,16 +1,24 @@
+; Logic of the new Freedom commander (SGM: scripts\SGM\darkvalley\val_freedom_squads_commander.ltx, Sigerous Mod 3.10)
+; Adaptation SRP Freeplay: Eon
 [logic]
-active = remark@idle
-level_spot = quest_npc
+active = move@squad_commander
 
-[remark@idle]
-anim = wait
-meet = meet@main
+[move@squad_commander]
+target_type     = level_vertex
+dest_number     = 184135
+state_in_center = ward
+state_for_move  = assault
+miss_center     = false
+look_vertex     = 188166
+meet            = meet@squad_commander
 
-[meet@main]
-meet_state = 3 | wait@nil
-meet_state_wpn = 3 | wait@nil
-use = true
-use_wpn = true
-victim = 10 | actor
-victim_wpn = 10 | actor
-quest_npc = true
+[meet@squad_commander]
+meet_state	= 3|nil@nil
+meet_state_wpn	= 3|nil@nil
+victim		= 3|actor
+victim_wpn	= 3|actor
+precond 	= usability
+use		= {!actor_enemy} true, false
+use_wpn		= {!actor_enemy} true, false
+abuse		= false
+quest_npc       = true

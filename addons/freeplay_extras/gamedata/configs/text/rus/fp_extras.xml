@@ -1096,7 +1096,7 @@
 	<string id="fp_bus_hostage_name">
 		<text>Заложник</text>
 	</string>
-	<string id="fp_freedom_commander_name">
-		<text>Комендант Свободы</text>
+	<string id="sgm_freedom_squads_commander_name">
+		<text>Майор Барановский</text>
 	</string>
 </string_table>

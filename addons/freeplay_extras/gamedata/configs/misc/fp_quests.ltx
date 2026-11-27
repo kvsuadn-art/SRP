@@ -200,13 +200,13 @@ reward_items = skill_book_fort
 
 ; Dark Valley: Freedom men are held on a bus by bandits (SGM: val_sos_*, giver is the new NPC 'squads commander').
 ; Open to everyone, no faction: the actor is a neutral outsider, so the bandits are less wary of him than of Freedom men.
-; The giver is the new Freedom commander (profile fp_freedom_commander) who replaces the story commander; he is created once.
+; The giver is the new Freedom commander (Major Baranovsky, SGM profile val_freedom_squads_commander) who replaces the story commander; he is created once.
 ; Kill both bandits; 'bonus_money' if the hostage survives.
 [val_sos_rescue_bus]
 type = kill
 story_info = val_pursuit_comendant_complete
-giver = spawn:fp_freedom_commander
-giver_pos = 44.0,0.037,41.9,206271,795
+giver = spawn:val_freedom_squads_commander
+giver_pos = 19.066,0.133,-2.351,184135,811
 npc = fp_bus_killer
 count = 2
 spawn = 59.798,0.201,-187.310,222893,959

@@ -572,26 +572,32 @@
 
 	</specific_character>
 
-	<!-- New Freedom commander (replaces the story commander): giver of val_sos_rescue_bus. Adaptation SRP Freeplay: Eon -->
-	<specific_character id="fp_freedom_commander" team_default = "1">
-		<name>fp_freedom_commander_name</name>
-		<icon>ui_npc_u_freedom_3</icon>
+	<!-- Major Baranovsky: the new Freedom commander in place of the story commander (SGM val_freedom_squads_commander, Sigerous Mod 3.10).
+	     Adaptation SRP Freeplay: Eon. Dialogs: only the fp_quests ones. -->
+	<specific_character id="val_freedom_squads_commander" team_default = "1">
+		<name>sgm_freedom_squads_commander_name</name>
+		<icon>ui_npc_u_freedom_1</icon>
 		<map_icon x="1" y="0"></map_icon>
-		<class>fp_freedom_commander</class>
+		<class>val_freedom_squads_commander</class>
 		<community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
-		<snd_config>characters_voice\human_01\freedom\</snd_config>
-		<rank>600</rank>
+		<snd_config>characters_voice\human_02\freedom\</snd_config>
+		<rank>950</rank>
 		<reputation>0</reputation>
-		<money min="5000" max="10000" infinitive="0"/>
-		<visual>actors\stalker_freedom\stalker_freedom_3</visual>
+		<visual>actors\stalker_freedom\stalker_freedom_1</visual>
 		<supplies>
 			[spawn] \n
-			wpn_sig550 \n
-			ammo_5.56x45_ss190 = 5 \n
+			device_torch \n
+			wpn_lr300 = 1, scope, silencer \n
+			ammo_5.56x45_ap = 2 \n
+			wpn_beretta \n
+			ammo_9x19_fmj = 1 \n
+			grenade_rgd5 = 2 \n
+			wpn_binoc = 1 \n
+#include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
 		</supplies>
-#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_criticals_4.xml"
 		<actor_dialog>val_sos_rescue_bus_give</actor_dialog>
 		<actor_dialog>val_sos_rescue_bus_complete</actor_dialog>
 	</specific_character>
