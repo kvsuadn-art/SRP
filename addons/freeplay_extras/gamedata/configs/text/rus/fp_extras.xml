@@ -467,4 +467,80 @@
 	<string id="st_fp_skill_known">
 		<text>Это уже изучено:</text>
 	</string>
+	<!-- rare items (OGSM) -->
+	<string id="st_fp_rare_title_mar_csky_trader">
+		<text>Суслов:</text>
+	</string>
+	<string id="st_fp_rare_news_mar_csky_trader">
+		<text>Заказывали - сообщаю. В продаже появилось кое-что вкусненькое.</text>
+	</string>
+	<string id="st_fp_rare_title_esc_stalker_trader">
+		<text>Шилов:</text>
+	</string>
+	<string id="st_fp_rare_news_esc_stalker_trader">
+		<text>В продажу поступили новые товары, заглядывай.</text>
+	</string>
+	<string id="st_fp_rare_title_gar_bandit_trader">
+		<text>Зуб:</text>
+	</string>
+	<string id="st_fp_rare_news_gar_bandit_trader">
+		<text>Слышь, брателло. Я тут прибарахлился нехило, подваливай, перетрём о цене.</text>
+	</string>
+	<string id="st_fp_rare_title_val_freedom_trader">
+		<text>Ашот:</text>
+	</string>
+	<string id="st_fp_rare_news_val_freedom_trader">
+		<text>Дарагой, шота у Ашота новенькое есть. Прихади, пакупай!</text>
+	</string>
+	<string id="st_fp_rare_title_agr_duty_trader">
+		<text>Митяй:</text>
+	</string>
+	<string id="st_fp_rare_news_agr_duty_trader">
+		<text>Сообщаю: в арсенале Долга новые поступления.</text>
+	</string>
+	<string id="st_fp_rare_title_agr_stalker_base_trader">
+		<text>Дрозд:</text>
+	</string>
+	<string id="st_fp_rare_news_agr_stalker_base_trader">
+		<text>В продажу поступили новые товары, заглядывай.</text>
+	</string>
+	<string id="st_fp_rare_q">
+		<text>Можно ли у тебя приобрести какие-нибудь редкие товары?</text>
+	</string>
+	<string id="st_fp_rare_have">
+		<text>Могу предложить следующее:</text>
+	</string>
+	<string id="st_fp_rare_none">
+		<text>На данный момент ничего нет.</text>
+	</string>
+	<string id="st_fp_rare_first">
+		<text>Давай первое.</text>
+	</string>
+	<string id="st_fp_rare_second">
+		<text>Давай второе.</text>
+	</string>
+	<string id="st_fp_rare_third">
+		<text>Давай третье.</text>
+	</string>
+	<string id="st_fp_rare_news_on">
+		<text>Если вдруг появится что-то ещё, можешь мне сообщить об этом?</text>
+	</string>
+	<string id="st_fp_rare_news_on_a">
+		<text>Конечно, договорились.</text>
+	</string>
+	<string id="st_fp_rare_news_off">
+		<text>Перестань сообщать мне о новых поступлениях...</text>
+	</string>
+	<string id="st_fp_rare_news_off_a">
+		<text>Без проблем, больше не буду.</text>
+	</string>
+	<string id="st_fp_rare_bye">
+		<text>Как-нибудь в другой раз.</text>
+	</string>
+	<string id="st_fp_rare_price">
+		<text>Цена:</text>
+	</string>
+	<string id="st_fp_rare_cur">
+		<text>р.</text>
+	</string>
 </string_table>

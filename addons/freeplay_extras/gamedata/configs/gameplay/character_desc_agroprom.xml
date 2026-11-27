@@ -205,6 +205,7 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+	<actor_dialog>rare_items_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="agr_stalker_base_mechanic" team_default = "1">
@@ -351,6 +352,7 @@
 #include "gameplay\character_criticals_1.xml"
 
 		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
+	<actor_dialog>rare_items_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="agr_zooman" team_default = "1">

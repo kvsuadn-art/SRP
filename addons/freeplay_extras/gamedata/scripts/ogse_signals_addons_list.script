@@ -11,4 +11,5 @@ addons = {
 	"ogsm_rt_manager",
 	"fp_mutants",
 	"fp_skills",
+	"ogsm_rare_items_manager",
 }

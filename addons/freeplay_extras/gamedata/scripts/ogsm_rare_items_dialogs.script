@@ -1,0 +1,72 @@
+---------------------- Copyright 2010-2011 Minister -----------------------------
+-------------------- Dialogs of rare goods orders (OGSM) ------------------------
+-- Adaptation SRP Freeplay: Eon (texts are string ids st_fp_rare_*, the state is read from ogsm_rare_items_manager)
+
+local function items_of(npc)
+	return ogsm_rare_items_manager.get_items(npc:name()) or {}
+end
+
+function rare_list_text(first_speaker, dialog_id, phrase_id)
+	if items_of(first_speaker)[1] == nil then
+		return game.translate_string("st_fp_rare_none")
+	end
+	return game.translate_string("st_fp_rare_have")
+end
+
+function rare_list(first_speaker, second_speaker, dialog_id, phrase_id)
+	local name = first_speaker:name()
+	for _, sect in ipairs(items_of(first_speaker)) do
+		local text = ogsm_rare_items_manager.get_inv_name(sect) .. ". " .. game.translate_string("st_fp_rare_price") .. " " ..
+			ogsm_rare_items_manager.get_cost(sect, name) .. game.translate_string("st_fp_rare_cur")
+		db.actor:give_talk_message2("", text, "ui_iconsTotal_found_money", "iconed_answer_item")
+	end
+end
+
+local function can_buy(second_speaker, idx)
+	local sect = items_of(second_speaker)[idx]
+	return sect ~= nil and db.actor:money() >= ogsm_rare_items_manager.get_cost(sect, second_speaker:name())
+end
+
+local function buy(first_speaker, second_speaker, idx)
+	local items = items_of(second_speaker)
+	local sect = items[idx]
+	if sect == nil then return end
+	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, sect)
+	dialogs.relocate_money(second_speaker, ogsm_rare_items_manager.get_cost(sect, second_speaker:name()), "out")
+	table.remove(items, idx)
+end
+
+function check_first_rare_item(first_speaker, second_speaker, dialog_id, prev_phrase_id, phrase_id)
+	return can_buy(second_speaker, 1)
+end
+function check_second_rare_item(first_speaker, second_speaker, dialog_id, prev_phrase_id, phrase_id)
+	return can_buy(second_speaker, 2)
+end
+function check_third_rare_item(first_speaker, second_speaker, dialog_id, prev_phrase_id, phrase_id)
+	return can_buy(second_speaker, 3)
+end
+function give_first_rare_item(first_speaker, second_speaker, dialog_id, phrase_id)
+	buy(first_speaker, second_speaker, 1)
+end
+function give_second_rare_item(first_speaker, second_speaker, dialog_id, phrase_id)
+	buy(first_speaker, second_speaker, 2)
+end
+function give_third_rare_item(first_speaker, second_speaker, dialog_id, phrase_id)
+	buy(first_speaker, second_speaker, 3)
+end
+
+function not_news(first_speaker, second_speaker, dialog_id, prev_phrase_id, phrase_id)
+	return db.actor:dont_has_info(second_speaker:name() .. "_rareitems_news")
+end
+function have_news(first_speaker, second_speaker, dialog_id, prev_phrase_id, phrase_id)
+	return db.actor:has_info(second_speaker:name() .. "_rareitems_news")
+end
+function allow_news(first_speaker, second_speaker, dialog_id, phrase_id)
+	db.actor:give_info_portion(second_speaker:name() .. "_rareitems_news")
+end
+function not_allow_news(first_speaker, second_speaker, dialog_id, phrase_id)
+	db.actor:disable_info_portion(second_speaker:name() .. "_rareitems_news")
+end
+
+-------------------- Dialogs of rare goods orders (OGSM) ------------------------
+---------------------- Copyright 2010-2011 Minister -----------------------------

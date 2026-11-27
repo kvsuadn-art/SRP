@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<!-- Rare goods of the traders (OGSM, Minister/Kirgudu). Adaptation SRP Freeplay: Eon. Texts: st_fp_rare_* in fp_extras.xml -->
+<game_dialogs>
+	<dialog id="rare_items_dialog">
+		<precondition>ogsm_rare_items_manager.is_enabled</precondition>
+		<phrase_list>
+			<phrase id="0">
+				<text>st_fp_rare_q</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<script_text>ogsm_rare_items_dialogs.rare_list_text</script_text>
+				<action>ogsm_rare_items_dialogs.rare_list</action>
+				<next>11</next>
+				<next>12</next>
+				<next>13</next>
+				<next>2</next>
+				<next>3</next>
+				<next>4</next>
+			</phrase>
+			<phrase id="11">
+				<text>st_fp_rare_first</text>
+				<precondition>ogsm_rare_items_dialogs.check_first_rare_item</precondition>
+				<action>ogsm_rare_items_dialogs.give_first_rare_item</action>
+			</phrase>
+			<phrase id="12">
+				<text>st_fp_rare_second</text>
+				<precondition>ogsm_rare_items_dialogs.check_second_rare_item</precondition>
+				<action>ogsm_rare_items_dialogs.give_second_rare_item</action>
+			</phrase>
+			<phrase id="13">
+				<text>st_fp_rare_third</text>
+				<precondition>ogsm_rare_items_dialogs.check_third_rare_item</precondition>
+				<action>ogsm_rare_items_dialogs.give_third_rare_item</action>
+			</phrase>
+			<phrase id="2">
+				<text>st_fp_rare_news_on</text>
+				<precondition>ogsm_rare_items_dialogs.not_news</precondition>
+				<action>ogsm_rare_items_dialogs.allow_news</action>
+				<next>21</next>
+			</phrase>
+			<phrase id="21">
+				<text>st_fp_rare_news_on_a</text>
+			</phrase>
+			<phrase id="3">
+				<text>st_fp_rare_news_off</text>
+				<precondition>ogsm_rare_items_dialogs.have_news</precondition>
+				<action>ogsm_rare_items_dialogs.not_allow_news</action>
+				<next>31</next>
+			</phrase>
+			<phrase id="31">
+				<text>st_fp_rare_news_off_a</text>
+			</phrase>
+			<phrase id="4">
+				<text>st_fp_rare_bye</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
+</game_dialogs>

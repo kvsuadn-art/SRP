@@ -21,6 +21,13 @@
 	<info_portion id="fp_artefacts"/>
 	<info_portion id="fp_mutants"/>
 	<info_portion id="fp_skills"/>
+	<info_portion id="fp_rare_items"/>
+	<info_portion id="mar_csky_trader_rareitems_news"/>
+	<info_portion id="esc_stalker_trader_rareitems_news"/>
+	<info_portion id="gar_bandit_trader_rareitems_news"/>
+	<info_portion id="val_freedom_trader_rareitems_news"/>
+	<info_portion id="agr_duty_trader_rareitems_news"/>
+	<info_portion id="agr_stalker_base_trader_rareitems_news"/>
 	<info_portion id="skill_book_ak74"/>
 	<info_portion id="skill_book_ak74u"/>
 	<info_portion id="skill_book_pkm"/>

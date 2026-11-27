@@ -1,0 +1,173 @@
+------------------------ Copyright 2010-2012 Minister, Kirgudu ------------------------
+-------------------------- Rare goods of the traders (orders) --------------------------
+-- Adaptation SRP Freeplay: Eon
+-- Differences from OGSM: no core hooks (ogse_signals via fp_binder instead of bind_stalker/ogsm.g_start_timer);
+-- the re-roll time of each trader is kept as last roll time + interval in days; price multiplier and interval
+-- are in misc\rare_items.ltx [settings]; texts are string ids. Switch: info srp_freeplay or fp_rare_items.
+-- Savegame: u8 count; per trader: name, u8 items + names, CTime of the last roll, u8 interval in days.
+
+local TAG = "[ogsm_rare_items_manager] "
+local CHECK_MS = 10000
+
+local ini = ini_file("misc\\rare_items.ltx")
+local mgr = nil
+local inited = false
+local traders = {}      -- trader names in config order
+local lists = {}        -- trader -> all possible sections
+local state = {}        -- trader -> { items = {}, last = CTime|nil, days = number }
+local multiplier, min_days, max_days = 3, 1, 3
+
+-- NPC icons / news titles (texts: st_fp_rare_title_<name>, st_fp_rare_news_<name>)
+local icon_by_name = {
+	["mar_csky_trader"] = "icon_stalker_nebo_1",
+	["esc_stalker_trader"] = "icon_stalker_neutral_2_4",
+	["gar_bandit_trader"] = "icon_stalker_bandit_3",
+	["val_freedom_trader"] = "icon_stalker_freedom_2_5",
+	["agr_duty_trader"] = "icon_stalker_dolg_2_2",
+	["agr_stalker_base_trader"] = "icon_stalker_neutral_2_3"
+}
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_rare_items")
+end
+
+local function init()
+	if inited then return end
+	inited = true
+	if ini:line_exist("settings", "price_multiplier") then multiplier = ini:r_float("settings", "price_multiplier") end
+	if ini:line_exist("settings", "min_days") then min_days = ini:r_u32("settings", "min_days") end
+	if ini:line_exist("settings", "max_days") then max_days = ini:r_u32("settings", "max_days") end
+	for i = 0, ini:line_count("traders") - 1 do
+		local _, name = ini:r_line("traders", i, "", "")
+		traders[#traders + 1] = name
+		lists[name] = {}
+		state[name] = { items = {}, days = min_days }
+		if ini:section_exist(name) then
+			for j = 0, ini:line_count(name) - 1 do
+				local _, sect = ini:r_line(name, j, "", "")
+				if system_ini():section_exist(sect) then
+					table.insert(lists[name], sect)
+				else
+					printf(TAG .. "section '%s' of trader '%s' does not exist", sect, name)
+				end
+			end
+		end
+	end
+end
+
+function get_items(name)
+	init()
+	local st = state[name]
+	return st and st.items or nil
+end
+
+local function trader_alive(name)
+	local s = alife():object(name)
+	return s ~= nil and (s.alive == nil or s:alive())
+end
+
+local function pick_items(name)
+	local pool = {}
+	for _, s in ipairs(lists[name]) do pool[#pool + 1] = s end
+	local items = {}
+	for i = 1, 3 do
+		if #pool == 0 then break end
+		local k = math.random(#pool)
+		items[i] = pool[k]
+		table.remove(pool, k)
+	end
+	return items
+end
+
+local function send_news(name)
+	xr_sound.set_sound_play(db.actor:id(), "pda_tips")
+	db.actor:give_game_news(game.translate_string("st_fp_rare_title_" .. name), game.translate_string("st_fp_rare_news_" .. name),
+		icon_by_name[name], 0, 5000, 1)
+end
+
+local function roll(name)
+	local s = alife():object(name)
+	if s == nil then return end
+	local npc = level.object_by_id(s.id)
+	-- do not change the goods while the actor talks to the trader
+	if npc ~= nil and npc:is_talking() then return end
+	local st = state[name]
+	st.items = pick_items(name)
+	st.last = game.get_game_time()
+	st.days = math.random(min_days, max_days)
+	if has_alife_info(name .. "_rareitems_news") then send_news(name) end
+end
+
+local function check()
+	if not is_enabled() or db.actor == nil then return end
+	init()
+	local now = game.get_game_time()
+	for _, name in ipairs(traders) do
+		local st = state[name]
+		if trader_alive(name) then
+			if st.last == nil or now:diffSec(st.last) >= st.days * 86400 then roll(name) end
+		else
+			st.items = {}
+		end
+	end
+end
+
+function get_inv_name(section)
+	return game.translate_string(system_ini():r_string(section, "inv_name"))
+end
+
+function get_cost(section, trader)
+	init()
+	return math.floor(system_ini():r_s32(section, "cost") * multiplier)
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_update", fun = fp_on_update })
+	m:subscribe({ signal = "on_save", fun = fp_on_save })
+	m:subscribe({ signal = "on_load", fun = fp_on_load })
+end
+
+function fp_on_update(delta)
+	if mgr then mgr:reschedule(CHECK_MS) end
+	check()
+end
+
+function fp_on_save(packet)
+	init()
+	local list = {}
+	for _, name in ipairs(traders) do
+		if state[name].last ~= nil then list[#list + 1] = name end
+	end
+	packet:w_u8(#list)
+	for _, name in ipairs(list) do
+		local st = state[name]
+		packet:w_stringZ(name)
+		packet:w_u8(#st.items)
+		for i = 1, #st.items do packet:w_stringZ(st.items[i]) end
+		utils.w_CTime(packet, st.last)
+		packet:w_u8(st.days)
+	end
+end
+
+function fp_on_load(reader)
+	init()
+	local cnt = reader:r_u8()
+	for _ = 1, cnt do
+		local name = reader:r_stringZ()
+		local n = reader:r_u8()
+		local items = {}
+		for i = 1, n do items[i] = reader:r_stringZ() end
+		local last = utils.r_CTime(reader)
+		local days = reader:r_u8()
+		local st = state[name]
+		if st ~= nil then
+			st.items = items
+			st.last = last
+			st.days = days
+		end
+	end
+end
+
+-------------------------- Rare goods of the traders --------------------------
+------------------------ Copyright 2010-2012 Minister, Kirgudu ----------------

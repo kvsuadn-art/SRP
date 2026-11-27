@@ -99,6 +99,7 @@
 #include "gameplay\character_criticals_1.xml"
 
 		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
+	<actor_dialog>rare_items_dialog</actor_dialog>
 	</specific_character>
 
 	<specific_character id="val_freedom_fixer" team_default = "1">
