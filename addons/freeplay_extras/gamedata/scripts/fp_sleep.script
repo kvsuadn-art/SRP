@@ -74,7 +74,13 @@ function on_item_use(obj)
 	local hud = get_hud()
 	hud:HideActorMenu()
 	hud:HidePdaMenu()
-	if not in_sleep_place() then tip("st_fp_sleep_no_place") return end
+	if not in_sleep_place() then
+		local zn = ini:line_exist("zones", level.name()) and ini:r_string("zones", level.name()) or "-"
+		local z = db.zone_by_name[zn]
+		local p = db.actor:position()
+		dbglog("%s", string.format("[fp_sleep] no place: level=%s pos=%.2f,%.2f,%.2f zone=%s registered=%s inside=%s", level.name(), p.x, p.y, p.z, zn, tostring(z ~= nil), tostring(z ~= nil and z:inside(p))))
+		tip("st_fp_sleep_no_place") return
+	end
 	if not is_night() then tip("st_fp_sleep_not_tired") return end
 	local act = db.actor
 	local hours = math.random(ini:r_u32("settings", "min_hours"), ini:r_u32("settings", "max_hours"))

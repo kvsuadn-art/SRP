@@ -1,7 +1,7 @@
 -- fp_stash: stashes restored in the world (misc\fp_stash.ltx). Idea: the rucksack in the start room of the Clear Sky base,
 -- a decoration in the original game; the base has no place to leave things. Adaptation SRP Freeplay: Eon
 --
--- Once (info fp_stash_done) a usable box with the same model is created at the place of the decorative object, which is removed,
+-- Once (info fp_stash_done2) a usable box with the same model is created at the place of the decorative object, which is removed,
 -- and a map spot is added. Switch: info portion srp_freeplay or fp_stash. Savegame: nothing of its own (the box is a normal object).
 
 local ini = ini_file("misc\\fp_stash.ltx")
@@ -17,7 +17,7 @@ function attach(m)
 end
 
 function on_update(delta)
-	if not is_enabled() or has_alife_info("fp_stash_done") then
+	if not is_enabled() or has_alife_info("fp_stash_done2") then
 		if mgr then mgr:reschedule(60000) end
 		return
 	end
@@ -29,9 +29,11 @@ function on_update(delta)
 			"([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
 		if ini:line_exist(name, "replaces") then
 			local old = alife():object(ini:r_string(name, "replaces"))
+			dbglog("%s", "[fp_stash] " .. name .. ": decoration " .. ini:r_string(name, "replaces") .. (old and " found, removed" or " NOT found"))
 			if old then alife():release(old, true) end
 		end
 		local se = alife():create(ini:r_string(name, "section"), vector():set(tonumber(x), tonumber(y), tonumber(z)), tonumber(lv), tonumber(gv))
+		dbglog("%s", "[fp_stash] " .. name .. ": box " .. (se and ("created id " .. se.id) or "NOT created"))
 		if se and ini:line_exist(name, "angle") then
 			pcall(function() se.angle = vector():set(0, ini:r_float(name, "angle"), 0) end)
 		end
@@ -39,5 +41,5 @@ function on_update(delta)
 			level.map_add_object_spot_ser(se.id, "treasure", game.translate_string(ini:r_string(name, "title")))
 		end
 	end
-	db.actor:give_info_portion("fp_stash_done")
+	db.actor:give_info_portion("fp_stash_done2")
 end
