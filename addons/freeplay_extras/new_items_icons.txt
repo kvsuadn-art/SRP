@@ -4,3 +4,5 @@ fp_master_outfit: иконка наследуется от svoboda_light_outfit,
 fp_outpost_pda, fp_dnk_sample: иконки-заглушки (10,25) 2x2 (общие с ammo_package); заменить своими.
 medal_rank_100..1200: иконки-заглушки (10,25) 2x2 (общие с ammo_package); заменить своими.
 sleeping_bag: иконка-заглушка (10,25) 2x2 (общая с ammo_package); заменить своей.
+killer_outfit: иконка заглушка (клетки stalker_outfit); заменить своей.
+monolith_scientific_outfit, red_ecolog_outfit, green_ecolog_outfit: иконка заглушка (клетки scientific_outfit); заменить своей.

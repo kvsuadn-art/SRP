@@ -1,0 +1,260 @@
+; Freeplay extras: outfits from OGSM Extended 2.0 (Minister and co.): killer_outfit, monolith_scientific_outfit, red_ecolog_outfit, green_ecolog_outfit.
+; Adaptation SRP Freeplay: Eon. Stats are as in OGSM (balance is for later). Differences: no upgrades, hands and icon cells are borrowed from the
+; original suit named in the comment (OGSM icon cells do not fit the SRP icon atlas), no OGSM night vision. Never sold by regular traders:
+; killer/monolith are stash items, ecolog suits are sold by Sakharov only (misc\rare_items.ltx).
+
+[killer_outfit]:outfit_base
+GroupControlSection				= spawn_group
+discovery_dependency 			=
+$spawn 							= "outfit\killer_outfit"
+class							= E_STLK
+cform           				= skeleton
+ef_equipment_type				= 4
+
+full_scale_icon			= 14,11
+full_icon_name			= npc_icon_stalker_outfit
+
+visual          				= dynamics\outfit\killer_outfit
+actor_visual					= actors\stalker_hero\stalker_hero_killer.ogf
+player_hud_section			= actor_hud_05	; hands of stalker_outfit
+
+inv_name						= killer_outfit_name
+inv_name_short					= killer_outfit_name
+description						= killer_outfit_description
+
+inv_weight						= 5.0
+
+inv_grid_width     				= 2
+inv_grid_height    				= 3
+inv_grid_x				= 6	; icon of stalker_outfit
+inv_grid_y				= 15
+
+slot							= 6
+
+cost							= 12000
+
+immunities_sect					= sect_killer_outfit_immunities
+
+burn_protection 				= 0.030
+shock_protection 				= 0.030
+radiation_protection 			= 0.030
+chemical_burn_protection 		= 0.020
+telepatic_protection 			= 0.000
+
+strike_protection 				= 0.2
+explosion_protection 			= 0.25
+wound_protection				= 0.3
+
+fire_wound_protection  			= 0.25
+physic_strike_wound_immunity 	= 0.2
+hit_fraction_actor 				= 0.3
+control_inertion_factor 		= 1.2
+
+bones_koeff_protection 			= actor_light_armor
+
+artefact_count          		= 0
+
+[sect_killer_outfit_immunities]
+burn_immunity					= 0.04
+strike_immunity					= 0.01
+shock_immunity					= 0.04
+wound_immunity					= 0.02
+radiation_immunity				= 0.00
+telepatic_immunity				= 0.00
+chemical_burn_immunity			= 0.04
+explosion_immunity				= 0.04
+fire_wound_immunity				= 0.012
+
+[monolith_scientific_outfit]:outfit_base
+GroupControlSection				= spawn_group
+discovery_dependency 			=
+$spawn 							= "outfit\monolith_scientific_outfit"
+class							= E_STLK
+cform           				= skeleton
+ef_equipment_type				= 4
+
+full_scale_icon			= 12,11
+full_icon_name			= npc_icon_scientific_outfit
+
+visual         					= dynamics\outfit\monolith_scientific_outfit
+actor_visual					= actors\stalker_monolith\stalker_monolith_1.ogf
+player_hud_section			= actor_hud_sci	; hands of scientific_outfit
+
+inv_name						= monolit_scientific_outfit_name
+inv_name_short					= monolit_scientific_outfit_name
+description						= monolit_scientific_outfit_description
+
+inv_weight						= 6.0
+
+inv_grid_width     				= 2
+inv_grid_height   	 			= 3
+inv_grid_x				= 16	; icon of scientific_outfit
+inv_grid_y				= 13
+
+slot							= 6
+
+cost							= 48000
+
+immunities_sect					= sect_monolit_scientific_outfit_immunities
+
+burn_protection 				= 0.080
+shock_protection 				= 0.080
+radiation_protection 			= 0.080
+chemical_burn_protection 		= 0.080
+telepatic_protection 			= 0.010
+
+strike_protection 				= 0.3
+explosion_protection 			= 0.3
+wound_protection				= 0.3
+
+fire_wound_protection  			= 0.4
+physic_strike_wound_immunity 	= 0.7
+hit_fraction_actor				= 0.25
+control_inertion_factor 		= 1.5
+
+bones_koeff_protection 			= actor_light_armor_1
+
+artefact_count					= 0
+
+[sect_monolit_scientific_outfit_immunities]
+burn_immunity					= 0.03
+strike_immunity					= 0.01
+shock_immunity					= 0.03
+wound_immunity					= 0.015
+radiation_immunity				= 0.00
+telepatic_immunity				= 0.00
+chemical_burn_immunity			= 0.03
+explosion_immunity				= 0.03
+fire_wound_immunity				= 0.01
+
+[red_ecolog_outfit]:outfit_base
+GroupControlSection				= spawn_group
+discovery_dependency 			=
+$spawn							= "outfit\red_ecolog_outfit"
+class							= E_STLK
+cform           				= skeleton
+ef_equipment_type				= 2
+
+full_scale_icon			= 12,11
+full_icon_name			= npc_icon_scientific_outfit
+
+visual          				= dynamics\outfit\ecolog_suit_red.ogf
+actor_visual					= actors\stalker_ecolog\ecolog_red.ogf
+player_hud_section			= actor_hud_sci	; hands of scientific_outfit
+
+inv_name						= red_ecolog_outfit_name
+inv_name_short					= red_ecolog_outfit_name
+description						= red_ecolog_outfit_description
+
+inv_weight						= 4
+
+inv_grid_width     				= 2
+inv_grid_height    				= 3
+inv_grid_x				= 16	; icon of scientific_outfit
+inv_grid_y				= 13
+
+slot							= 6
+
+cost							= 50000
+
+immunities_sect					= sect_red_ecolog_outfit_immunities
+
+burn_protection 				= 0.15
+shock_protection 				= 0.15
+radiation_protection 			= 0.15
+chemical_burn_protection 		= 0.15
+telepatic_protection 			= 0.025
+
+strike_protection 				= 0.15
+explosion_protection 			= 0.15
+wound_protection				= 0.15
+
+fire_wound_protection			= 0.0
+physic_strike_wound_immunity	= 0.25
+hit_fraction_actor				= 0.25
+control_inertion_factor			= 1.2
+
+bones_koeff_protection 			= actor_light_armor_1
+
+artefact_count          		= 5
+
+[sect_red_ecolog_outfit_immunities]
+burn_immunity					= 0.005
+strike_immunity					= 0.01
+shock_immunity					= 0.005
+wound_immunity					= 0.025
+radiation_immunity				= 0.00
+telepatic_immunity				= 0.00
+chemical_burn_immunity			= 0.005
+explosion_immunity				= 0.03
+fire_wound_immunity				= 0.015
+
+;====================================================================================
+;============================== «≈À≈Õ€… Õ¿”◊Õ»  ——œ-99Ã "¬≈√¿"
+;====================================================================================
+
+[green_ecolog_outfit]:outfit_base
+GroupControlSection				= spawn_group
+discovery_dependency 			=
+$spawn							= "outfit\green_ecolog_outfit"
+class							= E_STLK
+cform           				= skeleton
+ef_equipment_type				= 2
+
+full_scale_icon			= 12,11
+full_icon_name			= npc_icon_scientific_outfit
+
+visual          				= dynamics\outfit\ecolog_suit_green.ogf
+actor_visual					= actors\stalker_ecolog\ecolog_green.ogf
+player_hud_section			= actor_hud_sci	; hands of scientific_outfit
+
+inv_name						= green_ecolog_outfit_name
+inv_name_short					= green_ecolog_outfit_name
+description						= green_ecolog_outfit_description
+
+inv_weight						= 7
+
+inv_grid_width     				= 2
+inv_grid_height    				= 3
+inv_grid_x				= 16	; icon of scientific_outfit
+inv_grid_y				= 13
+
+slot							= 6
+
+cost							= 70000
+
+immunities_sect					= sect_green_ecolog_outfit_immunities
+
+burn_protection 				= 0.15
+shock_protection 				= 0.15
+radiation_protection 			= 0.15
+chemical_burn_protection 		= 0.15
+telepatic_protection 			= 0.05
+
+strike_protection 				= 0.3
+explosion_protection 			= 0.3
+wound_protection				= 0.3
+
+fire_wound_protection			= 0.0
+physic_strike_wound_immunity	= 0.25
+hit_fraction_actor				= 0.25
+control_inertion_factor			= 1.2
+
+bones_koeff_protection 			= actor_medium_armor
+
+artefact_count          		= 5
+
+[sect_green_ecolog_outfit_immunities]
+burn_immunity					= 0.005
+strike_immunity					= 0.01
+shock_immunity					= 0.005
+wound_immunity					= 0.015
+radiation_immunity				= 0.00
+telepatic_immunity				= 0.00
+chemical_burn_immunity			= 0.005
+explosion_immunity				= 0.03
+fire_wound_immunity				= 0.01
+
+;====================================================================================
+;==============================  Œ∆¿Õ¿ﬂ  ”–“ ¿ ƒ»√√≈–Œ¬
+;====================================================================================
