@@ -1,0 +1,111 @@
+; Freeplay extras: leaders' things. Idea, flash drive texts, stash coordinates: SGM (Sigerous Mod 3.10, GeJorge, deserve_items / sgm_deserves).
+; Adaptation SRP Freeplay: Eon. A leader carries a flash drive (dv_<name>_case); "using" it creates a stash (inventory_box) at
+; deserve_pos (x,y,z,level_vertex,game_vertex) with deserve_items and a map spot. Items are only what exists in the game
+; (SGM's own variants are replaced by their base sections; balance is for later). Effect: scripts\fp_deserves.script.
+; deserve_items: section[,count]; for ammo the count is rounds.
+
+[fp_deserve_case]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn = "devices\dev_flash_2"
+class = II_FOOD
+cform = skeleton
+visual = dynamics\devices\dev_flash_2\dev_flash_2.ogf
+description =
+inv_name =
+inv_name_short =
+cost = 50
+inv_weight = 0.05
+can_trade = false
+inv_grid_width = 1
+inv_grid_height = 1
+inv_grid_x = 11
+inv_grid_y = 23
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+[dv_dolg_holeman_case]:fp_deserve_case
+inv_name = dolg_holeman_case_title
+inv_name_short = dolg_holeman_case_title
+description = dolg_holeman_case_descr
+deserve_pos = 77.009,15.065,155.731,215375,1120
+deserve_title = dolg_holeman_unpack_title
+deserve_descr = dolg_holeman_unpack_descr
+deserve_items = wpn_pm,medkit,3,energy_drink,bandage,3
+
+[dv_freedom_boss_case]:fp_deserve_case
+inv_name = freedom_boss_case_title
+inv_name_short = freedom_boss_case_title
+description = freedom_boss_case_descr
+deserve_pos = 42.453,4.542,-85.762,186784,849
+deserve_title = freedom_boss_unpack_title
+deserve_descr = freedom_boss_unpack_descr
+deserve_items = af_gold_fish,af_cristall
+
+[dv_army_driver_case]:fp_deserve_case
+inv_name = army_driver_case_title
+inv_name_short = army_driver_case_title
+description = army_driver_case_descr
+deserve_pos = 36.752,16.197,680.151,350298,683
+deserve_title = army_driver_unpack_title
+deserve_descr = army_driver_unpack_descr
+deserve_items = wpn_l85,ammo_m209,2
+
+[dv_stalker_messenger_case]:fp_deserve_case
+inv_name = stalker_messenger_case_title
+inv_name_short = stalker_messenger_case_title
+description = stalker_messenger_case_descr
+deserve_pos = -168.707,4.880,8.051,26656,401
+deserve_title = stalker_messenger_unpack_title
+deserve_descr = stalker_messenger_unpack_descr
+deserve_items = af_electra_flash,medkit,2
+
+[dv_bandit_boss_case]:fp_deserve_case
+inv_name = bandit_boss_case_title
+inv_name_short = bandit_boss_case_title
+description = bandit_boss_case_descr
+deserve_pos = -72.436,21.578,118.824,85970,327
+deserve_title = bandit_boss_unpack_title
+deserve_descr = bandit_boss_unpack_descr
+deserve_items = stalker_outfit,wpn_toz34,wpn_hpsa,ammo_12x76_zhekan,50,ammo_9x19_pbp,60,af_night_star
+
+[dv_stalker_avoska_case]:fp_deserve_case
+inv_name = stalker_avoska_case_title
+inv_name_short = stalker_avoska_case_title
+description = stalker_avoska_case_descr
+deserve_pos = 242.944,-2.105,-165.370,342947,449
+deserve_title = stalker_avoska_unpack_title
+deserve_descr = stalker_avoska_unpack_descr
+deserve_items = wpn_ak74u,wpn_pm,wpn_walther,wpn_fort,wpn_bm16,novice_outfit,antirad,2
+
+[dv_stalker_wild_napr_case]:fp_deserve_case
+inv_name = stalker_wild_napr_case_title
+inv_name_short = stalker_wild_napr_case_title
+description = stalker_wild_napr_case_descr
+deserve_pos = -276.572,0.424,26.152,1549,295
+deserve_title = stalker_wild_napr_unpack_title
+deserve_descr = stalker_wild_napr_unpack_descr
+deserve_items = bandage,25,detector_advanced
+
+[dv_renegade_baron_case]:fp_deserve_case
+inv_name = renegade_baron_case_title
+inv_name_short = renegade_baron_case_title
+description = renegade_baron_case_descr
+deserve_pos = -289.634,0.863,28.983,3991,153
+deserve_title = renegade_baron_unpack_title
+deserve_descr = renegade_baron_unpack_descr
+deserve_items = bandit_outfit,medkit,3,antirad,2,wpn_beretta
+
+[dv_army_sviridov_case]:fp_deserve_case
+inv_name = army_sviridov_case_title
+inv_name_short = army_sviridov_case_title
+description = army_sviridov_case_descr
+deserve_pos = 113.717,0.208,-24.837,442724,556
+deserve_title = army_sviridov_unpack_title
+deserve_descr = army_sviridov_unpack_descr
+deserve_items = wpn_ak74,ammo_vog-25,5,wpn_addon_grenade_launcher,medkit_army,3,stalker_outfit
+

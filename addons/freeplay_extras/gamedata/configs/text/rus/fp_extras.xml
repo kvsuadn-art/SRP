@@ -1153,4 +1153,115 @@
 	<string id="st_medal_1200_descr">
 		<text>Награда за достижение ранга 1200. Чтобы превратить в деньги, используйте медаль.</text>
 	</string>
+	<string id="dolg_holeman_case_title">
+		<text>«Флешка сержанта Наливайко»</text>
+	</string>
+	<string id="dolg_holeman_case_descr">
+		<text>Флешка с информацией о личном тайнике долговца - Наливайко.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="dolg_holeman_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар сержанта Наливайко%c[110,128,128,255]»</text>
+	</string>
+	<string id="dolg_holeman_unpack_descr">
+		<text>%c[255,238,153,26]Хабар сержанта «Наливайко»\n%c[default]Информация с флешки: Спрятал перед тем как отправили служить возле нор.</text>
+	</string>
+	<string id="freedom_boss_case_title">
+		<text>«Флешка Чехова»</text>
+	</string>
+	<string id="freedom_boss_case_descr">
+		<text>Флешка с информацией о личном тайнике главаря свободовцев - Чехова.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="freedom_boss_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар Чехова%c[110,128,128,255]»</text>
+	</string>
+	<string id="freedom_boss_unpack_descr">
+		<text>%c[255,238,153,26]Хабар «Чехова»\n%c[default]Информация с флешки: В тайнике храню ценности группировки «СВОБОДА».</text>
+	</string>
+	<string id="army_driver_case_title">
+		<text>«Флешка водителя Халецкого»</text>
+	</string>
+	<string id="army_driver_case_descr">
+		<text>Флешка с информацией о личном тайнике - Халецкого.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="army_driver_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар Халецкого%c[110,128,128,255]»</text>
+	</string>
+	<string id="army_driver_unpack_descr">
+		<text>%c[255,238,153,26]Хабар «Халецкого»\n%c[default]Информация с флешки: Я водитель Халецкого, после того как моего командира забрали в плен, обыскал его рюкзак, и нашол в его КПК информацию о личном хабаре. Надо бы проверить что там, только вот высовываться пока стремно - пушка нужна.</text>
+	</string>
+	<string id="stalker_messenger_case_title">
+		<text>«Флешка Васяна»</text>
+	</string>
+	<string id="stalker_messenger_case_descr">
+		<text>Флешка с информацией о личном тайнике диггера - Васяна.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="stalker_messenger_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар Васяна%c[110,128,128,255]»</text>
+	</string>
+	<string id="stalker_messenger_unpack_descr">
+		<text>%c[255,238,153,26]Хабар «Васяна»\n%c[default]Информация с флешки: Оставил здесь свое барахлишко.</text>
+	</string>
+	<string id="bandit_boss_case_title">
+		<text>«Флешка Йоги»</text>
+	</string>
+	<string id="bandit_boss_case_descr">
+		<text>Флешка с информацией о личном тайнике главаря бандитов - Йоги.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="bandit_boss_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар Йоги%c[110,128,128,255]»</text>
+	</string>
+	<string id="bandit_boss_unpack_descr">
+		<text>%c[255,238,153,26]Хабар «Йоги»\n%c[default]Информация с флешки: Мои личные вещи. Там есть все: броник, пушки, бинокль.</text>
+	</string>
+	<string id="stalker_avoska_case_title">
+		<text>«Флешка контрабандиста Авоськи»</text>
+	</string>
+	<string id="stalker_avoska_case_descr">
+		<text>Флешка с информацией о личном тайнике контрабандиста - Авоськи.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="stalker_avoska_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар контрабандиста Авоськи%c[110,128,128,255]»</text>
+	</string>
+	<string id="stalker_avoska_unpack_descr">
+		<text>%c[255,238,153,26]Хабар контрабандиста «Авоськи»\n%c[default]Информация с флешки: Контрабанда - мать моя, наживался я добра.</text>
+	</string>
+	<string id="stalker_wild_napr_case_title">
+		<text>«Флешка Дикого Напра»</text>
+	</string>
+	<string id="stalker_wild_napr_case_descr">
+		<text>Флешка с информацией о личном тайнике лидера диггеров - Дикого Напра.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="stalker_wild_napr_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар Дикого Напра%c[110,128,128,255]»</text>
+	</string>
+	<string id="stalker_wild_napr_unpack_descr">
+		<text>%c[255,238,153,26]Хабар «Дикого Напра»\n%c[default]Информация с флешки: Мои ребята и я - храним здесь свой хабар.</text>
+	</string>
+	<string id="renegade_baron_case_title">
+		<text>«Флешка Барона»</text>
+	</string>
+	<string id="renegade_baron_case_descr">
+		<text>Флешка с информацией о личном тайнике вожака ренегатов - Барона.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="renegade_baron_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар Барона%c[110,128,128,255]»</text>
+	</string>
+	<string id="renegade_baron_unpack_descr">
+		<text>%c[255,238,153,26]Хабар «Барона»\n%c[default]Информация с флешки: Спрятал свою пушку, и пару безделушек.</text>
+	</string>
+	<string id="army_sviridov_case_title">
+		<text>«Флешка полковника Свиридова»</text>
+	</string>
+	<string id="army_sviridov_case_descr">
+		<text>Флешка с информацией о личном тайнике командующего южным блокпостом - Свиридова.\n«Для идентификации тайника необходимо использовать»</text>
+	</string>
+	<string id="army_sviridov_unpack_title">
+		<text>%c[110,128,128,255]«%c[110,200,128,0]Хабар полковника Свиридова%c[110,128,128,255]»</text>
+	</string>
+	<string id="army_sviridov_unpack_descr">
+		<text>%c[255,238,153,26]Хабар полковника «Свиридова»\n%c[default]Информация с флешки: Не так давно начали мы сталкеров мочить, вот я и решил - их вещи забирать и прятать здесь.</text>
+	</string>
+	<string id="st_fp_deserve_tip">
+		<text>Найден тайник</text>
+	</string>
 </string_table>

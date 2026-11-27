@@ -19,6 +19,7 @@
 
 		<supplies>
 			[spawn] \n
+			dv_freedom_boss_case \n
 			wpn_svu \n
 			hand_radio \n
 		</supplies>

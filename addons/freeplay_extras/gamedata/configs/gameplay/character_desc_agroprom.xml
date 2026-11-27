@@ -413,6 +413,7 @@
 
 		<supplies>
 			[spawn] \n
+			dv_dolg_holeman_case \n
 			wpn_beretta \n
 			ammo_9x19_fmj \n
 			wpn_spas12 \n

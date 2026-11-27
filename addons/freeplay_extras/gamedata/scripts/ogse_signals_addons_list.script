@@ -13,5 +13,6 @@ addons = {
 	"fp_skills",
 	"fp_quests",
 	"fp_medals",
+	"fp_deserves",
 	"ogsm_rare_items_manager",
 }

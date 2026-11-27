@@ -338,6 +338,7 @@
 		<visual>actors\stalker_bandit\stalker_bandit_2</visual>
 		<supplies>
 			[spawn] \n
+			dv_renegade_baron_case \n
 			device_torch \n
 			wpn_mp5 \n
 			ammo_9x19_fmj = 1 \n

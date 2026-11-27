@@ -215,6 +215,7 @@
 
 		<supplies>
 			[spawn] \n
+			dv_army_driver_case \n
 		</supplies>
 
 		<start_dialog>esc_driver_fear</start_dialog>
@@ -451,6 +452,7 @@
 		<visual>actors\stalker_soldier\stalker_soldier_3</visual>
 		<supplies>
 			[spawn] \n
+			dv_army_sviridov_case \n
 			wpn_ak74 \n
 			ammo_5.45x39_fmj = 3 \n
 #include "gameplay\character_food.xml"
