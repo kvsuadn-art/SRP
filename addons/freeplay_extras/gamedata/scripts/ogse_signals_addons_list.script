@@ -16,6 +16,6 @@ addons = {
 	"fp_deserves",
 	"fp_sleep",
 	"fp_items",
-	"fp_stash",
+	"fp_stash", "fp_cleaner",
 	"ogsm_rare_items_manager",
 }

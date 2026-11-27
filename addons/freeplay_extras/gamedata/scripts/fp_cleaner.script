@@ -1,0 +1,81 @@
+-- fp_cleaner: removes stray weapons lying on levels the player is not on (they only bloat the savegame).
+-- Based on: ogsm_cleaner.script, OGSM Extended 2.0 -- Copyright 2010-2011 Minister
+-- Адаптация под SRP Freeplay: Eon
+--
+-- Differences from the original: the pass is spread over many 1 s ticks (no freeze), only weapons are touched (no corpses),
+-- and everything that can be a quest object is skipped: items with story id, quest_item sections, sections and names from
+-- misc\fp_cleaner.ltx, weapons carried by someone (parent_id), weapons on the actor's current level.
+-- Switch: info portion srp_freeplay or fp_cleaner; off: fp_cleaner_off. Savegame: nothing of its own.
+
+local ini = ini_file("misc\\fp_cleaner.ltx")
+local mgr = nil
+local cursor = 1
+local resume_at = 0
+local keep_names = nil
+local keep_sections = nil
+local actor_level = nil
+
+function is_enabled()
+	return (has_alife_info("srp_freeplay") or has_alife_info("fp_cleaner")) and not has_alife_info("fp_cleaner_off")
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+local function load_lists()
+	keep_names, keep_sections = {}, {}
+	for i = 0, ini:line_count("keep_names") - 1 do
+		local _, n = ini:r_line("keep_names", i, "", "")
+		keep_names[#keep_names + 1] = n
+	end
+	for i = 0, ini:line_count("keep_sections") - 1 do
+		local _, n = ini:r_line("keep_sections", i, "", "")
+		keep_sections[n] = true
+	end
+end
+
+local function is_weapon_section(sect)
+	if not system_ini():section_exist(sect) or not system_ini():line_exist(sect, "class") then return false end
+	return string.find(system_ini():r_string(sect, "class"), "^WP_") ~= nil
+end
+
+local function can_release(obj)
+	if obj.parent_id ~= 65535 then return false end
+	local sect = obj:section_name()
+	if not is_weapon_section(sect) or keep_sections[sect] then return false end
+	if system_ini():line_exist(sect, "quest_item") and system_ini():r_bool(sect, "quest_item") then return false end
+	-- story id: if it cannot be read, do not touch the object
+	local ok, sid = pcall(function() return obj.m_story_id end)
+	if not ok or sid == nil or sid ~= 65535 then return false end
+	local name = obj:name()
+	for i = 1, #keep_names do
+		if string.find(name, keep_names[i], 1, true) then return false end
+	end
+	return true
+end
+
+function on_update(delta)
+	if mgr then mgr:reschedule(1000) end
+	if not is_enabled() or db.actor == nil or alife() == nil then return end
+	if time_global() < resume_at then return end
+	if keep_names == nil then load_lists() end
+	local sim = alife()
+	local gg = game_graph()
+	actor_level = gg:vertex(sim:actor().m_game_vertex_id):level_id()
+	local last = cursor + ini:r_u32("settings", "chunk") - 1
+	if last > 65535 then last = 65535 end
+	for i = cursor, last do
+		local obj = sim:object(i)
+		if obj and gg:vertex(obj.m_game_vertex_id):level_id() ~= actor_level and can_release(obj) then
+			sim:release(obj, true)
+		end
+	end
+	if last >= 65535 then
+		cursor = 1
+		resume_at = time_global() + ini:r_u32("settings", "pause_ms")
+	else
+		cursor = last + 1
+	end
+end

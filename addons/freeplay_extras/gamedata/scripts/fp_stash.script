@@ -32,6 +32,9 @@ function on_update(delta)
 			if old then alife():release(old, true) end
 		end
 		local se = alife():create(ini:r_string(name, "section"), vector():set(tonumber(x), tonumber(y), tonumber(z)), tonumber(lv), tonumber(gv))
+		if se and ini:line_exist(name, "angle") then
+			pcall(function() se.angle = vector():set(0, ini:r_float(name, "angle"), 0) end)
+		end
 		if se and level.map_has_object_spot(se.id, "treasure") == 0 then
 			level.map_add_object_spot_ser(se.id, "treasure", game.translate_string(ini:r_string(name, "title")))
 		end
