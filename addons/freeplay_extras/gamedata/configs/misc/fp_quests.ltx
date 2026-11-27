@@ -1,0 +1,11 @@
+; Quests ported from SGM ideas (see scripts\fp_quests.script). Adaptation SRP Freeplay: Eon
+; type = fetch: item spawns at 'spawn' (x,y,z,level_vertex,game_vertex) when the quest starts, actor brings it to 'giver' (NPC name).
+
+; Escape: the base mechanic (Fourgon) lost his rucksack in the loners' camp (SGM: esc_shilov_find_rukzak)
+[esc_shilov_find_rukzak]
+type = fetch
+giver = esc_stalker_mechanic
+item = shilov_rukzak
+spawn = -200.732,-16.617,-160.797,51907,569
+reward_money = 2000
+reward_items = medkit, skill_book_pm

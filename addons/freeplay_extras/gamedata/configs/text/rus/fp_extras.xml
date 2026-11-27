@@ -543,4 +543,41 @@
 	<string id="st_fp_rare_cur">
 		<text>р.</text>
 	</string>
+	<!-- fp_quests (SGM ideas) -->
+	<string id="st_shilov_rukzak">
+		<text>«Рюкзак Фургона»</text>
+	</string>
+	<string id="st_shilov_rukzak_descr">
+		<text>Потрёпанный рюкзак с личными вещами сталкера по прозвищу Фургон, механика сталкерской базы.</text>
+	</string>
+	<string id="esc_shilov_find_rukzak">
+		<text>Найти рюкзак Фургона</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_text">
+		<text>Механик сталкерской базы оставил свой рюкзак в лагере одиночек. Нужно отправиться туда и забрать его.</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_back">
+		<text>Вернуть рюкзак Фургону</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_back_text">
+		<text>Рюкзак у меня. Осталось отнести его владельцу на сталкерскую базу.</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_dialog_1">
+		<text>Чем я могу тебе помочь?</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_dialog_2">
+		<text>Да ничем вроде. Но если хочешь чем-то помочь, принеси мне мой рюкзак. Я, кажется, оставил его в лагере одиночек. Ладно, сейчас скину координаты. Берёшься?</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_dialog_3">
+		<text>Да.</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_dialog_4">
+		<text>Нет.</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_dialog_5">
+		<text>Я принёс твой рюкзак. Держи.</text>
+	</string>
+	<string id="esc_shilov_find_rukzak_dialog_6">
+		<text>Отличная работа, сталкер!</text>
+	</string>
 </string_table>

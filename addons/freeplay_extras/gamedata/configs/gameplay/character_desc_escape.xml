@@ -135,6 +135,8 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+		<actor_dialog>esc_shilov_find_rukzak_give</actor_dialog>
+		<actor_dialog>esc_shilov_find_rukzak_complete</actor_dialog>
 	</specific_character>
 
 	<specific_character id="esc_zak_stalkerbase" team_default = "1">

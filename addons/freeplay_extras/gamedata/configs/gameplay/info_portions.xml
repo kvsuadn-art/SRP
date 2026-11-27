@@ -21,6 +21,10 @@
 	<info_portion id="fp_artefacts"/>
 	<info_portion id="fp_mutants"/>
 	<info_portion id="fp_skills"/>
+	<info_portion id="fp_quests"/>
+	<info_portion id="esc_shilov_find_rukzak_start"/>
+	<info_portion id="esc_shilov_find_rukzak_complete"/>
+	<info_portion id="esc_shilov_find_rukzak_reward"/>
 	<info_portion id="fp_rare_items"/>
 	<info_portion id="mar_csky_trader_rareitems_news"/>
 	<info_portion id="esc_stalker_trader_rareitems_news"/>

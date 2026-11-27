@@ -1,0 +1,166 @@
+-- fp_quests: compact quest layer for quests ported from SGM (Sigerous Mod 3.10, GeJorge) ideas.
+-- Adaptation SRP Freeplay: Eon
+--
+-- Not a port of the SGM task layer: quests are re-implemented on stock engine tasks (CGameTask, as in
+-- ogsm_rt_manager) and dialogs; data is in misc\fp_quests.ltx. Supported quest type: "fetch"
+-- (a quest item is spawned at a place, the actor brings it to the giver for a reward).
+-- Dialog ids: <quest>_give (start), <quest>_complete (hand over). Stage flags are info portions:
+-- <quest>_start, <quest>_complete (item found), <quest>_reward (finished) - same names as in SGM.
+-- Switch: info srp_freeplay or fp_quests. Savegame: u8 count; per started quest: name + u16 item id.
+
+local TAG = "[fp_quests] "
+local ini = ini_file("misc\\fp_quests.ltx")
+local mgr = nil
+local data = {}    -- quest -> parsed config
+local items = {}   -- quest -> server id of the spawned quest item
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_quests")
+end
+
+-- Freeplay: always; otherwise only for a stalker actor (as in SGM)
+function gate_stalker()
+	return has_alife_info("srp_freeplay") or dialogs.actor_in_stalker()
+end
+
+function gate_dialog()
+	return is_enabled() and gate_stalker()
+end
+
+local function cfg(q)
+	local c = data[q]
+	if c ~= nil then return c end
+	if not ini:section_exist(q) then return nil end
+	c = {}
+	c.giver = ini:r_string(q, "giver")
+	c.item = ini:r_string(q, "item")
+	local pos = ini:r_string(q, "spawn")
+	local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
+	c.pos = vector():set(tonumber(x), tonumber(y), tonumber(z))
+	c.lv, c.gv = tonumber(lv), tonumber(gv)
+	c.money = ini:line_exist(q, "reward_money") and ini:r_u32(q, "reward_money") or 0
+	c.rewards = {}
+	if ini:line_exist(q, "reward_items") then
+		for s in string.gmatch(ini:r_string(q, "reward_items"), "[^,%s]+") do c.rewards[#c.rewards + 1] = s end
+	end
+	data[q] = c
+	return c
+end
+
+local function quest_of(dialog_id)
+	return (string.gsub(dialog_id, "_[a-z]+$", ""))
+end
+
+local function giver_id(c)
+	local s = alife():object(c.giver)
+	return s and s.id or nil
+end
+
+local function task_id(q) return "fpq_" .. q end
+
+local function set_task_stage(q, back)
+	local task = db.actor:get_task(task_id(q), true)
+	if task == nil then return end
+	local c = cfg(q)
+	if back then
+		task:set_title(game.translate_string(q .. "_back"))
+		task:set_description(game.translate_string(q .. "_back_text"))
+		local gid = giver_id(c)
+		if gid then task:change_map_location("secondary_task_location", gid) end
+	else
+		task:set_title(game.translate_string(q))
+		task:set_description(game.translate_string(q .. "_text"))
+	end
+end
+
+local function give_task(q)
+	local c = cfg(q)
+	local task = CGameTask()
+	task:set_id(task_id(q))
+	task:set_title(game.translate_string(q))
+	task:set_description(game.translate_string(q .. "_text"))
+	task:set_icon_name("ui_pda2_mtask_overlay")
+	task:set_type(1)
+	task:add_complete_func("fp_quests.task_complete")
+	task:set_map_hint(q)
+	task:set_map_location("secondary_task_location")
+	task:set_map_object_id(items[q] or giver_id(c) or 0)
+	db.actor:give_task(task, 0, false)
+	if has_alife_info(q .. "_complete") then set_task_stage(q, true) end
+end
+
+-- engine polls this: true = task is completed
+function task_complete(id)
+	local q = string.sub(id, 5)
+	return has_alife_info(q .. "_reward")
+end
+
+-------------------------------------------------------------- dialog actions
+function start(actor, npc, dialog_id, phrase_id)
+	local q = quest_of(dialog_id)
+	local c = cfg(q)
+	if c == nil then printf(TAG .. "no config for '%s'", tostring(q)) return end
+	if items[q] == nil then
+		local se = alife():create(c.item, c.pos, c.lv, c.gv)
+		items[q] = se and se.id or nil
+	end
+	db.actor:give_info_portion(q .. "_start")
+	give_task(q)
+end
+
+function has_item(q)
+	local c = cfg(q)
+	return c ~= nil and db.actor:object(c.item) ~= nil
+end
+
+function finish(actor, npc, dialog_id, phrase_id)
+	local q = quest_of(dialog_id)
+	local c = cfg(q)
+	if c == nil then return end
+	dialogs.relocate_item_section_from_actor(actor, npc, c.item)
+	if c.money > 0 then dialogs.relocate_money(npc, c.money, "in") end
+	for _, s in ipairs(c.rewards) do dialogs.relocate_item_section_to_actor(actor, npc, s, 1) end
+	db.actor:give_info_portion(q .. "_reward")
+	items[q] = nil
+end
+
+-- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
+function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
+
+-------------------------------------------------------------- signals
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_item_take", fun = fp_on_item_take })
+	m:subscribe({ signal = "on_save", fun = fp_on_save })
+	m:subscribe({ signal = "on_load", fun = fp_on_load })
+end
+
+function fp_on_item_take(obj)
+	if not is_enabled() then return end
+	local sect = obj:section()
+	for q in pairs(items) do
+		local c = cfg(q)
+		if c ~= nil and c.item == sect and obj:id() == items[q] and not has_alife_info(q .. "_complete") then
+			db.actor:give_info_portion(q .. "_complete")
+			set_task_stage(q, true)
+		end
+	end
+end
+
+function fp_on_save(packet)
+	local list = {}
+	for q, id in pairs(items) do list[#list + 1] = q end
+	packet:w_u8(#list)
+	for _, q in ipairs(list) do
+		packet:w_stringZ(q)
+		packet:w_u16(items[q])
+	end
+end
+
+function fp_on_load(reader)
+	local n = reader:r_u8()
+	for _ = 1, n do
+		local q = reader:r_stringZ()
+		items[q] = reader:r_u16()
+	end
+end
