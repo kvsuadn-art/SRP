@@ -58,6 +58,13 @@ local function cfg(q)
 			c.count = ini:line_exist(q, "count") and ini:r_u32(q, "count") or 1
 			c.waves = ini:line_exist(q, "waves") and ini:r_u32(q, "waves") or 1
 			c.loot = ini:line_exist(q, "loot") and ini:r_string(q, "loot") or nil
+			-- optional ally: spawned with the targets at 'ally_spawn'; if it is alive at the end, info <q>_alive and 'bonus_money'
+			if ini:line_exist(q, "ally") then
+				c.ally = ini:r_string(q, "ally")
+				local x, y, z = string.match(ini:r_string(q, "ally_spawn"), "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)")
+				c.ally_pos = vector():set(tonumber(x), tonumber(y), tonumber(z))
+				c.bonus_money = ini:line_exist(q, "bonus_money") and ini:r_u32(q, "bonus_money") or 0
+			end
 		end
 		local pos = ini:r_string(q, "spawn")
 		local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
@@ -165,6 +172,10 @@ function start(actor, npc, dialog_id, phrase_id)
 			local se = alife():create(c.item or c.npc, c.pos, c.lv, c.gv)
 			if se then items[q][#items[q] + 1] = se.id end
 		end
+		if c.ally then
+			local se = alife():create(c.ally, c.ally_pos, c.lv, c.gv)
+			if se then items[q .. ".ally"] = { se.id } end
+		end
 	end
 	if string.find(c.giver, "^profile:") and npc ~= nil then givers[q] = npc:id() end
 	db.actor:give_info_portion(q .. "_start")
@@ -193,10 +204,13 @@ function finish(actor, npc, dialog_id, phrase_id)
 	if c.loot ~= nil then
 		for _ = 1, (c.count or 1) do dialogs.relocate_item_section_from_actor(actor, npc, c.loot) end
 	end
-	if c.money > 0 then dialogs.relocate_money(npc, c.money, "in") end
+	local money = c.money
+	if c.ally and has_alife_info(q .. "_alive") then money = money + c.bonus_money end
+	if money > 0 then dialogs.relocate_money(npc, money, "in") end
 	for _, s in ipairs(c.rewards) do dialogs.relocate_item_section_to_actor(actor, npc, s, 1) end
 	db.actor:give_info_portion(q .. "_reward")
 	items[q] = nil
+	items[q .. ".ally"] = nil
 	givers[q] = nil
 end
 
@@ -212,6 +226,8 @@ end
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
 function esc_capture_army_blockpost_available() return available("esc_capture_army_blockpost") end
+function esc_kill_blockpost_leader_available() return available("esc_kill_blockpost_leader") end
+function val_sos_rescue_bus_available() return available("val_sos_rescue_bus") end
 function agr_eliminate_outpost_available() return available("agr_eliminate_outpost") end
 function yan_bring_sample_dnk_available() return available("yan_bring_sample_dnk") end
 function gar_find_master_outfit_available() return available("gar_find_master_outfit") end
@@ -290,6 +306,7 @@ function fp_on_update(delta)
 				done = not smart_held(q)
 			end
 			if done then
+				if c.ally and items[q .. ".ally"] and not target_gone(q .. ".ally") then db.actor:give_info_portion(q .. "_alive") end
 				db.actor:give_info_portion(q .. "_complete")
 				set_task_stage(q, true)
 			end

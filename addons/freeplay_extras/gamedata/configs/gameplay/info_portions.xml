@@ -46,6 +46,13 @@
 	<info_portion id="gar_rescue_tunnel_novice_start"/>
 	<info_portion id="gar_rescue_tunnel_novice_complete"/>
 	<info_portion id="gar_rescue_tunnel_novice_reward"/>
+	<info_portion id="esc_kill_blockpost_leader_start"/>
+	<info_portion id="esc_kill_blockpost_leader_complete"/>
+	<info_portion id="esc_kill_blockpost_leader_reward"/>
+	<info_portion id="val_sos_rescue_bus_start"/>
+	<info_portion id="val_sos_rescue_bus_complete"/>
+	<info_portion id="val_sos_rescue_bus_reward"/>
+	<info_portion id="val_sos_rescue_bus_alive"/>
 	<info_portion id="agr_eliminate_outpost_start"/>
 	<info_portion id="agr_eliminate_outpost_complete"/>
 	<info_portion id="agr_eliminate_outpost_reward"/>

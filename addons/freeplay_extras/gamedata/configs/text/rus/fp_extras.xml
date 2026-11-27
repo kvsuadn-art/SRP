@@ -1039,4 +1039,61 @@
 	<string id="fp_exo_bandit_name">
 		<text>Бандит-ветеран</text>
 	</string>
+	<string id="esc_kill_blockpost_leader">
+		<text>Командир блокпоста</text>
+	</string>
+	<string id="esc_kill_blockpost_leader_text">
+		<text>Командир армейского блокпоста мешает всей округе. Его нужно убрать. Он держится возле лагеря у блокпоста.</text>
+	</string>
+	<string id="esc_kill_blockpost_leader_back">
+		<text>Командир убит</text>
+	</string>
+	<string id="esc_kill_blockpost_leader_back_text">
+		<text>Командир блокпоста мёртв. Вернуться к главному сталкеров за наградой.</text>
+	</string>
+	<string id="esc_kill_blockpost_leader_dialog_1">
+		<text>Есть работа?</text>
+	</string>
+	<string id="esc_kill_blockpost_leader_dialog_2">
+		<text>Есть. Командир армейцев на блокпосту совсем распоясался: бьёт всех, кто подходит к посту. Без него военные присмиреют. Справишься — получишь деньги и редкую книгу. Берёшься?</text>
+	</string>
+	<string id="esc_kill_blockpost_leader_dialog_5">
+		<text>Командир блокпоста убит.</text>
+	</string>
+	<string id="esc_kill_blockpost_leader_dialog_6">
+		<text>Ну ты даёшь. Вот плата, как договаривались. Теперь здесь станет спокойнее.</text>
+	</string>
+	<string id="val_sos_rescue_bus">
+		<text>Автобус</text>
+	</string>
+	<string id="val_sos_rescue_bus_text">
+		<text>Бандиты захватили автобус и держат там нашего человека. Нужно убить обоих бандитов. Если заложник выживет, награда будет больше.</text>
+	</string>
+	<string id="val_sos_rescue_bus_back">
+		<text>Бандиты убиты</text>
+	</string>
+	<string id="val_sos_rescue_bus_back_text">
+		<text>Бандиты у автобуса убиты. Вернуться за наградой.</text>
+	</string>
+	<string id="val_sos_rescue_bus_dialog_1">
+		<text>Есть задание?</text>
+	</string>
+	<string id="val_sos_rescue_bus_dialog_2">
+		<text>Есть. Бандиты захватили автобус на дороге и держат там нашего. Убей обоих, но постарайся не задеть заложника. Если он уцелеет, заплачу больше. Идёшь?</text>
+	</string>
+	<string id="val_sos_rescue_bus_dialog_5">
+		<text>Бандиты убиты.</text>
+	</string>
+	<string id="val_sos_rescue_bus_dialog_6">
+		<text>Хорошая работа. Вот твоя плата.</text>
+	</string>
+	<string id="fp_army_colonel_name">
+		<text>Полковник</text>
+	</string>
+	<string id="fp_bus_killer_name">
+		<text>Бандит</text>
+	</string>
+	<string id="fp_bus_hostage_name">
+		<text>Заложник</text>
+	</string>
 </string_table>

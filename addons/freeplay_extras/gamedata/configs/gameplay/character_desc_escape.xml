@@ -66,6 +66,8 @@
 		<actor_dialog>esc_leader_about_prisoner</actor_dialog>
 		<actor_dialog>esc_capture_army_blockpost_give</actor_dialog>
 		<actor_dialog>esc_capture_army_blockpost_complete</actor_dialog>
+		<actor_dialog>esc_kill_blockpost_leader_give</actor_dialog>
+		<actor_dialog>esc_kill_blockpost_leader_complete</actor_dialog>
 		<actor_dialog>treasure_dialog</actor_dialog>
 
 #include "gameplay\character_criticals_4.xml"
@@ -434,5 +436,27 @@
 			[spawn] \n
 		</supplies>
 
+	</specific_character>
+
+	<!-- Army colonel of the Cordon blockpost: target of fp_quests esc_kill_blockpost_leader (SGM esc_army_polkovnik). Adaptation SRP Freeplay: Eon -->
+	<specific_character id="fp_army_colonel" team_default = "1">
+		<name>fp_army_colonel_name</name>
+		<icon>ui_npc_u_soldier_3</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<class>fp_army_colonel</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_03\military\</snd_config>
+		<rank>1200</rank>
+		<reputation>0</reputation>
+		<visual>actors\stalker_soldier\stalker_soldier_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 3 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
 	</specific_character>
 </xml>

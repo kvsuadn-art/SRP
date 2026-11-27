@@ -20,6 +20,8 @@ mar_capture_boat_station
 mar_capture_embankment
 mar_capture_north_khutor
 mar_last_intensify_reward
+esc_kill_blockpost_leader
+val_sos_rescue_bus
 
 ; Escape: the base mechanic (Fourgon) lost his rucksack in the loners' camp (SGM: esc_shilov_find_rukzak)
 [esc_shilov_find_rukzak]
@@ -181,6 +183,32 @@ loot = fp_outpost_pda
 spawn = -37.787,-4.133,-290.333,120737,1058
 reward_money = 6000
 reward_items = medkit_army, medkit_army, skill_book_lr300
+
+; Cordon: kill the army colonel who commands the blockpost (SGM: esc_kill_blockpost_leader, giver Bogdanov, a new NPC).
+; Freeplay: the giver is the existing stalker leader; the SGM penalty to stalker goodwill (-2500) and the SVU requirement are dropped.
+[esc_kill_blockpost_leader]
+type = kill
+giver = esc_stalker_leader
+npc = fp_army_colonel
+spawn = -150.523,-30.436,-350.477,101915,564
+reward_money = 5000
+reward_items = skill_book_fort
+
+; Dark Valley: Freedom men are held on a bus by bandits (SGM: val_sos_*, giver is the new NPC 'squads commander').
+; Temporary giver: the Freedom barman (replace in this one line). Kill both bandits; 'bonus_money' if the hostage survives.
+[val_sos_rescue_bus]
+type = kill
+faction = freedom
+story_info = val_pursuit_comendant_complete
+giver = val_freedom_barmen
+npc = fp_bus_killer
+count = 2
+spawn = 59.798,0.201,-187.310,222893,959
+ally = fp_bus_hostage
+ally_spawn = 61.2,0.201,-187.3
+reward_money = 1000
+bonus_money = 4000
+reward_items = skill_book_l85
 
 ; Yantar: a DNA sample from a bloodsucker (SGM: yan_bring_sample_dnk / take / reward). The sample is a drop of the monster.
 [yan_bring_sample_dnk]
