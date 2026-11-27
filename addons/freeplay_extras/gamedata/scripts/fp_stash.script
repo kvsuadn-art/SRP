@@ -13,6 +13,7 @@ end
 
 function attach(m)
 	mgr = m
+	dbglog("%s", "[fp_stash] attached, enabled=" .. tostring(is_enabled()))
 	m:subscribe({ signal = "on_update", fun = on_update })
 end
 

@@ -3,11 +3,13 @@
 -- area (describe) and runs the chosen entry with the same "Получить" button (run).
 -- Teleport targets are taken from SRP's own guide data (guiders_table): the cross-level points
 -- (cross_level_teleport) and the guide points of the current level (teleport_points). The jump itself is
--- the one SRP guides use: db.actor:set_actor_position(patrol point).
+-- the one SRP guides use: fade, db.actor:set_actor_position(patrol point). Own fade code (guiders.start_teleport is not
+-- used: it calls level.show_weapon, which the engine export list of this build does not have).
 -- Adaptation for SRP Freeplay: Eon
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
+local BUILD = "2026-11-28 b4"
 
 local tools = {
 	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
@@ -19,6 +21,7 @@ local tools = {
 	{ key = "heal",    name = "Здоровье и деньги",      descr = "Восстановить здоровье, выносливость, психику, убрать радиацию и кровотечение, +100000 руб." },
 	{ key = "surge",   name = "Запустить выброс",       descr = "Немедленно запустить выброс (30 сек. до укрытия), если он сейчас не идёт." },
 	{ key = "eclipse", name = "Запустить затмение",     descr = "Выброс с эффектом затмения (fx_blackday)." },
+	{ key = "diag",    name = "Диагностика в лог",      descr = "Записать в лог состояние модулей Freeplay: тайник, сон, зона базы, версия сборки." },
 }
 
 local function tip(text)
@@ -120,11 +123,69 @@ end
 
 function on_net_spawn()
 	entry_time = time_global()
+	dbglog("%s", TAG .. "build " .. BUILD)
 	pending = get_pending()
 	if pending ~= "" then
 		local d = guiders_table.teleport_points[pending]
 		if not (d and d.level == level.name()) then set_pending("") end   -- stale target (the level change did not happen)
 	end
+end
+
+-- own fade + move (the guides' sequence without level.show_weapon)
+local jump = nil
+local jump_time = 0
+
+local function give_back_control()
+	pcall(level.enable_input)
+	pcall(level.show_indicators)
+end
+
+local function fade_in()
+	pcall(level.add_pp_effector, "peace_unfade.ppe", 160608, false)
+end
+
+local function do_jump()
+	if not jump then return end
+	local j = jump
+	jump = nil
+	local act = db.actor
+	if not act then return end
+	local pnt = patrol(j.point)
+	act:set_actor_position(pnt:point(0))
+	if j.look then
+		local ok, dir = pcall(function() return patrol(j.look):point(0):sub(pnt:point(0)) end)
+		if ok and dir then act:set_actor_direction(-dir:getH()) end
+	end
+	fade_in()
+	if j.cross then
+		started = time_global()      -- waiting for the engine's level change
+	else
+		give_back_control()
+	end
+	dbglog("%s", TAG .. "moved to " .. j.point .. (j.cross and " (level changer)" or ""))
+end
+
+-- called by the camera effector when the fade-out is over (the name is given to the engine as a string)
+function fade_cb()
+	do_jump()
+end
+
+local function begin_jump(point, look, cross)
+	if not level.patrol_path_exists(point) then
+		tip("Нет точки пути: " .. tostring(point))
+		dbglog("%s", TAG .. "patrol point missing: " .. tostring(point))
+		return false
+	end
+	jump = { point = point, look = look, cross = cross }
+	jump_time = time_global()
+	pcall(level.disable_input)
+	pcall(level.hide_indicators_safe)
+	local hud = get_hud()
+	pcall(function() hud:HideActorMenu() end)
+	pcall(function() hud:HidePdaMenu() end)
+	level.add_cam_effector("camera_effects\\empty.anm", 160608, false, "fp_dev_tools.fade_cb")
+	level.add_pp_effector("peace_fade.ppe", 160608, false)
+	return true
 end
 
 local function jump_to(key)
@@ -133,29 +194,32 @@ local function jump_to(key)
 	if not (point and look) then
 		point, look = key .. "_kamp_1", key .. "_kamp_1_task"
 	end
-	guiders.start_teleport(point, look)
+	return begin_jump(point, look, false)
 end
 
 function on_update(delta)
 	mgr:reschedule(1000)
-	if pending == "" or not (db.actor and db.actor:alive()) then return end
+	if not (db.actor and db.actor:alive()) then return end
+	-- the effector callback did not come: do the move anyway
+	if jump and time_global() - jump_time > 5000 then
+		dbglog("%s", TAG .. "fade callback timeout, moving directly")
+		do_jump()
+	end
+	if pending == "" then return end
 	local key = pending
 	local d = guiders_table.teleport_points[key]
 	if not d then set_pending(""); return end
 	if d.level == level.name() then
-		if time_global() - entry_time < ARRIVE_WAIT then return end
+		if jump or time_global() - entry_time < ARRIVE_WAIT then return end
 		set_pending("")
-		guiders.teleported_to_another_level = false   -- the guides' own second step has nothing to do here
-		guiders.level_changed = false
+		started = 0
 		jump_to(key)
 		dbglog("%s", TAG .. "arrived, second step to " .. key)
 	elseif started > 0 and time_global() - started > FAIL_WAIT then
 		-- the level did not change (level changer closed): give the control back
 		set_pending("")
 		started = 0
-		guiders.teleported_to_another_level = false
-		guiders.teleport_end()
-		level.add_pp_effector("peace_unfade.ppe", 160608, false)
+		give_back_control()
 		tip("Переход закрыт (уровень не сменился)")
 		dbglog("%s", TAG .. "level change failed for " .. key)
 	end
@@ -166,7 +230,7 @@ local function teleport(key)
 	if not d then return false end
 	local cur = level.name()
 	if d.level == cur then
-		jump_to(key)
+		if not jump_to(key) then return false end
 	else
 		local cross = guiders_table.cross_level_teleport[cur] and guiders_table.cross_level_teleport[cur][d.level]
 		if not cross then
@@ -174,12 +238,37 @@ local function teleport(key)
 			return false
 		end
 		set_pending(key)
-		started = time_global()
-		guiders.level_changed = true
-		guiders.start_teleport(cross, nil)
+		started = 0
+		if not begin_jump(cross, nil, true) then set_pending(""); return false end
 	end
 	dbglog("%s", TAG .. "teleport to " .. key .. " (" .. tostring(d.level) .. ")")
 	return true
+end
+
+local function diag()
+	local act = db.actor
+	local p = act:position()
+	local function inf(s) return s .. "=" .. tostring(has_alife_info(s)) end
+	dbglog("%s", TAG .. "DIAG build " .. BUILD .. " level=" .. level.name() .. string.format(" pos=%.1f,%.1f,%.1f hour=%d", p.x, p.y, p.z, level.get_time_hours()))
+	dbglog("%s", TAG .. "DIAG infos: " .. inf("srp_freeplay") .. " " .. inf("fp_sleep") .. " " .. inf("fp_stash") .. " " .. inf("fp_stash_done") .. " " .. inf("fp_stash_done2"))
+	local zn = "mar_space_restrictor_csky_base_noweapon"
+	local z = db.zone_by_name[zn]
+	dbglog("%s", TAG .. "DIAG zone " .. zn .. " registered=" .. tostring(z ~= nil) .. " inside=" .. tostring(z ~= nil and z:inside(p)))
+	local ok, a, b = pcall(function() return fp_sleep.is_enabled(), fp_sleep.in_place() end)
+	dbglog("%s", TAG .. "DIAG sleep: " .. tostring(ok) .. " enabled=" .. tostring(a) .. " in_place=" .. tostring(b))
+	dbglog("%s", TAG .. "DIAG sleeping_bag in inventory=" .. tostring(act:object("sleeping_bag") ~= nil))
+	local old = alife():object("mar_physic_object_0039")
+	dbglog("%s", TAG .. "DIAG decorative rucksack mar_physic_object_0039 exists=" .. tostring(old ~= nil))
+	local n = 0
+	for i = 0, 65534 do
+		local se = alife():object(i, true)
+		if se and se:section_name() == "fp_base_stash" then
+			n = n + 1
+			dbglog("%s", TAG .. "DIAG fp_base_stash id=" .. se.id .. string.format(" pos=%.1f,%.1f,%.1f", se.position.x, se.position.y, se.position.z))
+		end
+	end
+	dbglog("%s", TAG .. "DIAG fp_base_stash count=" .. n)
+	tip("Диагностика записана в лог")
 end
 
 local function change_time(h, text)
@@ -204,7 +293,8 @@ function run(tab, key)
 	if tab == "teleport" then
 		return teleport(key)
 	end
-	if key == "pos" then log_pos(); return false
+	if key == "diag" then diag(); return false
+	elseif key == "pos" then log_pos(); return false
 	elseif key == "h1" then change_time(1, "Время +1 ч"); return true
 	elseif key == "h6" then change_time(6, "Время +6 ч"); return true
 	elseif key == "d1" then change_time(24, "Время +1 сутки"); return true
