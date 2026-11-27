@@ -910,4 +910,70 @@
 	<string id="st_fp_impounded_goods_descr">
 		<text>Потрёпанная сумка с личными вещами сталкера, погибшего в аномалии.</text>
 	</string>
+	<string id="gar_find_master_outfit">
+		<text>Найти «Ветер свободы»</text>
+	</string>
+	<string id="gar_find_master_outfit_text">
+		<text>Заказчик на Свалке ищет запасной комплект комбинезона Свободы. Он лежит в лагере Свободы. Нужно забрать его.</text>
+	</string>
+	<string id="gar_find_master_outfit_back">
+		<text>Вернуть комбинезон заказчику</text>
+	</string>
+	<string id="gar_find_master_outfit_back_text">
+		<text>Комплект «Ветра свободы» у меня. Осталось отнести его фиксеру бандитов на Свалку.</text>
+	</string>
+	<string id="gar_find_master_outfit_dialog_1">
+		<text>Нет ли для меня работы?</text>
+	</string>
+	<string id="gar_find_master_outfit_dialog_2">
+		<text>Есть. Мне нужен хороший комбинезон Свободы, запасной комплект. Где-то в их лагере такой лежит без присмотра. Принесёшь, заплачу. Идёт?</text>
+	</string>
+	<string id="gar_find_master_outfit_dialog_5">
+		<text>Вот твой комбинезон.</text>
+	</string>
+	<string id="gar_find_master_outfit_dialog_6">
+		<text>То, что надо. Держи оплату и книгу в придачу.</text>
+	</string>
+	<string id="st_fp_master_outfit">
+		<text>«Ветер свободы» (запасной комплект)</text>
+	</string>
+	<string id="st_fp_master_outfit_descr">
+		<text>Запасной комплект комбинезона Свободы, оставленный в лагере. Лёгкий и прочный.</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice">
+		<text>Найти пропавшего новичка</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_text">
+		<text>В туннеле на Свалке пропал молодой сталкер Федька. Нужно найти его и убедить возвращаться на базу.</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_back">
+		<text>Вернуться к бармену бандитов</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_back_text">
+		<text>Новичок найден и идёт на базу. Осталось сообщить бармену бандитов и получить награду.</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_dialog_1">
+		<text>Что-нибудь слышно про пропавших?</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_dialog_2">
+		<text>Слышно. Один новичок ушёл в туннель и не вернулся. Парнишку жалко. Найди его и скажи, пусть идёт домой. Заплачу. Согласен?</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_dialog_5">
+		<text>Парня я нашёл, он скоро будет здесь.</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_dialog_6">
+		<text>Спасибо тебе, сталкер. Вот награда: деньги, аптечки и книга.</text>
+	</string>
+	<string id="fp_tunnel_novice_name">
+		<text>Федька</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_found_1">
+		<text>Сталкер… Да, сталкер. Сразу не разглядел, думал, бандюки идут. Ты как сюда попал?</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_found_2">
+		<text>Тебя ищут. Пора возвращаться, здесь опасно.</text>
+	</string>
+	<string id="gar_rescue_tunnel_novice_found_3">
+		<text>Понял, иду следом. Спасибо тебе.</text>
+	</string>
 </string_table>

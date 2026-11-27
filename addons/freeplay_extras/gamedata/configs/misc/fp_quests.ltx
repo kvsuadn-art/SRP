@@ -6,6 +6,8 @@ esc_shilov_find_rukzak
 esc_capture_army_blockpost
 mar_csky_kill_baron
 mil_hog_find_item
+gar_find_master_outfit
+gar_rescue_tunnel_novice
 val_find_ashot_dummy
 val_searched_impounded
 agr_kill_wild_giant
@@ -147,3 +149,21 @@ item = fp_impounded_goods
 spawn = -6.543,7.011,-158.918,178873,849
 reward_money = 3000
 reward_items = af_night_star
+
+; Garbage (SGM: gar_find/reward_master_outfit and gar_rescue/return/reward_tunnel_novice). The new SGM NPCs are replaced by the
+; existing bandit fixer and bartender; the SGM armor upgrade is replaced by a plain copy of the vanilla Freedom outfit.
+[gar_find_master_outfit]
+type = fetch
+giver = gar_bandit_fixer
+item = fp_master_outfit
+spawn = 23.968,4.592,212.699,182959,341
+reward_money = 2000
+reward_items = skill_book_wincheaster1300
+
+[gar_rescue_tunnel_novice]
+type = talk
+giver = gar_bandit_barman
+npc = fp_tunnel_novice
+spawn = -275.499,0.375,28.433,1626,295
+reward_money = 3000
+reward_items = medkit_army, medkit_army, skill_book_toz34

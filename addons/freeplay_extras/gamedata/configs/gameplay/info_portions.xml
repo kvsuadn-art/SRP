@@ -40,6 +40,12 @@
 	<info_portion id="val_searched_impounded_start"/>
 	<info_portion id="val_searched_impounded_complete"/>
 	<info_portion id="val_searched_impounded_reward"/>
+	<info_portion id="gar_find_master_outfit_start"/>
+	<info_portion id="gar_find_master_outfit_complete"/>
+	<info_portion id="gar_find_master_outfit_reward"/>
+	<info_portion id="gar_rescue_tunnel_novice_start"/>
+	<info_portion id="gar_rescue_tunnel_novice_complete"/>
+	<info_portion id="gar_rescue_tunnel_novice_reward"/>
 	<info_portion id="agr_kill_wild_giant_start"/>
 	<info_portion id="agr_kill_wild_giant_complete"/>
 	<info_portion id="agr_kill_wild_giant_reward"/>

@@ -104,6 +104,8 @@
 
 		<actor_dialog>rt_borov_task_dialog</actor_dialog>
 		<actor_dialog>rt_borov_reward_dialog</actor_dialog>
+		<actor_dialog>gar_rescue_tunnel_novice_give</actor_dialog>
+		<actor_dialog>gar_rescue_tunnel_novice_complete</actor_dialog>
 	</specific_character>
 
 	<specific_character id="gar_bandit_trader" team_default = "1">
@@ -166,6 +168,8 @@
 		<actor_dialog>gar_bandit_tech_questions</actor_dialog>
 		<actor_dialog>tm_upgr_task</actor_dialog>
 		<actor_dialog>find_upgrade_task</actor_dialog>
+		<actor_dialog>gar_find_master_outfit_give</actor_dialog>
+		<actor_dialog>gar_find_master_outfit_complete</actor_dialog>
 
 #include "gameplay\character_criticals_1.xml"
 
@@ -636,5 +640,27 @@
 
 #include "gameplay\character_criticals_1.xml"
 
+	</specific_character>
+
+	<!-- Fedka: the target of fp_quests gar_rescue_tunnel_novice (SGM idea). Adaptation SRP Freeplay: Eon -->
+	<specific_character id="fp_tunnel_novice" team_default = "1">
+		<name>fp_tunnel_novice_name</name>
+		<icon>ui_npc_u_neutral_1</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<class>fp_tunnel_novice</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<rank>44</rank>
+		<reputation>0</reputation>
+		<visual>actors\stalker_neutral\stalker_neutral_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+#include "gameplay\character_food.xml"
+		</supplies>
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+		<actor_dialog>gar_rescue_tunnel_novice_found</actor_dialog>
 	</specific_character>
 </xml>

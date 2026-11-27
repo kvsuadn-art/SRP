@@ -9,6 +9,8 @@
 --   kill    - an NPC (section 'npc') is spawned at 'spawn' when the quest starts; its death completes
 --             the quest (checked every 5 s while the quest is active), then report to the giver;
 --             optional count (NPCs per wave) and waves (the next wave appears when the previous is dead);
+--   talk    - an NPC (section 'npc') is spawned at 'spawn'; talking to it (a dialog action fp_quests.talked)
+--             completes the quest, then report to the giver;
 --   deliver - the actor brings an existing item (section 'item', nothing is spawned); it is noticed in the
 --             inventory every 5 s while the quest is active, then report to the giver;
 --   bonus   - no task: a dialog reward available once all quests in 'requires' are rewarded.
@@ -48,7 +50,7 @@ local function cfg(q)
 		c.enemy = ini:r_string(q, "enemy")
 	elseif c.type == "deliver" then
 		c.item = ini:r_string(q, "item")
-	elseif c.type == "fetch" or c.type == "kill" then
+	elseif c.type == "fetch" or c.type == "kill" or c.type == "talk" then
 		if c.type == "fetch" then
 			c.item = ini:r_string(q, "item")
 		else
@@ -156,7 +158,7 @@ function start(actor, npc, dialog_id, phrase_id)
 	local q = quest_of(dialog_id)
 	local c = cfg(q)
 	if c == nil then printf(TAG .. "no config for '%s'", tostring(q)) return end
-	if (c.type == "fetch" or c.type == "kill") and items[q] == nil then
+	if (c.type == "fetch" or c.type == "kill" or c.type == "talk") and items[q] == nil then
 		items[q] = {}
 		for _ = 1, (c.count or 1) do
 			local se = alife():create(c.item or c.npc, c.pos, c.lv, c.gv)
@@ -166,6 +168,15 @@ function start(actor, npc, dialog_id, phrase_id)
 	if string.find(c.giver, "^profile:") and npc ~= nil then givers[q] = npc:id() end
 	db.actor:give_info_portion(q .. "_start")
 	give_task(q)
+end
+
+-- a dialog action on the spawned NPC of a "talk" quest
+function talked(actor, npc, dialog_id, phrase_id)
+	local q = quest_of(dialog_id)
+	local c = cfg(q)
+	if c == nil or has_alife_info(q .. "_complete") then return end
+	db.actor:give_info_portion(q .. "_complete")
+	set_task_stage(q, true)
 end
 
 function has_item(q)
@@ -197,6 +208,8 @@ end
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
 function esc_capture_army_blockpost_available() return available("esc_capture_army_blockpost") end
+function gar_find_master_outfit_available() return available("gar_find_master_outfit") end
+function gar_rescue_tunnel_novice_available() return available("gar_rescue_tunnel_novice") end
 function val_find_ashot_dummy_available() return available("val_find_ashot_dummy") end
 function val_searched_impounded_available() return available("val_searched_impounded") end
 function mil_hog_find_item_available() return available("mil_hog_find_item") end
