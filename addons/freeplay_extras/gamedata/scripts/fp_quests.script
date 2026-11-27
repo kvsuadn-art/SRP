@@ -48,6 +48,8 @@ local function cfg(q)
 		local x, y, z, lv, gv = string.match(ini:r_string(q, "giver_pos"), "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
 		c.giver_at = vector():set(tonumber(x), tonumber(y), tonumber(z))
 		c.giver_lv, c.giver_gv = tonumber(lv), tonumber(gv)
+		-- 'replaces': the story NPC this giver stands in for; he is removed from the world in Freeplay
+		c.replaces = ini:line_exist(q, "replaces") and ini:r_string(q, "replaces") or nil
 	end
 	-- 'lend' = a weapon given at the start if the actor has none of 'lend_skip' (comma list) and taken back at the reward; 'lend_ammo' goes along
 	if ini:line_exist(q, "lend") then
@@ -325,6 +327,10 @@ function fp_on_update(delta)
 	end
 	for _, c in ipairs(spawn_list) do
 		local key = "giver." .. c.giver_spawn
+		if c.replaces and has_alife_info("srp_freeplay") then
+			local old = alife():object(c.replaces)
+			if old then alife():release(old, true) end
+		end
 		if items[key] == nil and (has_alife_info("srp_freeplay") or (c.story_info and has_alife_info(c.story_info))) then
 			local se = alife():create(c.giver_spawn, c.giver_at, c.giver_lv, c.giver_gv)
 			if se then items[key] = { se.id } end
