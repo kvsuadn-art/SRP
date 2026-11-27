@@ -742,4 +742,31 @@
 	<string id="mar_last_intensify_reward_dialog_2">
 		<text>Теперь болото чисто. Спасибо, это дорогого стоит. Возьми эту награду: заслужил.</text>
 	</string>
+	<string id="fp_baron_name">
+		<text>Барон</text>
+	</string>
+	<string id="mar_csky_kill_baron">
+		<text>Убрать главаря ренегатов Барона</text>
+	</string>
+	<string id="mar_csky_kill_baron_text">
+		<text>Ренегаты на болотах держатся за своего главаря по кличке Барон. Он обосновался у железной дороги, на стоянке под насыпью. Нужно найти его и убрать.</text>
+	</string>
+	<string id="mar_csky_kill_baron_back">
+		<text>Вернуться к бармену на базу ЧН</text>
+	</string>
+	<string id="mar_csky_kill_baron_back_text">
+		<text>Барон мёртв. Осталось вернуться к бармену на базу Чистого Неба за платой.</text>
+	</string>
+	<string id="mar_csky_kill_baron_dialog_1">
+		<text>Есть работа для того, кто умеет стрелять?</text>
+	</string>
+	<string id="mar_csky_kill_baron_dialog_2">
+		<text>Есть. У ренегатов объявился главарь, зовут Барон. Сидит где-то у железной дороги. Пока он жив, торговля на болотах стоит. Уберёшь его, получишь плату. Возьмёшься?</text>
+	</string>
+	<string id="mar_csky_kill_baron_dialog_5">
+		<text>Барон мёртв.</text>
+	</string>
+	<string id="mar_csky_kill_baron_dialog_6">
+		<text>Туда ему и дорога. Вот твои деньги и пара книжек в придачу.</text>
+	</string>
 </string_table>

@@ -28,6 +28,9 @@
 	<info_portion id="esc_capture_army_blockpost_start"/>
 	<info_portion id="esc_capture_army_blockpost_complete"/>
 	<info_portion id="esc_capture_army_blockpost_reward"/>
+	<info_portion id="mar_csky_kill_baron_start"/>
+	<info_portion id="mar_csky_kill_baron_complete"/>
+	<info_portion id="mar_csky_kill_baron_reward"/>
 	<info_portion id="mar_capture_pumping_station_start"/>
 	<info_portion id="mar_capture_pumping_station_complete"/>
 	<info_portion id="mar_capture_pumping_station_reward"/>

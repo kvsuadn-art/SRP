@@ -6,6 +6,8 @@
 --   fetch   - a quest item is spawned at a place, the actor brings it to the giver for a reward;
 --   capture - a smart terrain held by the enemy faction must stop belonging to it (checked every 5 s,
 --             only while such a quest is active), then report to the giver;
+--   kill    - an NPC (section 'npc') is spawned at 'spawn' when the quest starts; its death completes
+--             the quest (checked every 5 s while the quest is active), then report to the giver;
 --   bonus   - no task: a dialog reward available once all quests in 'requires' are rewarded.
 -- Optional 'faction' in a quest (stalker/csky): the actor must have joined it (also in Freeplay).
 -- The module switches itself on (info fp_quests) at the first update: quests are an extension of both modes.
@@ -38,8 +40,8 @@ local function cfg(q)
 	if c.type == "capture" then
 		c.smart = ini:r_string(q, "smart")
 		c.enemy = ini:r_string(q, "enemy")
-	elseif c.type == "fetch" then
-		c.item = ini:r_string(q, "item")
+	elseif c.type == "fetch" or c.type == "kill" then
+		if c.type == "fetch" then c.item = ini:r_string(q, "item") else c.npc = ini:r_string(q, "npc") end
 		local pos = ini:r_string(q, "spawn")
 		local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
 		c.pos = vector():set(tonumber(x), tonumber(y), tonumber(z))
@@ -135,8 +137,8 @@ function start(actor, npc, dialog_id, phrase_id)
 	local q = quest_of(dialog_id)
 	local c = cfg(q)
 	if c == nil then printf(TAG .. "no config for '%s'", tostring(q)) return end
-	if c.type == "fetch" and items[q] == nil then
-		local se = alife():create(c.item, c.pos, c.lv, c.gv)
+	if (c.type == "fetch" or c.type == "kill") and items[q] == nil then
+		local se = alife():create(c.item or c.npc, c.pos, c.lv, c.gv)
 		items[q] = se and se.id or nil
 	end
 	db.actor:give_info_portion(q .. "_start")
@@ -171,6 +173,7 @@ end
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
 function esc_capture_army_blockpost_available() return available("esc_capture_army_blockpost") end
+function mar_csky_kill_baron_available() return available("mar_csky_kill_baron") end
 function esc_shilov_find_rukzak_available() return available("esc_shilov_find_rukzak") end
 function mar_capture_pumping_station_available() return available("mar_capture_pumping_station") end
 function mar_capture_church_available() return available("mar_capture_church") end
@@ -188,7 +191,14 @@ function attach(m)
 	m:subscribe({ signal = "on_load", fun = fp_on_load })
 end
 
--- capture quests: the list is read from the config, the state is in info portions (nothing extra in the save)
+-- capture/kill quests: the list is read from the config, the state is in info portions (kill: target id in the save)
+local function target_gone(q)
+	local id = items[q]
+	if id == nil then return true end
+	local se = alife():object(id)
+	return se == nil or not se:alive()
+end
+
 local capture_list = nil
 function fp_on_update(delta)
 	if mgr then mgr:reschedule(5000) end
@@ -199,12 +209,15 @@ function fp_on_update(delta)
 		for i = 0, ini:line_count("quests") - 1 do
 			local _, q = ini:r_line("quests", i, "", "")
 			local c = cfg(q)
-			if c ~= nil and c.type == "capture" then capture_list[#capture_list + 1] = q end
+			if c ~= nil and (c.type == "capture" or c.type == "kill") then capture_list[#capture_list + 1] = q end
 		end
 	end
 	for _, q in ipairs(capture_list) do
 		if has_alife_info(q .. "_start") and not has_alife_info(q .. "_complete") then
-			if not smart_held(q) then
+			local c = cfg(q)
+			local done
+			if c.type == "kill" then done = target_gone(q) else done = not smart_held(q) end
+			if done then
 				db.actor:give_info_portion(q .. "_complete")
 				set_task_stage(q, true)
 			end

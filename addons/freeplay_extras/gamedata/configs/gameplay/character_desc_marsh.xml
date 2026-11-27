@@ -161,6 +161,8 @@
 
 		<actor_dialog>rt_holod_task_dialog</actor_dialog>
 		<actor_dialog>rt_holod_reward_dialog</actor_dialog>
+		<actor_dialog>mar_csky_kill_baron_give</actor_dialog>
+		<actor_dialog>mar_csky_kill_baron_complete</actor_dialog>
 	</specific_character>
 
 	<specific_character id="mar_intro_lebedev" team_default = "1">
@@ -321,5 +323,32 @@
 		<actor_dialog>mar_csky_tactic_tutorial_dialog</actor_dialog>
 		<actor_dialog>treasure_dialog</actor_dialog>
 
+	</specific_character>
+
+	<!-- Baron: bounty target of the fp_quests quest mar_csky_kill_baron (SGM idea). Adaptation SRP Freeplay: Eon -->
+	<specific_character id="fp_renegade_baron" team_default = "1">
+		<name>fp_baron_name</name>
+		<icon>ui_npc_u_bandit_2</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<class>fp_renegade_baron</class>
+		<community>renegade</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<rank>300</rank>
+		<reputation>0</reputation>
+		<visual>actors\stalker_bandit\stalker_bandit_2</visual>
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_mp5 \n
+			ammo_9x19_fmj = 1 \n
+			wpn_pm \n
+			ammo_9x18_fmj = 1 \n
+			grenade_rgd5 = 1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
 	</specific_character>
 </xml>

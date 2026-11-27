@@ -4,6 +4,7 @@
 [quests]
 esc_shilov_find_rukzak
 esc_capture_army_blockpost
+mar_csky_kill_baron
 mar_capture_pumping_station
 mar_capture_church
 mar_capture_boat_station
@@ -80,3 +81,13 @@ giver = mar_csky_commander
 requires = mar_capture_pumping_station, mar_capture_church, mar_capture_boat_station, mar_capture_embankment, mar_capture_north_khutor
 reward_money = 4000
 reward_items = cs_heavy_outfit, flesh_up_ac_mp5, medkit_scientic, skill_book_mp5
+
+; Marsh: bounty on the renegade leader Baron, posted by the bartender of the Clear Sky base (SGM: mar_csky_find_baron -> kill_baron -> reward_baron;
+; the patrolman giver is replaced by an existing character, the "find" stage is dropped). Not tied to a faction or to the war.
+[mar_csky_kill_baron]
+type = kill
+giver = mar_csky_barman
+npc = fp_renegade_baron
+spawn = 144.582,2.099,493.792,222051,89
+reward_money = 2000
+reward_items = skill_book_pm, skill_book_bm16
