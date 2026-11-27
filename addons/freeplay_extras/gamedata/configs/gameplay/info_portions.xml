@@ -31,6 +31,9 @@
 	<info_portion id="mar_csky_kill_baron_start"/>
 	<info_portion id="mar_csky_kill_baron_complete"/>
 	<info_portion id="mar_csky_kill_baron_reward"/>
+	<info_portion id="mil_hog_find_item_start"/>
+	<info_portion id="mil_hog_find_item_complete"/>
+	<info_portion id="mil_hog_find_item_reward"/>
 	<info_portion id="agr_kill_wild_giant_start"/>
 	<info_portion id="agr_kill_wild_giant_complete"/>
 	<info_portion id="agr_kill_wild_giant_reward"/>

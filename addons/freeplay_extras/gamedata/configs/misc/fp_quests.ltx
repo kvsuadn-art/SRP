@@ -5,6 +5,7 @@
 esc_shilov_find_rukzak
 esc_capture_army_blockpost
 mar_csky_kill_baron
+mil_hog_find_item
 agr_kill_wild_giant
 yan_kill_tunnel_snorks
 mar_capture_pumping_station
@@ -115,3 +116,12 @@ waves = 3
 spawn = 127.993,-8.778,-165.259,124057,1266
 reward_money = 2000
 
+; Military: the mercenary Hog asks for a trophy RPG-7 lying on the Military base (SGM: mil_hog_find_item/reward_item).
+; Hog is a squad member, not a fixed object: the giver is remembered at the start (giver = profile:...).
+[mil_hog_find_item]
+type = fetch
+giver = profile:mil_hog
+item = fp_mil_rpg7
+spawn = 3.503,5.977,-61.462,292865,1449
+reward_money = 4500
+reward_items = ammo_7.62x54_7h14

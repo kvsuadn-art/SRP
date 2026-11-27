@@ -817,4 +817,43 @@
 	<string id="yan_kill_tunnel_snorks_dialog_6">
 		<text>Спасибо. Теперь наши смогут пройти. Вот ваша плата.</text>
 	</string>
+	<string id="st_fp_mil_rpg7">
+		<text>РПГ-7 «Резонанс»</text>
+	</string>
+	<string id="st_fp_mil_rpg7_descr">
+		<text>Трофейное орудие. Деревянный корпус и рукоятка наводят на мысль, что оно сделано на заказ каким-то умельцем.</text>
+	</string>
+	<string id="mil_hog_find_item">
+		<text>Найти трофейный РПГ-7</text>
+	</string>
+	<string id="mil_hog_find_item_text">
+		<text>Наёмнику на Военных складах нужен трофейный гранатомёт. Он лежит где-то на территории военной базы. Нужно найти его.</text>
+	</string>
+	<string id="mil_hog_find_item_back">
+		<text>Вернуть гранатомёт наёмнику</text>
+	</string>
+	<string id="mil_hog_find_item_back_text">
+		<text>Гранатомёт у меня. Осталось отнести его заказчику на Военные склады.</text>
+	</string>
+	<string id="mil_hog_find_item_dialog_1">
+		<text>Вот, я принёс то, что ты просил.</text>
+	</string>
+	<string id="mil_hog_find_item_dialog_2">
+		<text>Спасибо, наёмник, что б я без тебя делал. Тебе причитается.</text>
+	</string>
+	<string id="mil_hog_find_item_dialog_3">
+		<text>Бывай.</text>
+	</string>
+	<string id="mil_hog_find_item_dialog_4">
+		<text>Чем я могу вам помочь?</text>
+	</string>
+	<string id="mil_hog_find_item_dialog_5">
+		<text>Да есть одно дело: принеси мне трофейный гранатомёт, тогда и наградку нехилую тебе подкину. Хорошо?</text>
+	</string>
+	<string id="mil_hog_find_item_dialog_6">
+		<text>Занят я. Позже поговорим.</text>
+	</string>
+	<string id="mil_hog_find_item_dialog_7">
+		<text>Хорошо, сбрасывай координаты, я пошёл.</text>
+	</string>
 </string_table>

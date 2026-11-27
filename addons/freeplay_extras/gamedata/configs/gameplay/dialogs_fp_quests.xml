@@ -230,4 +230,24 @@
 			<phrase id="1"><text>yan_kill_tunnel_snorks_dialog_6</text></phrase>
 		</phrase_list>
 	</dialog>
+	<dialog id="mil_hog_find_item_give">
+		<precondition>fp_quests.mil_hog_find_item_available</precondition>
+		<dont_has_info>mil_hog_find_item_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0"><text>mil_hog_find_item_dialog_4</text><next>1</next></phrase>
+			<phrase id="1"><text>mil_hog_find_item_dialog_5</text><next>2</next><next>5</next></phrase>
+			<phrase id="2"><text>mil_hog_find_item_dialog_7</text><action>fp_quests.start</action><action>dialogs.break_dialog</action></phrase>
+			<phrase id="5"><text>mil_hog_find_item_dialog_6</text><action>dialogs.break_dialog</action></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="mil_hog_find_item_complete">
+		<precondition>fp_quests.has_mil_hog_find_item_item</precondition>
+		<has_info>mil_hog_find_item_start</has_info>
+		<dont_has_info>mil_hog_find_item_reward</dont_has_info>
+		<phrase_list>
+			<phrase id="0"><text>mil_hog_find_item_dialog_1</text><action>fp_quests.finish</action><next>1</next></phrase>
+			<phrase id="1"><text>mil_hog_find_item_dialog_2</text><next>2</next></phrase>
+			<phrase id="2"><text>mil_hog_find_item_dialog_3</text></phrase>
+		</phrase_list>
+	</dialog>
 </game_dialogs>
