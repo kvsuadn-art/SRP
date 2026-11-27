@@ -1,0 +1,85 @@
+; Freeplay extras: medals for the rank. Idea, section names, titles and rewards: SGM (Sigerous Mod 3.10, GeJorge, sgm_grant / sgm_medals).
+; Adaptation SRP Freeplay: Eon. The medal is given once when the rank is reached (scripts\fp_medals.script) and turned into money
+; with the "use" action. Icon: placeholder shared with documents (10,25), 2x2.
+
+[medal_sect]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn = "device\skill_book"
+class = II_FOOD
+cform = skeleton
+visual = dynamics\equipments\documents_2.ogf
+description =
+inv_name =
+inv_name_short =
+cost = 10000
+inv_weight = 0.25
+can_trade = false
+inv_grid_width = 2
+inv_grid_height = 2
+inv_grid_x = 10
+inv_grid_y = 25
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+[medal_rank_100]:medal_sect
+inv_name = st_medal_100_title
+inv_name_short = st_medal_100_title
+description = st_medal_100_descr
+medal_money = 5000
+
+[medal_rank_200]:medal_sect
+inv_name = st_medal_200_title
+inv_name_short = st_medal_200_title
+description = st_medal_200_descr
+medal_money = 9000
+
+[medal_rank_400]:medal_sect
+inv_name = st_medal_400_title
+inv_name_short = st_medal_400_title
+description = st_medal_400_descr
+medal_money = 15000
+
+[medal_rank_600]:medal_sect
+inv_name = st_medal_600_title
+inv_name_short = st_medal_600_title
+description = st_medal_600_descr
+medal_money = 20000
+
+[medal_rank_800]:medal_sect
+inv_name = st_medal_800_title
+inv_name_short = st_medal_800_title
+description = st_medal_800_descr
+medal_money = 25000
+
+[medal_rank_1000]:medal_sect
+inv_name = st_medal_1000_title
+inv_name_short = st_medal_1000_title
+description = st_medal_1000_descr
+medal_money = 32000
+
+[medal_rank_1100]:medal_sect
+inv_name = st_medal_1100_title
+inv_name_short = st_medal_1100_title
+description = st_medal_1100_descr
+medal_money = 40000
+
+[medal_rank_1200]:medal_sect
+inv_name = st_medal_1200_title
+inv_name_short = st_medal_1200_title
+description = st_medal_1200_descr
+medal_money = 50000
+
+[ranks]
+100
+200
+400
+600
+800
+1000
+1100
+1200

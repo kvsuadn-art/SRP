@@ -12,5 +12,6 @@ addons = {
 	"fp_mutants",
 	"fp_skills",
 	"fp_quests",
+	"fp_medals",
 	"ogsm_rare_items_manager",
 }

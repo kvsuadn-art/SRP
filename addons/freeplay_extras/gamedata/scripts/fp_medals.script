@@ -1,0 +1,53 @@
+-- fp_medals: medals for the rank. Idea, titles and rewards: SGM (Sigerous Mod 3.10, GeJorge, sgm_grant).
+-- Adaptation SRP Freeplay: Eon
+--
+-- When the actor's rank reaches a threshold (misc\fp_medals.ltx [ranks]) the medal item medal_rank_<N> is given once
+-- (info portion fp_medal_<N> marks it). "Using" the medal gives its medal_money. Unlike SGM no item callbacks are needed.
+-- Switch: info portion srp_freeplay or fp_medals. Cost: one subscriber, 10 s period, one rank read.
+-- Savegame: nothing of its own (info portions).
+
+local CHECK_MS = 10000
+
+local ini = ini_file("misc\\fp_medals.ltx")
+local mgr = nil
+local ranks = nil
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_medals")
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+function on_item_use(obj)
+	if not is_enabled() then return end
+	local sect = obj:section()
+	if not string.find(sect, "^medal_rank_") then return end
+	local money = system_ini():r_u32(sect, "medal_money")
+	dialogs.relocate_money(nil, money, "in")
+end
+
+function on_update(delta)
+	if mgr then mgr:reschedule(CHECK_MS) end
+	if not is_enabled() then return end
+	local act = db.actor
+	if not (act and act:alive()) then return end
+	if ranks == nil then
+		ranks = {}
+		for i = 0, ini:line_count("ranks") - 1 do
+			local _, r = ini:r_line("ranks", i, "", "")
+			ranks[#ranks + 1] = tonumber(r)
+		end
+	end
+	local rank = act:character_rank()
+	for _, r in ipairs(ranks) do
+		if rank >= r and not has_alife_info("fp_medal_" .. r) then
+			act:give_info_portion("fp_medal_" .. r)
+			dialogs.relocate_item_section_to_actor(nil, nil, "medal_rank_" .. r, 1)
+			news_manager.send_tip(act, game.translate_string("st_fp_medal_tip") .. " " .. game.translate_string("st_medal_" .. r .. "_title"))
+		end
+	end
+end

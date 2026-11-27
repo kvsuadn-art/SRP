@@ -1099,4 +1099,58 @@
 	<string id="sgm_freedom_squads_commander_name">
 		<text>Майор Барановский</text>
 	</string>
+	<string id="st_fp_medal_tip_title">
+		<text>За достижение ранга:</text>
+	</string>
+	<string id="st_fp_medal_tip">
+		<text>Получена медаль</text>
+	</string>
+	<string id="st_medal_100_title">
+		<text>Первенство «Новичка»</text>
+	</string>
+	<string id="st_medal_100_descr">
+		<text>Награда за достижение ранга 100. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
+	<string id="st_medal_200_title">
+		<text>Первенство «Следопыта»</text>
+	</string>
+	<string id="st_medal_200_descr">
+		<text>Награда за достижение ранга 200. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
+	<string id="st_medal_400_title">
+		<text>Первенство «Сталкера»</text>
+	</string>
+	<string id="st_medal_400_descr">
+		<text>Награда за достижение ранга 400. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
+	<string id="st_medal_600_title">
+		<text>Первенство «Опытного»</text>
+	</string>
+	<string id="st_medal_600_descr">
+		<text>Награда за достижение ранга 600. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
+	<string id="st_medal_800_title">
+		<text>Первенство «Ветерана»</text>
+	</string>
+	<string id="st_medal_800_descr">
+		<text>Награда за достижение ранга 800. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
+	<string id="st_medal_1000_title">
+		<text>Первенство «Мастера»</text>
+	</string>
+	<string id="st_medal_1000_descr">
+		<text>Награда за достижение ранга 1000. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
+	<string id="st_medal_1100_title">
+		<text>Первенство «Элитария»</text>
+	</string>
+	<string id="st_medal_1100_descr">
+		<text>Награда за достижение ранга 1100. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
+	<string id="st_medal_1200_title">
+		<text>Первенство «Героя зоны»</text>
+	</string>
+	<string id="st_medal_1200_descr">
+		<text>Награда за достижение ранга 1200. Чтобы превратить в деньги, используйте медаль.</text>
+	</string>
 </string_table>
