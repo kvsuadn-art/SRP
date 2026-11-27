@@ -46,6 +46,12 @@
 	<info_portion id="gar_rescue_tunnel_novice_start"/>
 	<info_portion id="gar_rescue_tunnel_novice_complete"/>
 	<info_portion id="gar_rescue_tunnel_novice_reward"/>
+	<info_portion id="agr_eliminate_outpost_start"/>
+	<info_portion id="agr_eliminate_outpost_complete"/>
+	<info_portion id="agr_eliminate_outpost_reward"/>
+	<info_portion id="yan_bring_sample_dnk_start"/>
+	<info_portion id="yan_bring_sample_dnk_complete"/>
+	<info_portion id="yan_bring_sample_dnk_reward"/>
 	<info_portion id="agr_kill_wild_giant_start"/>
 	<info_portion id="agr_kill_wild_giant_complete"/>
 	<info_portion id="agr_kill_wild_giant_reward"/>

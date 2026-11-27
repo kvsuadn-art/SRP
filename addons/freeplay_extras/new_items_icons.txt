@@ -1,3 +1,4 @@
 fp_mil_rpg7: wpn_rpg7 icon (наследуется, своя иконка не нужна)
 fp_impounded_goods: иконка-заглушка (10,25) 2x2 (общая с ammo_package); заменить своей.
 fp_master_outfit: иконка наследуется от svoboda_light_outfit, своя не нужна.
+fp_outpost_pda, fp_dnk_sample: иконки-заглушки (10,25) 2x2 (общие с ammo_package); заменить своими.

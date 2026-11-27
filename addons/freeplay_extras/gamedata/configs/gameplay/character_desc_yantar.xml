@@ -124,6 +124,8 @@
 		<actor_dialog>rt_saharov_reward_dialog</actor_dialog>
 		<actor_dialog>yan_kill_tunnel_snorks_give</actor_dialog>
 		<actor_dialog>yan_kill_tunnel_snorks_complete</actor_dialog>
+		<actor_dialog>yan_bring_sample_dnk_give</actor_dialog>
+		<actor_dialog>yan_bring_sample_dnk_complete</actor_dialog>
 	</specific_character>
 
 	<specific_character id="yan_stalker_levsha" team_default = "1">

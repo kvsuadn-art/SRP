@@ -355,6 +355,8 @@
 
 		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
 	<actor_dialog>rare_items_dialog</actor_dialog>
+		<actor_dialog>agr_eliminate_outpost_give</actor_dialog>
+		<actor_dialog>agr_eliminate_outpost_complete</actor_dialog>
 	</specific_character>
 
 	<specific_character id="agr_zooman" team_default = "1">
@@ -741,5 +743,28 @@
 #include "gameplay\character_criticals_4.xml"
 #include "gameplay\character_dialogs.xml"
 
+	</specific_character>
+
+	<!-- Bandit veterans on the south outpost: the targets of the fp_quests quest agr_eliminate_outpost. Adaptation SRP Freeplay: Eon -->
+	<specific_character id="fp_exo_bandit" team_default = "1">
+		<name>fp_exo_bandit_name</name>
+		<icon>ui_npc_u_bandit_3</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<class>fp_exo_bandit</class>
+		<community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<rank>400</rank>
+		<reputation>0</reputation>
+		<visual>actors\stalker_bandit\stalker_bandit_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_mp5 \n
+			ammo_9x19_fmj = 2 \n
+			fp_outpost_pda = 1 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
 	</specific_character>
 </xml>

@@ -976,4 +976,67 @@
 	<string id="gar_rescue_tunnel_novice_found_3">
 		<text>Понял, иду следом. Спасибо тебе.</text>
 	</string>
+	<string id="agr_eliminate_outpost">
+		<text>Очистить южный форпост</text>
+	</string>
+	<string id="agr_eliminate_outpost_text">
+		<text>На южном форпосту Агропрома пропала связь. По слухам, там обосновались бандиты-ветераны. Нужно проверить, устранить их и забрать КПК погибших.</text>
+	</string>
+	<string id="agr_eliminate_outpost_back">
+		<text>Вернуть КПК торговцу Долга</text>
+	</string>
+	<string id="agr_eliminate_outpost_back_text">
+		<text>Бандиты устранены, КПК у меня. Осталось вернуться к торговцу на базу Долга.</text>
+	</string>
+	<string id="agr_eliminate_outpost_dialog_1">
+		<text>Здорово. Есть работа?</text>
+	</string>
+	<string id="agr_eliminate_outpost_dialog_2">
+		<text>Есть. Час назад пропала связь с нашим южным форпостом. Похоже, там бандиты. Сходи, проверь, устрани их и принеси КПК наших ребят. Возьмёшься?</text>
+	</string>
+	<string id="agr_eliminate_outpost_dialog_5">
+		<text>Я проверил форпост. Бандиты устранены, вот КПК.</text>
+	</string>
+	<string id="agr_eliminate_outpost_dialog_6">
+		<text>Спасибо, наёмник. Вот награда. Ребят жаль, но теперь хоть ясно, что случилось.</text>
+	</string>
+	<string id="st_fp_outpost_pda">
+		<text>КПК с форпоста</text>
+	</string>
+	<string id="st_fp_outpost_pda_descr">
+		<text>Личный КПК бойца южного форпоста Долга.</text>
+	</string>
+	<string id="yan_bring_sample_dnk">
+		<text>Образец ДНК кровососа</text>
+	</string>
+	<string id="yan_bring_sample_dnk_text">
+		<text>Учёным на Янтаре нужен образец ДНК необычного кровососа, который бродит неподалёку. Нужно убить его и забрать образец.</text>
+	</string>
+	<string id="yan_bring_sample_dnk_back">
+		<text>Отдать образец Сахарову</text>
+	</string>
+	<string id="yan_bring_sample_dnk_back_text">
+		<text>Образец ДНК у меня. Осталось отнести его Сахарову.</text>
+	</string>
+	<string id="yan_bring_sample_dnk_dialog_1">
+		<text>Для меня есть дело?</text>
+	</string>
+	<string id="yan_bring_sample_dnk_dialog_2">
+		<text>Есть. Нам нужен образец ДНК одного кровососа, он бродит недалеко от лаборатории. Убей его и принеси образец. Согласен?</text>
+	</string>
+	<string id="yan_bring_sample_dnk_dialog_5">
+		<text>Образец у меня, держите.</text>
+	</string>
+	<string id="yan_bring_sample_dnk_dialog_6">
+		<text>Отлично, это очень поможет исследованиям. Вот ваша награда.</text>
+	</string>
+	<string id="st_fp_dnk_sample">
+		<text>Образец ДНК</text>
+	</string>
+	<string id="st_fp_dnk_sample_descr">
+		<text>Контейнер с образцом ДНК кровососа.</text>
+	</string>
+	<string id="fp_exo_bandit_name">
+		<text>Бандит-ветеран</text>
+	</string>
 </string_table>

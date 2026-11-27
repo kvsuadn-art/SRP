@@ -6,6 +6,8 @@ esc_shilov_find_rukzak
 esc_capture_army_blockpost
 mar_csky_kill_baron
 mil_hog_find_item
+agr_eliminate_outpost
+yan_bring_sample_dnk
 gar_find_master_outfit
 gar_rescue_tunnel_novice
 val_find_ashot_dummy
@@ -167,3 +169,26 @@ npc = fp_tunnel_novice
 spawn = -275.499,0.375,28.433,1626,295
 reward_money = 3000
 reward_items = medkit_army, medkit_army, skill_book_toz34
+
+; Agroprom: the south outpost taken by bandits (SGM: agr_go_to_outpost -> eliminate -> search bodies -> return PDAs, merged into
+; one kill quest: the PDAs lie on the bandits). The giver is the existing Duty base trader (SGM: sergeant Maklakov, a new NPC).
+[agr_eliminate_outpost]
+type = kill
+giver = agr_duty_base_trader
+npc = fp_exo_bandit
+count = 2
+loot = fp_outpost_pda
+spawn = -37.787,-4.133,-290.333,120737,1058
+reward_money = 6000
+reward_items = medkit_army, medkit_army, skill_book_lr300
+
+; Yantar: a DNA sample from a bloodsucker (SGM: yan_bring_sample_dnk / take / reward). The sample is a drop of the monster.
+[yan_bring_sample_dnk]
+type = kill
+giver = yan_stalker_sakharov
+npc = fp_dnk_bloodsucker
+loot = fp_dnk_sample
+spawn = 62.813,0.604,40.940,90537,1272
+story_info = yan_proriv_k_ystanovke
+reward_money = 4000
+reward_items = skill_book_fn2000

@@ -8,7 +8,7 @@
 --             only while such a quest is active), then report to the giver;
 --   kill    - an NPC (section 'npc') is spawned at 'spawn' when the quest starts; its death completes
 --             the quest (checked every 5 s while the quest is active), then report to the giver;
---             optional count (NPCs per wave) and waves (the next wave appears when the previous is dead);
+--             optional loot (an item the actor must also take from the targets before it counts), optional count (NPCs per wave) and waves (the next wave appears when the previous is dead);
 --   talk    - an NPC (section 'npc') is spawned at 'spawn'; talking to it (a dialog action fp_quests.talked)
 --             completes the quest, then report to the giver;
 --   deliver - the actor brings an existing item (section 'item', nothing is spawned); it is noticed in the
@@ -57,6 +57,7 @@ local function cfg(q)
 			c.npc = ini:r_string(q, "npc")
 			c.count = ini:line_exist(q, "count") and ini:r_u32(q, "count") or 1
 			c.waves = ini:line_exist(q, "waves") and ini:r_u32(q, "waves") or 1
+			c.loot = ini:line_exist(q, "loot") and ini:r_string(q, "loot") or nil
 		end
 		local pos = ini:r_string(q, "spawn")
 		local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
@@ -189,6 +190,9 @@ function finish(actor, npc, dialog_id, phrase_id)
 	local c = cfg(q)
 	if c == nil then return end
 	if c.item ~= nil then dialogs.relocate_item_section_from_actor(actor, npc, c.item) end
+	if c.loot ~= nil then
+		for _ = 1, (c.count or 1) do dialogs.relocate_item_section_from_actor(actor, npc, c.loot) end
+	end
 	if c.money > 0 then dialogs.relocate_money(npc, c.money, "in") end
 	for _, s in ipairs(c.rewards) do dialogs.relocate_item_section_to_actor(actor, npc, s, 1) end
 	db.actor:give_info_portion(q .. "_reward")
@@ -208,6 +212,8 @@ end
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
 function esc_capture_army_blockpost_available() return available("esc_capture_army_blockpost") end
+function agr_eliminate_outpost_available() return available("agr_eliminate_outpost") end
+function yan_bring_sample_dnk_available() return available("yan_bring_sample_dnk") end
 function gar_find_master_outfit_available() return available("gar_find_master_outfit") end
 function gar_rescue_tunnel_novice_available() return available("gar_rescue_tunnel_novice") end
 function val_find_ashot_dummy_available() return available("val_find_ashot_dummy") end
@@ -277,7 +283,7 @@ function fp_on_update(delta)
 			local c = cfg(q)
 			local done
 			if c.type == "kill" then
-				done = target_gone(q) and not next_wave(q, c)
+				done = target_gone(q) and not next_wave(q, c) and (c.loot == nil or db.actor:object(c.loot) ~= nil)
 			elseif c.type == "deliver" then
 				done = db.actor:object(c.item) ~= nil
 			else
