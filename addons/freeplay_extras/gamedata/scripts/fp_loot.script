@@ -190,6 +190,10 @@ function startup_spawn()
 	for _, section in ipairs(doc_list) do
 		place(section)
 	end
+	-- weapon skill books (fp_skills)
+	for _, section in ipairs(fp_skills.book_list()) do
+		place(section)
+	end
 end
 
 -- documents in the actor's inventory (dialog precondition)

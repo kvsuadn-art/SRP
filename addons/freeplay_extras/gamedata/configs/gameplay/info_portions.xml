@@ -20,6 +20,39 @@
 	<info_portion id="fp_rt_manager"/>
 	<info_portion id="fp_artefacts"/>
 	<info_portion id="fp_mutants"/>
+	<info_portion id="fp_skills"/>
+	<info_portion id="skill_book_ak74"/>
+	<info_portion id="skill_book_ak74u"/>
+	<info_portion id="skill_book_pkm"/>
+	<info_portion id="skill_book_abakan"/>
+	<info_portion id="skill_book_beretta"/>
+	<info_portion id="skill_book_bm16"/>
+	<info_portion id="skill_book_colt1911"/>
+	<info_portion id="skill_book_desert_eagle"/>
+	<info_portion id="skill_book_fn2000"/>
+	<info_portion id="skill_book_fort"/>
+	<info_portion id="skill_book_g36"/>
+	<info_portion id="skill_book_gauss"/>
+	<info_portion id="skill_book_groza"/>
+	<info_portion id="skill_book_hpsa"/>
+	<info_portion id="skill_book_l85"/>
+	<info_portion id="skill_book_lr300"/>
+	<info_portion id="skill_book_mp5"/>
+	<info_portion id="skill_book_pb"/>
+	<info_portion id="skill_book_pm"/>
+	<info_portion id="skill_book_rg-6"/>
+	<info_portion id="skill_book_rpg7"/>
+	<info_portion id="skill_book_sig220"/>
+	<info_portion id="skill_book_sig550"/>
+	<info_portion id="skill_book_spas12"/>
+	<info_portion id="skill_book_svd"/>
+	<info_portion id="skill_book_svu"/>
+	<info_portion id="skill_book_toz34"/>
+	<info_portion id="skill_book_usp"/>
+	<info_portion id="skill_book_val"/>
+	<info_portion id="skill_book_vintorez"/>
+	<info_portion id="skill_book_walther"/>
+	<info_portion id="skill_book_wincheaster1300"/>
 
 <!--	Freeplay end	-->
 

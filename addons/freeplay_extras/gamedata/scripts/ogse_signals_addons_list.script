@@ -10,4 +10,5 @@ addons = {
 	"fp_satiety",
 	"ogsm_rt_manager",
 	"fp_mutants",
+	"fp_skills",
 }

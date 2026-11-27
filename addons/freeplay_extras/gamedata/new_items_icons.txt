@@ -53,3 +53,11 @@ fp_dev_tools     | configs/misc/fp_dev.ltx       | x=2, y=25, 2x1 | та же и
 Торговля: configs/misc/trade_generic.ltx и configs/misc/trade/*.ltx (цена как у af_medusa / af_fireball)
 Выпадение частей из мутантов: configs/creatures/m_*.ltx (Spawn_Inventory_Item_Section/Probability; в оригинале вероятность 0.0)
 Появление в мире: scripts/fp_anomaly_zone.script (во Фриплее аномальные зоны получают эти артефакты в свой список)
+
+Книги навыков (fp_skills) — 32 предмета skill_book_*  | configs/misc/fp_skill_items.ltx
+--------------------------------------------------------------------------------------
+Все используют общую иконку документа: x=2, y=25, 2x1 (inv_grid_x/y в базовой секции [skill_book]).
+Если нужна своя иконка — достаточно поменять inv_grid_x/y в [skill_book] (одна для всех) или дописать ключи в нужные секции.
+Секции: skill_book_ak74, ak74u, pkm, abakan, beretta, bm16, colt1911, desert_eagle, fn2000, fort, g36, gauss, groza, hpsa, l85, lr300, mp5, pb, pm,
+        rg-6, rpg7, sig220, sig550, spas12, svd, svu, toz34, usp, val, vintorez, walther, wincheaster1300
+Тексты: configs/text/rus/fp_extras.xml (st_skill_book_*_title / _descr); конфиг соответствия оружию: configs/misc/fp_skills.ltx

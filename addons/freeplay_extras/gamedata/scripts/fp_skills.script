@@ -1,0 +1,86 @@
+-- fp_skills: weapon skill books. Idea and book sections: SGM (Sigerous Mod 3.10, GeJorge).
+-- Adaptation SRP Freeplay: Eon
+--
+-- A book (item section skill_book_*, misc\fp_skill_items.ltx) is "used" like food; the use gives the info
+-- portion with the same name. While the weapon from skill_target is in the actor's hands, a share of the wear
+-- it takes (misc\fp_skills.ltx [settings] wear_save) is given back. Unlike SGM no NPC hit callbacks are needed.
+-- Switch: info portion srp_freeplay or fp_skills. Cost: one subscriber, 1 s period, only reads the active item.
+-- Savegame: nothing of its own (the state is in info portions).
+
+local TAG = "[fp_skills] "
+local CHECK_MS = 1000
+
+local ini = ini_file("misc\\fp_skills.ltx")
+local weapon_info = {}   -- weapon section -> info portion (book section)
+local inited = false
+local mgr = nil
+local wear_save = 0.5
+local last_id = nil
+local last_cond = nil
+
+function is_enabled()
+	return has_alife_info("srp_freeplay") or has_alife_info("fp_skills")
+end
+
+local function init()
+	if inited then return end
+	inited = true
+	if ini:line_exist("settings", "wear_save") then wear_save = ini:r_float("settings", "wear_save") end
+	for i = 0, ini:line_count("books") - 1 do
+		local _, book, wpn = ini:r_line("books", i, "", "")
+		weapon_info[wpn] = book
+	end
+end
+
+-- book sections for fp_loot (one list, same order as in the config)
+function book_list()
+	init()
+	local list = {}
+	for i = 0, ini:line_count("books") - 1 do
+		local _, book = ini:r_line("books", i, "", "")
+		list[#list + 1] = book
+	end
+	return list
+end
+
+function attach(m)
+	mgr = m
+	m:subscribe({ signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ signal = "on_update", fun = on_update })
+end
+
+function on_item_use(obj)
+	if not is_enabled() then return end
+	init()
+	local sect = obj:section()
+	if not ini:line_exist("books", sect) then return end
+	local wpn = ini:r_string("books", sect)
+	local name = game.translate_string(system_ini():r_string(sect, "inv_name"))
+	if has_alife_info(sect) then
+		news_manager.send_tip(db.actor, game.translate_string("st_fp_skill_known") .. " " .. name)
+	else
+		db.actor:give_info_portion(sect)
+		news_manager.send_tip(db.actor, game.translate_string("st_fp_skill_learned") .. " " .. name)
+	end
+end
+
+function on_update(delta)
+	if mgr then mgr:reschedule(CHECK_MS) end
+	if not is_enabled() then return end
+	init()
+	local act = db.actor
+	if not (act and act:alive()) then return end
+	local item = act:active_item()
+	local book = item and weapon_info[item:section()]
+	if book == nil or not has_alife_info(book) then
+		last_id = nil
+		return
+	end
+	local cond = item:condition()
+	if last_id == item:id() and last_cond ~= nil and cond < last_cond then
+		cond = cond + (last_cond - cond) * wear_save
+		item:set_condition(cond)
+	end
+	last_id = item:id()
+	last_cond = cond
+end
