@@ -41,7 +41,7 @@ local function teleport_list()
 			res[#res + 1] = {
 				key = name,
 				name = lvl .. ". " .. label,
-				descr = (d.level == cur) and "Точка на этом уровне." or "Точка на другом уровне: сначала переход на уровень (консольная команда jump_to_level), затем прыжок к точке.",
+				descr = (d.level == cur) and "Точка на этом уровне." or "Точка на другом уровне: сначала переход через зону перехода, как у проводников, затем прыжок к точке.",
 				here = (d.level == cur) and 0 or 1,
 				lvl = lvl,
 			}
