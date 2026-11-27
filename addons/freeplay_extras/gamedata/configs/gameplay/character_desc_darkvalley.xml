@@ -100,6 +100,8 @@
 
 		<actor_dialog>rt_squad_courier_dialog</actor_dialog>
 	<actor_dialog>rare_items_dialog</actor_dialog>
+		<actor_dialog>val_find_ashot_dummy_give</actor_dialog>
+		<actor_dialog>val_find_ashot_dummy_complete</actor_dialog>
 	</specific_character>
 
 	<specific_character id="val_freedom_fixer" team_default = "1">
@@ -130,6 +132,8 @@
 		<actor_dialog>val_fixer_about_benefit</actor_dialog>
 		<actor_dialog>tm_upgr_task</actor_dialog>
 		<actor_dialog>find_upgrade_task</actor_dialog>
+		<actor_dialog>val_searched_impounded_give</actor_dialog>
+		<actor_dialog>val_searched_impounded_complete</actor_dialog>
 
 #include "gameplay\character_criticals_1.xml"
 

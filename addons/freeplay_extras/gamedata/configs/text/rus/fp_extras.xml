@@ -856,4 +856,58 @@
 	<string id="mil_hog_find_item_dialog_7">
 		<text>Хорошо, сбрасывай координаты, я пошёл.</text>
 	</string>
+	<string id="val_find_ashot_dummy">
+		<text>Найти для Ашота артефакт «Пустышка»</text>
+	</string>
+	<string id="val_find_ashot_dummy_text">
+		<text>Торговец Свободы Ашот ищет артефакт «Пустышка». Нужно найти его и принести торговцу.</text>
+	</string>
+	<string id="val_find_ashot_dummy_back">
+		<text>Отдать Ашоту артефакт «Пустышка»</text>
+	</string>
+	<string id="val_find_ashot_dummy_back_text">
+		<text>Артефакт «Пустышка» у меня. Нужно принести его Ашоту на базу Свободы.</text>
+	</string>
+	<string id="val_find_ashot_dummy_dialog_1">
+		<text>Ашотик, помощь нужна?</text>
+	</string>
+	<string id="val_find_ashot_dummy_dialog_2">
+		<text>Вах, какие люди! Помочь хочешь? Принеси мне артефактик один, «Пустышкой» зовётся, а я заплачу как надо. Лады?</text>
+	</string>
+	<string id="val_find_ashot_dummy_dialog_5">
+		<text>Вот твой артефакт, держи.</text>
+	</string>
+	<string id="val_find_ashot_dummy_dialog_6">
+		<text>Спасибо, дорогой! Вот, как договаривались, деньги. И ещё вот, пригодится.</text>
+	</string>
+	<string id="val_searched_impounded">
+		<text>Найти вещи погибшего свободовца</text>
+	</string>
+	<string id="val_searched_impounded_text">
+		<text>Свободовец, искавший редкий артефакт, пропал на юге долины. Нужно найти его вещи и вернуть их на базу Свободы.</text>
+	</string>
+	<string id="val_searched_impounded_back">
+		<text>Отнести найденное на базу Свободы</text>
+	</string>
+	<string id="val_searched_impounded_back_text">
+		<text>Вещи погибшего у меня. Нужно вернуть их на базу Свободы и получить вознаграждение.</text>
+	</string>
+	<string id="val_searched_impounded_dialog_1">
+		<text>Есть для меня какая-нибудь работа?</text>
+	</string>
+	<string id="val_searched_impounded_dialog_2">
+		<text>Есть. Недавно пропал один из наших. По слухам, он нашёл редкий артефакт и погиб где-то на юге долины. Найди его вещи и принеси мне. Берёшься?</text>
+	</string>
+	<string id="val_searched_impounded_dialog_5">
+		<text>Я нашёл вещи погибшего свободовца.</text>
+	</string>
+	<string id="val_searched_impounded_dialog_6">
+		<text>Значит, слухи не врали. Спасибо, наёмник, вот твоя награда.</text>
+	</string>
+	<string id="st_fp_impounded_goods">
+		<text>Вещи погибшего свободовца</text>
+	</string>
+	<string id="st_fp_impounded_goods_descr">
+		<text>Потрёпанная сумка с личными вещами сталкера, погибшего в аномалии.</text>
+	</string>
 </string_table>

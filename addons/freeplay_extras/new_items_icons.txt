@@ -1,1 +1,2 @@
 fp_mil_rpg7: wpn_rpg7 icon (наследуется, своя иконка не нужна)
+fp_impounded_goods: иконка-заглушка (10,25) 2x2 (общая с ammo_package); заменить своей.

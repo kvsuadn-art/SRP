@@ -34,6 +34,12 @@
 	<info_portion id="mil_hog_find_item_start"/>
 	<info_portion id="mil_hog_find_item_complete"/>
 	<info_portion id="mil_hog_find_item_reward"/>
+	<info_portion id="val_find_ashot_dummy_start"/>
+	<info_portion id="val_find_ashot_dummy_complete"/>
+	<info_portion id="val_find_ashot_dummy_reward"/>
+	<info_portion id="val_searched_impounded_start"/>
+	<info_portion id="val_searched_impounded_complete"/>
+	<info_portion id="val_searched_impounded_reward"/>
 	<info_portion id="agr_kill_wild_giant_start"/>
 	<info_portion id="agr_kill_wild_giant_complete"/>
 	<info_portion id="agr_kill_wild_giant_reward"/>

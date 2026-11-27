@@ -9,6 +9,8 @@
 --   kill    - an NPC (section 'npc') is spawned at 'spawn' when the quest starts; its death completes
 --             the quest (checked every 5 s while the quest is active), then report to the giver;
 --             optional count (NPCs per wave) and waves (the next wave appears when the previous is dead);
+--   deliver - the actor brings an existing item (section 'item', nothing is spawned); it is noticed in the
+--             inventory every 5 s while the quest is active, then report to the giver;
 --   bonus   - no task: a dialog reward available once all quests in 'requires' are rewarded.
 -- 'giver = profile:<name>': the giver is an NPC without a fixed object name, its id is stored at the start.
 -- Optional 'story_info': outside Freeplay the quest opens after this original story info portion.
@@ -44,6 +46,8 @@ local function cfg(q)
 	if c.type == "capture" then
 		c.smart = ini:r_string(q, "smart")
 		c.enemy = ini:r_string(q, "enemy")
+	elseif c.type == "deliver" then
+		c.item = ini:r_string(q, "item")
 	elseif c.type == "fetch" or c.type == "kill" then
 		if c.type == "fetch" then
 			c.item = ini:r_string(q, "item")
@@ -193,6 +197,8 @@ end
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
 function esc_capture_army_blockpost_available() return available("esc_capture_army_blockpost") end
+function val_find_ashot_dummy_available() return available("val_find_ashot_dummy") end
+function val_searched_impounded_available() return available("val_searched_impounded") end
 function mil_hog_find_item_available() return available("mil_hog_find_item") end
 function has_mil_hog_find_item_item() return has_item("mil_hog_find_item") end
 function agr_kill_wild_giant_available() return available("agr_kill_wild_giant") end
@@ -250,7 +256,7 @@ function fp_on_update(delta)
 		for i = 0, ini:line_count("quests") - 1 do
 			local _, q = ini:r_line("quests", i, "", "")
 			local c = cfg(q)
-			if c ~= nil and (c.type == "capture" or c.type == "kill") then capture_list[#capture_list + 1] = q end
+			if c ~= nil and (c.type == "capture" or c.type == "kill" or c.type == "deliver") then capture_list[#capture_list + 1] = q end
 		end
 	end
 	for _, q in ipairs(capture_list) do
@@ -259,6 +265,8 @@ function fp_on_update(delta)
 			local done
 			if c.type == "kill" then
 				done = target_gone(q) and not next_wave(q, c)
+			elseif c.type == "deliver" then
+				done = db.actor:object(c.item) ~= nil
 			else
 				done = not smart_held(q)
 			end

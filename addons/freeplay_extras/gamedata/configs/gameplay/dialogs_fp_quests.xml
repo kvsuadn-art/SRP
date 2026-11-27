@@ -250,4 +250,40 @@
 			<phrase id="2"><text>mil_hog_find_item_dialog_3</text></phrase>
 		</phrase_list>
 	</dialog>
+	<dialog id="val_find_ashot_dummy_give">
+		<precondition>fp_quests.val_find_ashot_dummy_available</precondition>
+		<dont_has_info>val_find_ashot_dummy_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0"><text>val_find_ashot_dummy_dialog_1</text><next>1</next></phrase>
+			<phrase id="1"><text>val_find_ashot_dummy_dialog_2</text><next>100</next><next>200</next></phrase>
+			<phrase id="100"><text>fp_quest_yes</text><action>fp_quests.start</action><action>dialogs.break_dialog</action></phrase>
+			<phrase id="200"><text>fp_quest_no</text><action>dialogs.break_dialog</action></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="val_find_ashot_dummy_complete">
+		<has_info>val_find_ashot_dummy_complete</has_info>
+		<dont_has_info>val_find_ashot_dummy_reward</dont_has_info>
+		<phrase_list>
+			<phrase id="0"><text>val_find_ashot_dummy_dialog_5</text><action>fp_quests.finish</action><next>1</next></phrase>
+			<phrase id="1"><text>val_find_ashot_dummy_dialog_6</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="val_searched_impounded_give">
+		<precondition>fp_quests.val_searched_impounded_available</precondition>
+		<dont_has_info>val_searched_impounded_start</dont_has_info>
+		<phrase_list>
+			<phrase id="0"><text>val_searched_impounded_dialog_1</text><next>1</next></phrase>
+			<phrase id="1"><text>val_searched_impounded_dialog_2</text><next>100</next><next>200</next></phrase>
+			<phrase id="100"><text>fp_quest_yes</text><action>fp_quests.start</action><action>dialogs.break_dialog</action></phrase>
+			<phrase id="200"><text>fp_quest_no</text><action>dialogs.break_dialog</action></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="val_searched_impounded_complete">
+		<has_info>val_searched_impounded_complete</has_info>
+		<dont_has_info>val_searched_impounded_reward</dont_has_info>
+		<phrase_list>
+			<phrase id="0"><text>val_searched_impounded_dialog_5</text><action>fp_quests.finish</action><next>1</next></phrase>
+			<phrase id="1"><text>val_searched_impounded_dialog_6</text></phrase>
+		</phrase_list>
+	</dialog>
 </game_dialogs>

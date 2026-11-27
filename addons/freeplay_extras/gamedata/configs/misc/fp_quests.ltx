@@ -6,6 +6,8 @@ esc_shilov_find_rukzak
 esc_capture_army_blockpost
 mar_csky_kill_baron
 mil_hog_find_item
+val_find_ashot_dummy
+val_searched_impounded
 agr_kill_wild_giant
 yan_kill_tunnel_snorks
 mar_capture_pumping_station
@@ -125,3 +127,23 @@ item = fp_mil_rpg7
 spawn = 3.503,5.977,-61.462,292865,1449
 reward_money = 4500
 reward_items = ammo_7.62x54_7h14
+
+; Dark Valley (Freedom tasks: available only to an actor who joined Freedom).
+; SGM: val_find_ashot_dummy (the trader discount is dropped) and val_searched_impounded (the breeder "Dr. Mamaev" is replaced
+; by the existing Freedom fixer; the selection reward is replaced by an artifact).
+[val_find_ashot_dummy]
+type = deliver
+faction = freedom
+giver = val_freedom_trader
+item = af_dummy_dummy
+reward_money = 6000
+reward_items = skill_book_g36
+
+[val_searched_impounded]
+type = fetch
+faction = freedom
+giver = val_freedom_fixer
+item = fp_impounded_goods
+spawn = -6.543,7.011,-158.918,178873,849
+reward_money = 3000
+reward_items = af_night_star
