@@ -72,7 +72,7 @@ function describe(tab, key)
 	return ""
 end
 
--- The jump inside a level is done by SRP's own guide code: guiders.start_teleport (fade, control back at the end).
+-- The jump inside a level: a direct move onto the guide's patrol point.
 -- To another level the guides' own way is used (guiders.action_teleport_to_point): the player is put onto the
 -- patrol point guiders_table.cross_level_teleport[current][target], which lies inside a level changer zone, so the
 -- engine itself loads the next level. On the new level the same guide jump goes to the exact point. The target is
