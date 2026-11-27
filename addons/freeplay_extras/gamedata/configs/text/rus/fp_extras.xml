@@ -610,4 +610,136 @@
 	<string id="esc_capture_army_blockpost_dialog_6">
 		<text>Отлично сработано! Вот твоя плата и кое-что из снаряжения в придачу.</text>
 	</string>
+	<string id="fp_quest_yes">
+		<text>Берусь.</text>
+	</string>
+	<string id="fp_quest_no">
+		<text>Не сейчас.</text>
+	</string>
+	<string id="mar_capture_pumping_station">
+		<text>Выбить ренегатов из насосной станции</text>
+	</string>
+	<string id="mar_capture_pumping_station_text">
+		<text>Ренегаты заняли насосную станцию на болотах. Нужно выбить их оттуда: станция не должна остаться за ренегатами.</text>
+	</string>
+	<string id="mar_capture_pumping_station_back">
+		<text>Доложить Лебедеву</text>
+	</string>
+	<string id="mar_capture_pumping_station_back_text">
+		<text>Насосная станция больше не принадлежит ренегатам. Нужно вернуться к Лебедеву на базу Чистого Неба и доложить.</text>
+	</string>
+	<string id="mar_capture_pumping_station_dialog_1">
+		<text>Есть задание по ренегатам?</text>
+	</string>
+	<string id="mar_capture_pumping_station_dialog_2">
+		<text>Ренегаты обосновались на насосной станции. Мне нужно, чтобы их там не было. Возьмёшься выбить их?</text>
+	</string>
+	<string id="mar_capture_pumping_station_dialog_5">
+		<text>Насосная станция очищена. Ренегатов там больше нет.</text>
+	</string>
+	<string id="mar_capture_pumping_station_dialog_6">
+		<text>Хорошая работа! Вот твоя плата.</text>
+	</string>
+	<string id="mar_capture_church">
+		<text>Очистить старую церковь от ренегатов</text>
+	</string>
+	<string id="mar_capture_church_text">
+		<text>Ренегаты засели в старой церкви. Нужно очистить её, чтобы место не осталось за ренегатами.</text>
+	</string>
+	<string id="mar_capture_church_back">
+		<text>Доложить Лебедеву</text>
+	</string>
+	<string id="mar_capture_church_back_text">
+		<text>Церковь больше не принадлежит ренегатам. Нужно вернуться к Лебедеву на базу Чистого Неба и доложить.</text>
+	</string>
+	<string id="mar_capture_church_dialog_1">
+		<text>Ещё работа для меня найдётся?</text>
+	</string>
+	<string id="mar_capture_church_dialog_2">
+		<text>Ренегаты засели в старой церкви. Нужно очистить её. Справишься?</text>
+	</string>
+	<string id="mar_capture_church_dialog_5">
+		<text>Церковь очищена от ренегатов.</text>
+	</string>
+	<string id="mar_capture_church_dialog_6">
+		<text>Отлично. Держи оплату.</text>
+	</string>
+	<string id="mar_capture_boat_station">
+		<text>Захватить лодочную станцию</text>
+	</string>
+	<string id="mar_capture_boat_station_text">
+		<text>Ренегаты держат лодочную станцию. Нужно отбить её у них.</text>
+	</string>
+	<string id="mar_capture_boat_station_back">
+		<text>Доложить Лебедеву</text>
+	</string>
+	<string id="mar_capture_boat_station_back_text">
+		<text>Лодочная станция больше не за ренегатами. Нужно доложить Лебедеву.</text>
+	</string>
+	<string id="mar_capture_boat_station_dialog_1">
+		<text>Что-нибудь ещё нужно сделать на болотах?</text>
+	</string>
+	<string id="mar_capture_boat_station_dialog_2">
+		<text>Лодочная станция всё ещё у ренегатов. Выбей их оттуда.</text>
+	</string>
+	<string id="mar_capture_boat_station_dialog_5">
+		<text>Лодочная станция наша.</text>
+	</string>
+	<string id="mar_capture_boat_station_dialog_6">
+		<text>Молодец. Вот награда.</text>
+	</string>
+	<string id="mar_capture_embankment">
+		<text>Захватить стоянку под насыпью</text>
+	</string>
+	<string id="mar_capture_embankment_text">
+		<text>Ренегаты закрепились на стоянке под железнодорожной насыпью. Нужно выбить их.</text>
+	</string>
+	<string id="mar_capture_embankment_back">
+		<text>Доложить Лебедеву</text>
+	</string>
+	<string id="mar_capture_embankment_back_text">
+		<text>Стоянка под насыпью больше не за ренегатами. Нужно доложить Лебедеву.</text>
+	</string>
+	<string id="mar_capture_embankment_dialog_1">
+		<text>Есть ещё места, откуда нужно выбить ренегатов?</text>
+	</string>
+	<string id="mar_capture_embankment_dialog_2">
+		<text>Ренегаты закрепились на стоянке под насыпью. Нужно выбить их оттуда.</text>
+	</string>
+	<string id="mar_capture_embankment_dialog_5">
+		<text>Стоянка под насыпью очищена.</text>
+	</string>
+	<string id="mar_capture_embankment_dialog_6">
+		<text>Хорошо. Вот твоя доля.</text>
+	</string>
+	<string id="mar_capture_north_khutor">
+		<text>Захватить северный хутор</text>
+	</string>
+	<string id="mar_capture_north_khutor_text">
+		<text>Ренегаты держат северный хутор. Нужно отбить его.</text>
+	</string>
+	<string id="mar_capture_north_khutor_back">
+		<text>Доложить Лебедеву</text>
+	</string>
+	<string id="mar_capture_north_khutor_back_text">
+		<text>Северный хутор больше не за ренегатами. Нужно доложить Лебедеву.</text>
+	</string>
+	<string id="mar_capture_north_khutor_dialog_1">
+		<text>Что насчёт северного хутора?</text>
+	</string>
+	<string id="mar_capture_north_khutor_dialog_2">
+		<text>Северный хутор всё ещё у ренегатов. Нужно отбить его.</text>
+	</string>
+	<string id="mar_capture_north_khutor_dialog_5">
+		<text>Северный хутор очищен.</text>
+	</string>
+	<string id="mar_capture_north_khutor_dialog_6">
+		<text>Прекрасно. Держи оплату.</text>
+	</string>
+	<string id="mar_last_intensify_reward_dialog_1">
+		<text>Я зачистил всё, что ты просил. Ренегатов на болотах больше нет.</text>
+	</string>
+	<string id="mar_last_intensify_reward_dialog_2">
+		<text>Теперь болото чисто. Спасибо, это дорогого стоит. Возьми эту награду: заслужил.</text>
+	</string>
 </string_table>

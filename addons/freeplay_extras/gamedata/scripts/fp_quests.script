@@ -5,7 +5,9 @@
 -- ogsm_rt_manager) and dialogs; data is in misc\fp_quests.ltx. Quest types:
 --   fetch   - a quest item is spawned at a place, the actor brings it to the giver for a reward;
 --   capture - a smart terrain held by the enemy faction must stop belonging to it (checked every 5 s,
---             only while such a quest is active), then report to the giver.
+--             only while such a quest is active), then report to the giver;
+--   bonus   - no task: a dialog reward available once all quests in 'requires' are rewarded.
+-- Optional 'faction' in a quest (stalker/csky): outside Freeplay the actor must belong to it.
 -- Dialog ids: <quest>_give (start), <quest>_complete (hand over). Stage flags are info portions:
 -- <quest>_start, <quest>_complete (item found), <quest>_reward (finished) - same names as in SGM.
 -- Switch: info srp_freeplay or fp_quests. Savegame: u8 count; per started quest: name + u16 item id.
@@ -36,10 +38,15 @@ local function cfg(q)
 	c = {}
 	c.type = ini:line_exist(q, "type") and ini:r_string(q, "type") or "fetch"
 	c.giver = ini:r_string(q, "giver")
+	c.faction = ini:line_exist(q, "faction") and ini:r_string(q, "faction") or nil
+	if c.type == "bonus" then
+		c.requires = {}
+		for s in string.gmatch(ini:r_string(q, "requires"), "[^,%s]+") do c.requires[#c.requires + 1] = s end
+	end
 	if c.type == "capture" then
 		c.smart = ini:r_string(q, "smart")
 		c.enemy = ini:r_string(q, "enemy")
-	else
+	elseif c.type == "fetch" then
 		c.item = ini:r_string(q, "item")
 		local pos = ini:r_string(q, "spawn")
 		local x, y, z, lv, gv = string.match(pos, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
@@ -53,6 +60,27 @@ local function cfg(q)
 	end
 	data[q] = c
 	return c
+end
+
+local smart_held
+
+local function gate(c)
+	if has_alife_info("srp_freeplay") then return true end
+	return c.faction == nil or db.actor:character_community() == "actor_" .. c.faction
+end
+
+-- generic dialog precondition of a quest: mode switch, faction, quest state
+local function available(q)
+	if not is_enabled() then return false end
+	local c = cfg(q)
+	if c == nil or not gate(c) then return false end
+	if c.type == "capture" then return smart_held(q) end
+	if c.type == "bonus" then
+		for _, r in ipairs(c.requires) do
+			if not has_alife_info(r .. "_reward") then return false end
+		end
+	end
+	return true
 end
 
 local function quest_of(dialog_id)
@@ -140,7 +168,7 @@ function finish(actor, npc, dialog_id, phrase_id)
 end
 
 -- capture quests: precondition for the "give" dialog (the enemy still holds the smart)
-function smart_held(q)
+smart_held = function(q)
 	local c = cfg(q)
 	if c == nil then return false end
 	local board = sim_board.get_sim_board()
@@ -151,6 +179,12 @@ end
 -- per-quest dialog preconditions (a dialog-level precondition gets no dialog id)
 function has_esc_shilov_find_rukzak_item() return has_item("esc_shilov_find_rukzak") end
 function esc_capture_army_blockpost_available() return smart_held("esc_capture_army_blockpost") end
+function mar_capture_pumping_station_available() return available("mar_capture_pumping_station") end
+function mar_capture_church_available() return available("mar_capture_church") end
+function mar_capture_boat_station_available() return available("mar_capture_boat_station") end
+function mar_capture_embankment_available() return available("mar_capture_embankment") end
+function mar_capture_north_khutor_available() return available("mar_capture_north_khutor") end
+function mar_last_intensify_reward_available() return available("mar_last_intensify_reward") end
 
 -------------------------------------------------------------- signals
 function attach(m)

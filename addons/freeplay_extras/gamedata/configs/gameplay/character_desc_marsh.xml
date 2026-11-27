@@ -24,6 +24,17 @@
 
 		<start_dialog>mar_csky_leader_hello_dialog</start_dialog>
 		<actor_dialog>mar_csky_leader_choose_dialog</actor_dialog>
+		<actor_dialog>mar_capture_pumping_station_give</actor_dialog>
+		<actor_dialog>mar_capture_pumping_station_complete</actor_dialog>
+		<actor_dialog>mar_capture_church_give</actor_dialog>
+		<actor_dialog>mar_capture_church_complete</actor_dialog>
+		<actor_dialog>mar_capture_boat_station_give</actor_dialog>
+		<actor_dialog>mar_capture_boat_station_complete</actor_dialog>
+		<actor_dialog>mar_capture_embankment_give</actor_dialog>
+		<actor_dialog>mar_capture_embankment_complete</actor_dialog>
+		<actor_dialog>mar_capture_north_khutor_give</actor_dialog>
+		<actor_dialog>mar_capture_north_khutor_complete</actor_dialog>
+		<actor_dialog>mar_last_intensify_reward_complete</actor_dialog>
 
 #include "gameplay\character_criticals_1.xml"
 
