@@ -1,0 +1,556 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: naxac's universal spawn menu; SRP: guide data (guiders_table).
+-- Сборка на основе решений и идей: универсальное спавн-меню naxac; SRP: данные проводников (guiders_table). Авторам спасибо за их труд.
+-- Freeplay extras: developer tools for the naxac window (tabs "Телепорт" and "Инструменты").
+-- No window of its own: ui_cheat_cs asks this module for the list of a tab (list), the text for the description
+-- area (describe) and runs the chosen entry with the same "Получить" button (run).
+-- Teleport targets are taken from SRP's own guide data (guiders_table): the cross-level points
+-- (cross_level_teleport) and the guide points of the current level (teleport_points). The jump itself is
+-- the one SRP guides use: db.actor:set_actor_position(patrol point). guiders.start_teleport is not used (its fade chain
+-- and level.show_weapon are not needed for a tool, the first version without them worked).
+-- Адаптация под SRP Freeplay: Eon
+-- Описание на русском:
+-- Инструменты разработчика для окна naxac (вкладки «Телепорт» и «Инструменты»). Своего окна нет: ui_cheat_cs запрашивает у модуля
+-- список вкладки (list), текст описания (describe) и выполняет выбранную строку той же кнопкой «Получить» (run).
+-- Цели телепорта берутся из данных проводников SRP (guiders_table): межуровневые точки (cross_level_teleport) и точки проводников
+-- текущего уровня (teleport_points). Сам прыжок — как у проводников SRP: db.actor:set_actor_position(патрульная точка).
+-- guiders.start_teleport не используется: цепочка затемнения и level.show_weapon инструменту не нужны.
+
+local TAG = "[fp_dev_tools] "
+local tf_default = 10
+local BUILD = "2026-11-28 b14"
+
+local tools = {
+	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
+	{ key = "fwd10",   name = "Вперёд на 10 м",   descr = "То же, на 10 метров: например, через забор на территорию." },
+	{ key = "fwd30",   name = "Вперёд на 30 м",   descr = "То же, на 30 метров." },
+	{ key = "fwd100",  name = "Вперёд на 100 м",  descr = "То же, на 100 метров." },
+	{ key = "fwdn",    name = "Вперёд на N м (число в поле)", descr = "Расстояние берётся из поля ввода над списком (1–500 м); если там не число, 10 м." },
+	{ key = "money",   name = "Деньги: добавить N (число в поле)", descr = "Добавить игроку деньги: сумма из поля ввода (по умолчанию 10000, максимум 10000000)." },
+	{ key = "moneyminus", name = "Деньги: отнять N (число в поле)", descr = "Отнять деньги: сумма из поля ввода (по умолчанию 10000), не больше, чем есть у игрока." },
+	{ key = "spot",    name = "Точка для трупа: строка в лог", descr = "Записать в лог готовую строку для таблицы coords в ogsm_bring_items.script (строка SPOT): позиция игрока, level vertex, game vertex, короткое имя уровня. Встаньте там, где должен лежать труп с предметами." },
+	{ key = "store",   name = "Размер хранилища pstor",  descr = "Оценить, сколько байт занимает pstor игрока в сейве и какая это доля от практического лимита ~6 КБ на чанк актора (6*1024 в движке). Считается по формуле xr_logic.pstor_save_all; остальное содержимое чанка (погода и прочее) сюда не входит, поэтому это нижняя оценка. Подробности в логе: строки STORE." },
+	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
+	{ key = "mat",    name = "Точка матраса в лог",    descr = "Записать в лог строку для misc\\fp_sleep.ltx: позиция пола под ногами, вершины, угол. Встаньте там, где должен лежать матрас, лицом вдоль него." },
+	{ key = "ray1",   name = "Матрас по взгляду: луч 1",  descr = "Навести перекрестие на матрас (хоть на верхнем ярусе) и запомнить направление взгляда. Затем отойти на 2-3 метра в сторону, навести на ту же точку и нажать «луч 2»." },
+	{ key = "ray2",   name = "Матрас по взгляду: луч 2",  descr = "Второй взгляд на ту же точку матраса: по двум лучам считается точка в пространстве (с высотой) и пишется в лог строка для misc\\fp_sleep.ltx." },
+	{ key = "bed1",    name = "К матрасу 1",    descr = "Переместиться к точке 1 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed2",    name = "К матрасу 2",    descr = "Переместиться к точке 2 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed3",    name = "К матрасу 3",    descr = "Переместиться к точке 3 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed4",    name = "К матрасу 4",    descr = "Переместиться к точке 4 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed5",    name = "К матрасу 5",    descr = "Переместиться к точке 5 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed6",    name = "К матрасу 6",    descr = "Переместиться к точке 6 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed7",    name = "К матрасу 7",    descr = "Переместиться к точке 7 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed8",    name = "К матрасу 8",    descr = "Переместиться к точке 8 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "mats",   name = "Матрасы: пересоздать",    descr = "Удалить все объекты fp_mattress (всех уровней) и создать заново из секций [mattress_<уровень>] misc\\fp_sleep.ltx на этом уровне. Нужно после правки точек. Полный перебор id, на секунду может подвиснуть." },
+	{ key = "pdacorpse", name = "К трупу с КПК",  descr = "Заказ Сидоровича «найти КПК»: переместиться к трупу с КПК (если труп на этом уровне) или показать, на каком он уровне. Сначала возьмите задание и дойдите до уровня, где труп создаётся. Данные пишутся в лог." },
+	{ key = "flashlist", name = "Предметы в трупах: список в лог", descr = "Записать в лог, в каком трупе что лежит (флешки механиков, документы, книги навыков), на каком уровне и где (строки FLASH n). Сначала флешки, потом остальное." },
+	{ key = "flashnext", name = "К следующему трупу с предметом", descr = "Переместиться к следующему по списку трупу (порядок как в логе, строки FLASH). Если труп на другом уровне, будет показан уровень: перейдите туда через вкладку телепортов, затем нажмите кнопку снова: она идёт дальше по списку." },
+	{ key = "flashprev", name = "К предыдущему трупу с предметом", descr = "Шаг назад по тому же списку." },
+	{ key = "wpn",    name = "Оружие: достать",    descr = "Один вызов restore_weapon: если оружие осталось спрятанным после лечения или сна, нажмите; повторять только если всё ещё спрятано (счётчик движка)." },
+	{ key = "h1",      name = "Время +1 час",           descr = "Сдвинуть игровое время на час вперёд." },
+	{ key = "h6",      name = "Время +6 часов",         descr = "Сдвинуть игровое время на 6 часов вперёд." },
+	{ key = "d1",      name = "Время +1 сутки",         descr = "Сдвинуть игровое время на сутки вперёд." },
+	{ key = "tf1",     name = "Время x1 (стандартный ход)", descr = "Вернуть стандартный ход времени (таймфактор " .. tf_default .. ")." },
+	{ key = "tf2",     name = "Время x2",  descr = "Ускорить ход времени вдвое относительно стандартного (таймфактор " .. tf_default * 2 .. "). Вернуть: «Время x1»." },
+	{ key = "tf3",     name = "Время x3",  descr = "Ускорить ход времени втрое относительно стандартного (таймфактор " .. tf_default * 3 .. ")." },
+	{ key = "tf5",     name = "Время x5",  descr = "Ускорить ход времени в 5 раз (таймфактор " .. tf_default * 5 .. ")." },
+	{ key = "tf10",    name = "Время x10", descr = "Ускорить ход времени в 10 раз (таймфактор " .. tf_default * 10 .. ")." },
+	{ key = "tfn",     name = "Время xN (число в поле)", descr = "Ускорение N (1-100) берётся из поля ввода над списком; таймфактор = стандартный x N, не больше 1000." },
+	{ key = "heal",    name = "Здоровье и деньги",      descr = "Восстановить здоровье, выносливость, психику, убрать радиацию и кровотечение, +100000 руб." },
+	{ key = "surge",   name = "Запустить выброс",       descr = "Немедленно запустить выброс (30 сек. до укрытия), если он сейчас не идёт." },
+	{ key = "eclipse", name = "Запустить затмение",     descr = "Выброс с эффектом затмения (fx_blackday)." },
+	{ key = "diag",    name = "Диагностика в лог",      descr = "Записать в лог состояние модулей Freeplay: тайник, сон, зона базы, версия сборки." },
+}
+
+local function tip(text)
+	news_manager.send_tip(db.actor, text)
+end
+
+-- list of a tab: array of { key, name, descr }
+-- "teleport": every guide point of guiders_table on every level, named the way guides name them:
+-- "<level>. <point name>", both localized.
+local function teleport_list()
+	local res = {}
+	local cur = level.name()
+	local smarts = sim_board.get_sim_board().smarts_by_names
+	for name, d in pairs(guiders_table.teleport_points) do
+		local smart = smarts[name]
+		if smart then
+			local ok, label = pcall(smart_names.get_smart_terrain_name, smart)
+			if not ok or not label then label = name end
+			local lvl = game.translate_string(d.level)
+			res[#res + 1] = {
+				key = name,
+				name = lvl .. ". " .. label,
+				descr = (d.level == cur) and "Точка на этом уровне." or "Точка на другом уровне: сначала переход через зону перехода, как у проводников, затем прыжок к точке.",
+				here = (d.level == cur) and 0 or 1,
+				lvl = lvl,
+			}
+		end
+	end
+	table.sort(res, function(a, b)
+		if a.here ~= b.here then return a.here < b.here end
+		if a.lvl ~= b.lvl then return a.lvl < b.lvl end
+		return a.name < b.name
+	end)
+	return res
+end
+
+function list(tab)
+	if tab == "tools" then return tools end
+	if tab == "teleport" then return teleport_list() end
+	return {}
+end
+
+function describe(tab, key)
+	local t = list(tab)
+	for i = 1, #t do
+		if t[i].key == key then return t[i].descr end
+	end
+	return ""
+end
+
+-- The jump inside a level: a direct move onto the guide's patrol point.
+-- To another level the guides' own way is used (guiders.action_teleport_to_point): the player is put onto the
+-- patrol point guiders_table.cross_level_teleport[current][target], which lies inside a level changer zone, so the
+-- engine itself loads the next level. On the new level the same guide jump goes to the exact point. The target is
+-- kept in the savegame for that: "pending" (one string, empty when nothing is pending; the Lua state is rebuilt on
+-- a level change, SRP's own guiders.save/load work the same way).
+local pending = ""
+local entry_time = 0
+local started = 0
+local ARRIVE_WAIT = 2000
+local FAIL_WAIT = 8000
+local mgr = nil
+
+function attach(m)
+	mgr = m
+	m:subscribe({ script_name = "fp_dev_tools.on_net_spawn", signal = "on_net_spawn", fun = on_net_spawn })
+	m:subscribe({ script_name = "fp_dev_tools.on_update", signal = "on_update", fun = on_update })
+end
+
+-- The target is kept as an info portion fp_tp_<index of the key in the sorted list of guide points> (savegame-safe: no
+-- chunk of its own, so saves made by other versions keep loading).
+local function keys()
+	local t = {}
+	for k in pairs(guiders_table.teleport_points) do t[#t + 1] = k end
+	table.sort(t)
+	return t
+end
+
+local function get_pending()
+	local t = keys()
+	for i = 1, math.min(#t, 128) do
+		if has_alife_info("fp_tp_" .. (i - 1)) then return t[i], i - 1 end
+	end
+	return ""
+end
+
+local function set_pending(key)
+	local t = keys()
+	for i = 1, math.min(#t, 128) do
+		local id = "fp_tp_" .. (i - 1)
+		if t[i] == key then
+			if not has_alife_info(id) then db.actor:give_info_portion(id) end
+		elseif has_alife_info(id) then
+			db.actor:disable_info_portion(id)
+		end
+	end
+	pending = key
+end
+
+function on_net_spawn()
+	entry_time = time_global()
+	fp_log.always("%s", TAG .. "build " .. BUILD)
+	pending = get_pending()
+	if pending ~= "" then
+		local d = guiders_table.teleport_points[pending]
+		if not (d and d.level == level.name()) then set_pending("") end   -- stale target (the level change did not happen)
+	end
+end
+
+-- Direct move, as in the first (working) version: set_actor_position at once, no effector chain that could
+-- fail to come back while the tool window is closing. The fade is only cosmetic.
+local function give_back_control()
+	pcall(level.enable_input)
+	pcall(level.show_indicators)
+end
+
+local function begin_jump(point, look, cross)
+	if not level.patrol_path_exists(point) then
+		tip("Нет точки пути: " .. tostring(point))
+		fp_log.always("%s", TAG .. "patrol point missing: " .. tostring(point))
+		return false
+	end
+	local act = db.actor
+	local pnt = patrol(point)
+	act:set_actor_position(pnt:point(0))
+	if look and level.patrol_path_exists(look) then
+		local dir = patrol(look):point(0):sub(pnt:point(0))
+		act:set_actor_direction(-dir:getH())
+	end
+	pcall(level.add_pp_effector, "peace_unfade.ppe", 160608, false)
+	if cross then started = time_global() end   -- waiting for the engine's level change
+	fp_log.always("%s", TAG .. "moved to " .. point .. (cross and " (level changer)" or ""))
+	return true
+end
+
+local function jump_to(key)
+	local d = guiders_table.teleport_points[key]
+	local point, look = d.point, d.look
+	if not (point and look) then
+		point, look = key .. "_kamp_1", key .. "_kamp_1_task"
+	end
+	return begin_jump(point, look, false)
+end
+
+function on_update(delta)
+	mgr:reschedule(1000)
+	if not (db.actor and db.actor:alive()) then return end
+	if pending == "" then return end
+	local key = pending
+	local d = guiders_table.teleport_points[key]
+	if not d then set_pending(""); return end
+	if d.level == level.name() then
+		if time_global() - entry_time < ARRIVE_WAIT then return end
+		set_pending("")
+		started = 0
+		jump_to(key)
+		fp_log.always("%s", TAG .. "arrived, second step to " .. key)
+	elseif started > 0 and time_global() - started > FAIL_WAIT then
+		-- the level did not change (level changer closed): give the control back
+		set_pending("")
+		started = 0
+		give_back_control()
+		tip("Переход закрыт (уровень не сменился)")
+		fp_log.always("%s", TAG .. "level change failed for " .. key)
+	end
+end
+
+local function teleport(key)
+	local d = guiders_table.teleport_points[key]
+	if not d then return false end
+	local cur = level.name()
+	if d.level == cur then
+		if not jump_to(key) then return false end
+	else
+		local cross = guiders_table.cross_level_teleport[cur] and guiders_table.cross_level_teleport[cur][d.level]
+		if not cross then
+			tip("Нет перехода " .. cur .. " -> " .. d.level)
+			return false
+		end
+		set_pending(key)
+		started = 0
+		if not begin_jump(cross, nil, true) then set_pending(""); return false end
+	end
+	fp_log.always("%s", TAG .. "teleport to " .. key .. " (" .. tostring(d.level) .. ")")
+	return true
+end
+
+local function diag()
+	local act = db.actor
+	local p = act:position()
+	local function inf(s) return s .. "=" .. tostring(has_alife_info(s)) end
+	fp_log.always("%s", TAG .. "DIAG build " .. BUILD .. " level=" .. level.name() .. string.format(" pos=%.1f,%.1f,%.1f hour=%d", p.x, p.y, p.z, level.get_time_hours()))
+	fp_log.always("%s", TAG .. "DIAG infos: " .. inf("srp_freeplay") .. " " .. inf("fp_sleep") .. " " .. inf("fp_stash") .. " " .. inf("fp_stash_done") .. " " .. inf("fp_stash_done2"))
+	local zn = "mar_space_restrictor_csky_base_noweapon"
+	local z = db.zone_by_name[zn]
+	fp_log.always("%s", TAG .. "DIAG zone " .. zn .. " registered=" .. tostring(z ~= nil) .. " inside=" .. tostring(z ~= nil and z:inside(p)))
+	local ok, a, b = pcall(function() return fp_sleep.is_enabled(), fp_sleep.in_place() end)
+	fp_log.always("%s", TAG .. "DIAG sleep: " .. tostring(ok) .. " enabled=" .. tostring(a) .. " in_place=" .. tostring(b))
+	local ok2, n = pcall(fp_sleep.mattress_count)
+	fp_log.always("%s", TAG .. "DIAG mattresses (fp_mattress objects found): " .. tostring(ok2) .. " " .. tostring(n))
+	fp_log.always("%s", TAG .. "DIAG sleeping_bag in inventory=" .. tostring(act:object("sleeping_bag") ~= nil))
+	local old = alife():object("mar_physic_object_0039")
+	fp_log.always("%s", TAG .. "DIAG decorative rucksack mar_physic_object_0039 exists=" .. tostring(old ~= nil))
+	local n = 0
+	for i = 0, 65534 do
+		local se = alife():object(i, true)
+		if se and (se:section_name() == "fp_base_stash" or se:section_name() == "fp_mattress") then
+			n = n + 1
+			local o = level.object_by_id(se.id)
+			fp_log.always("%s", TAG .. "DIAG " .. se:section_name() .. " id=" .. se.id .. string.format(" pos=%.2f,%.2f,%.2f dist=%.1f lv=%s gv=%s", se.position.x, se.position.y, se.position.z, se.position:distance_to(p), tostring(se.m_level_vertex_id), tostring(se.m_game_vertex_id)) .. " online=" .. tostring(o ~= nil) .. (o and (" visual=" .. tostring(o:section())) or ""))
+		end
+	end
+	fp_log.always("%s", TAG .. "DIAG fp_base_stash+fp_mattress count=" .. n)
+	tip("Диагностика записана в лог")
+end
+
+local function change_time(h, text)
+	local ok = pcall(level.change_game_time, 0, h, 0)
+	tip(ok and text or "level.change_game_time недоступна в этом движке")
+end
+
+local function log_pos()
+	local act = db.actor
+	local lvid, gvid = act:level_vertex_id(), act:game_vertex_id()
+	local pos = level.vertex_position(lvid)
+	local dir = act:direction()
+	local msg = string.format("%s pos=vector():set(%.3f,%.3f,%.3f), lvid=%d, gvid=%d, dir=vector():set(%.3f,%.3f,%.3f)",
+		level.name(), pos.x, pos.y, pos.z, lvid, gvid, dir.x, dir.y, dir.z)
+	fp_log.always("%s", TAG .. msg)
+	tip("Координаты записаны в лог")
+end
+
+-- A line for the coords table of ogsm_bring_items: stand where a corpse with items should lie and press the button.
+-- Строка для таблицы coords в ogsm_bring_items: встаньте, где должен лежать труп, и нажмите кнопку.
+local function log_spot()
+	local act = db.actor
+	local p = act:position()
+	local short = string.gsub(level.name(), "^l%d+%a*_", "")
+	local msg = string.format('SPOT\t{vector():set(%.6f,%.6f,%.6f), %d, %d, "%s"},', p.x, p.y, p.z, act:level_vertex_id(), act:game_vertex_id(), short)
+	fp_log.always("%s", TAG .. msg)
+	tip("Точка записана в лог (строка SPOT)")
+end
+
+-- Size estimate of the actor's pstor as xr_logic.pstor_save_all writes it: u32 count, then per entry key (len+1),
+-- type byte, value (number 4, boolean 1, string len+1). The chunk limit comes from the engine (see README).
+-- Оценка размера pstor актора по формате xr_logic.pstor_save_all; предел чанка задаёт движок (см. README).
+local STORE_LIMIT = 6 * 1024
+local function log_store()
+	local st = db.storage and db.storage[db.actor:id()]
+	local ps = st and st.pstor
+	if not ps then tip("pstor пуст или недоступен") return end
+	local total, count, rows = 4, 0, {}
+	for k, v in pairs(ps) do
+		local tv = type(v)
+		local sz = string.len(tostring(k)) + 1 + 1
+		if tv == "string" then sz = sz + string.len(v) + 1
+		elseif tv == "boolean" then sz = sz + 1
+		else sz = sz + 4 end
+		total = total + sz
+		count = count + 1
+		rows[#rows + 1] = { k = tostring(k), sz = sz }
+	end
+	table.sort(rows, function(a, b) return a.sz > b.sz end)
+	fp_log.always("%s", TAG .. string.format("STORE pstor: %d entries, ~%d bytes of %d (%.1f%%)", count, total, STORE_LIMIT, total * 100 / STORE_LIMIT))
+	for i = 1, math.min(10, #rows) do
+		fp_log.always("%s", TAG .. string.format("STORE %2d. %s: %d bytes", i, rows[i].k, rows[i].sz))
+	end
+	tip(string.format("pstor: %d записей, ~%d байт (%.1f%% от ~6 КБ)", count, total, total * 100 / STORE_LIMIT))
+end
+
+-- Jump forward by m metres along the view direction (horizontal). Height: the nearest AI-net vertex, if it is close,
+-- otherwise the actor's height + 1 m. Прыжок вперёд на m метров по направлению взгляда; высота по ближайшей вершине AI-сетки.
+local function jump_forward(m)
+	local act = db.actor
+	local d, p = act:direction(), act:position()
+	local len = math.sqrt(d.x * d.x + d.z * d.z)
+	if len < 0.01 then tip("Смотрите не строго вверх или вниз") return end
+	local tx, tz = p.x + d.x / len * m, p.z + d.z / len * m
+	local y = p.y + 1.0
+	local ok, vid = pcall(level.vertex_id, vector():set(tx, p.y, tz))
+	if ok and vid then
+		local vp = level.vertex_position(vid)
+		if (vp.x - tx) * (vp.x - tx) + (vp.z - tz) * (vp.z - tz) <= 25 then y = vp.y + 0.3 end
+	end
+	act:set_actor_position(vector():set(tx, y, tz))
+	fp_log.always("%s", TAG .. string.format("JUMP %d m: %.1f,%.1f,%.1f -> %.1f,%.1f,%.1f (ai-net %s)", m, p.x, p.y, p.z, tx, y, tz, tostring(ok and vid or "none")))
+	tip("Вперёд на " .. m .. " м")
+end
+
+local function change_money(sign, n)
+	n = math.floor(math.min(math.max(n or 10000, 1), 10000000))
+	local act = db.actor
+	if sign < 0 then n = math.min(n, act:money()) end
+	if n <= 0 then tip("Денег нет") return end
+	act:give_money(sign * n)
+	tip((sign > 0 and "Деньги +" or "Деньги -") .. n)
+end
+
+local mat_n = 0
+local ray1 = nil
+
+-- two camera rays at the same spot give its position in space (the engine export of this build has no ray cast)
+local function cam_ray()
+	local d = device()
+	local p, v = d.cam_pos, d.cam_dir
+	return { px = p.x, py = p.y, pz = p.z, dx = v.x, dy = v.y, dz = v.z }
+end
+
+local function ray_point(r1, r2)
+	local wx, wy, wz = r1.px - r2.px, r1.py - r2.py, r1.pz - r2.pz
+	local b = r1.dx * r2.dx + r1.dy * r2.dy + r1.dz * r2.dz
+	local d = r1.dx * wx + r1.dy * wy + r1.dz * wz
+	local e = r2.dx * wx + r2.dy * wy + r2.dz * wz
+	local den = 1 - b * b
+	if den < 0.02 then return nil, "лучи почти параллельны: отойдите в сторону на 2-3 м" end
+	local s = (b * e - d) / den
+	local u = (e - b * d) / den
+	local q1 = { r1.px + r1.dx * s, r1.py + r1.dy * s, r1.pz + r1.dz * s }
+	local q2 = { r2.px + r2.dx * u, r2.py + r2.dy * u, r2.pz + r2.dz * u }
+	local gap = math.sqrt((q1[1] - q2[1]) ^ 2 + (q1[2] - q2[2]) ^ 2 + (q1[3] - q2[3]) ^ 2)
+	if s < 0 or u < 0 then return nil, "точка позади камеры: наведите на одну и ту же точку" end
+	return { (q1[1] + q2[1]) / 2, (q1[2] + q2[2]) / 2, (q1[3] + q2[3]) / 2 }, gap
+end
+
+local function log_ray(first)
+	if first then
+		ray1 = cam_ray()
+		tip("Луч 1 запомнен. Отойдите в сторону и наведите на ту же точку")
+		return
+	end
+	if not ray1 then tip("Сначала «луч 1»"); return end
+	local pt, gap = ray_point(ray1, cam_ray())
+	if not pt then tip(gap); return end
+	local act = db.actor
+	local lvid = level.vertex_id(vector():set(pt[1], pt[2], pt[3]))
+	local gvid = act:game_vertex_id()
+	local dir = act:direction()
+	mat_n = mat_n + 1
+	fp_log.always("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f   ; rays gap %.2f m", level.name(), mat_n, pt[1], pt[2], pt[3], lvid, gvid, math.atan2(dir.x, dir.z), gap))
+	tip(string.format("Точка записана (%d): y=%.2f, расхождение лучей %.2f м", mat_n, pt[2], gap))
+	ray1 = nil
+end
+local function log_mat()
+	local act = db.actor
+	local lvid, gvid = act:level_vertex_id(), act:game_vertex_id()
+	local pos = level.vertex_position(lvid)
+	local dir = act:direction()
+	local ang = math.atan2(dir.x, dir.z)   -- radians, as the "angle" of a server object (rotation around Y)
+	mat_n = mat_n + 1
+	fp_log.always("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f", level.name(), mat_n, pos.x, pos.y, pos.z, lvid, gvid, ang))
+	tip("Точка матраса записана в лог (" .. mat_n .. ")")
+end
+
+-- "To mattress N": point N of [mattress_<level>] of misc\fp_sleep.ltx (the same points fp_sleep turns into objects).
+local function goto_bed(n)
+	local sect = "mattress_" .. level.name()
+	local ini = ini_file("misc\\fp_sleep.ltx")
+	if not ini:section_exist(sect) or n > ini:line_count(sect) then
+		tip("Точки " .. n .. " нет на этом уровне (" .. level.name() .. ")")
+		return false
+	end
+	local _, name, v = ini:r_line(sect, n - 1, "", "")
+	local x, y, z = string.match(v, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)")
+	x, y, z = tonumber(x), tonumber(y), tonumber(z)
+	db.actor:set_actor_position(vector():set(x, y + 0.3, z))
+	fp_log.always("%s", TAG .. string.format("BEDCHECK %d %s = %.3f,%.3f,%.3f", n, name, x, y, z))
+	tip(string.format("Точка %d (%s): %.1f, %.1f, %.1f", n, name, x, y, z))
+	return true
+end
+
+-- "To the PDA corpse": the corpse of the active find_pda task (ogsm_rt_manager) and what is lying inside it.
+local function goto_pda_corpse()
+	local mgr = ogsm_rt_manager.get_rt_manager()
+	local found = false
+	for _, id in pairs(mgr.task_id_by_type["find_pda"] or {}) do
+		local td = mgr.task_info[id]
+		local corpse = td.selected_corpse and alife():object(td.selected_corpse)
+		if corpse then
+			found = true
+			local lid = game_graph():vertex(corpse.m_game_vertex_id):level_id()
+			local same = lid == alife():level_id()
+			local ok, nm = pcall(alife().level_name, alife(), lid)
+			local lvl = same and level.name() or (ok and nm) or ("уровень №" .. lid)
+			local pda = td.selected_target and alife():object(td.selected_target)
+			fp_log.always("%s", TAG .. string.format("PDACORPSE %s: corpse %d on %s at %.1f,%.1f,%.1f, pda %s parent %s", id, corpse.id, lvl, corpse.position.x, corpse.position.y, corpse.position.z, tostring(td.selected_target), pda and tostring(pda.parent_id) or "NONE"))
+			if lvl == level.name() then
+				db.actor:set_actor_position(vector():set(corpse.position.x, corpse.position.y + 0.5, corpse.position.z))
+				tip("Труп КПК: " .. lvl .. ", КПК " .. (pda and ("в объекте " .. pda.parent_id) or "ОТСУТСТВУЕТ"))
+			else
+				tip("Труп КПК на уровне " .. lvl .. " (вы на " .. level.name() .. ")")
+			end
+		end
+	end
+	if not found then tip("Трупа КПК нет: возьмите задание и дойдите до его уровня") end
+	return found
+end
+
+-- Where a corpse lies: level name (current level by name, another one by the engine's name or number), same-level flag.
+local function where(game_vertex_id)
+	local lid = game_graph():vertex(game_vertex_id):level_id()
+	local same = lid == alife():level_id()
+	local ok, nm = pcall(alife().level_name, alife(), lid)
+	return same and level.name() or (ok and nm) or ("уровень №" .. lid), same
+end
+
+local function flash_list()
+	local list = ogsm_bring_items.flash_holders()
+	for i, h in ipairs(list) do
+		local sobj = alife():object(h.id)
+		local lvl = sobj and where(sobj.m_game_vertex_id) or "?"
+		fp_log.always("%s", TAG .. string.format("FLASH %d %s: corpse %d on %s at %.1f,%.1f,%.1f", i, h.section, h.id, lvl, h.pos.x, h.pos.y, h.pos.z))
+	end
+	tip("Предметов в трупах: " .. #list .. " (подробности в логе, строки FLASH)")
+	return list
+end
+
+local flash_idx = 0
+local function goto_flash(step)
+	local list = ogsm_bring_items.flash_holders()
+	if #list == 0 then tip("Предметов в трупах не найдено") return false end
+	flash_idx = (flash_idx + step - 1) % #list + 1
+	local n = flash_idx
+	local h = list[n]
+	local sobj = alife():object(h.id)
+	local lvl, same = where(sobj.m_game_vertex_id)
+	fp_log.always("%s", TAG .. string.format("FLASH %d %s: corpse %d on %s at %.1f,%.1f,%.1f", n, h.section, h.id, lvl, h.pos.x, h.pos.y, h.pos.z))
+	if not same then
+		tip(string.format("№%d из %d, %s: труп на уровне %s, вы на %s", n, #list, h.section, lvl, level.name()))
+		return false
+	end
+	db.actor:set_actor_position(vector():set(h.pos.x, h.pos.y + 0.5, h.pos.z))
+	tip(string.format("№%d из %d, %s: труп на этом уровне (%s)", n, #list, h.section, lvl))
+	return true
+end
+
+-- Runs an entry. Returns true when the window must be closed (the action needs the game to continue).
+-- n: number from the spawn menu text field or nil
+function run(tab, key, n)
+	if not (db.actor and db.actor:alive()) then return false end
+	if tab == "teleport" then
+		return teleport(key)
+	end
+	local bed = string.match(key, "^bed(%d+)$")
+	if bed then return goto_bed(tonumber(bed)) end
+	if key == "pdacorpse" then return goto_pda_corpse() end
+	local fwd = string.match(key, "^fwd(%d+)$")
+	if fwd then jump_forward(tonumber(fwd)) return true end
+	if key == "fwdn" then jump_forward(math.floor(math.min(math.max(n or 10, 1), 500))) return true end
+	if key == "money" then change_money(1, n) return false end
+	if key == "moneyminus" then change_money(-1, n) return false end
+	if key == "flashlist" then flash_list() return false end
+	if key == "flashnext" then return goto_flash(1) end
+	if key == "flashprev" then return goto_flash(-1) end
+	if key == "wpn" then pcall(db.actor.restore_weapon, db.actor) tip("restore_weapon вызван") return true end
+	if key == "mats" then
+		local ok, a, b = pcall(fp_sleep.recreate_mattresses)
+		tip(ok and ("Матрасы: удалено " .. a .. ", создано " .. b) or "Ошибка пересоздания, см. лог")
+		return true
+	end
+	if key == "ray1" then log_ray(true); return true
+	elseif key == "ray2" then log_ray(false); return true
+	elseif key == "mat" then log_mat(); return false
+	elseif key == "diag" then diag(); return false
+	elseif key == "pos" then log_pos(); return false
+	elseif key == "spot" then log_spot(); return false
+	elseif key == "store" then log_store(); return false
+	elseif key == "h1" then change_time(1, "Время +1 ч"); return true
+	elseif key == "h6" then change_time(6, "Время +6 ч"); return true
+	elseif key == "d1" then change_time(24, "Время +1 сутки"); return true
+	elseif string.match(key, "^tf%d+$") or key == "tfn" then
+		-- N x the standard speed (tf_default); x1 restores the standard course of time
+		-- N x стандартная скорость (tf_default); x1 возвращает стандартный ход времени
+		local mult = key == "tfn" and (n or 1) or tonumber(string.match(key, "%d+"))
+		mult = math.floor(math.min(math.max(mult, 1), 100))
+		local tf = math.min(tf_default * mult, 1000)
+		level.set_time_factor(tf)
+		tip("Время x" .. mult .. " (таймфактор " .. tf .. ")")
+	elseif key == "heal" then
+		local act = db.actor
+		act.health = 0.99
+		act.bleeding = 0.99
+		act.power = 0.99
+		act.psy_health = 0.99
+		act.radiation = -1.0
+		act:give_money(100000)
+		tip("Здоровье восстановлено, +100000 руб.")
+	elseif key == "surge" then
+		tip(fp_surge.force(30, false)); return true
+	elseif key == "eclipse" then
+		tip(fp_surge.force(30, true)); return true
+	end
+	return false
+end
