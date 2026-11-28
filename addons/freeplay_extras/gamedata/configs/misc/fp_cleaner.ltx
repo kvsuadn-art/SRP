@@ -2,7 +2,7 @@
 ; Adaptation SRP Freeplay: Eon. Effect: scripts\fp_cleaner.script
 
 [settings]
-chunk=1500          ; how many object ids are looked at per 1 s tick
+chunk=250           ; how many object ids are looked at per 1 s tick (1500 gave a 37 ms tick in the log of b18)
 pause_ms=300000     ; pause between full passes
 
 ; Sections that are never released even if they are not marked as quest items
