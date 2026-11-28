@@ -5,7 +5,10 @@
 -- and zones of the config) and it is night, he sleeps 1-6 hours: the screen fades, time runs fast, health, power and psy-health
 -- are restored. Unlike SGM nothing runs per frame: the place is checked at the moment of use (SGM polled 38 distances 
 -- every update and showed a HUD static), the poller runs only while the actor sleeps (1 s).
--- Switch: info portion srp_freeplay or fp_sleep. Savegame: nothing of its own. Not handled: a save made during sleep keeps the
+-- Second way (SoC style): an invisible object fp_mattress over a bed (world mattresses, [mattress_<level>] of the config), "F" shows
+-- the tip and opens the hour window fp_sleep_ui (idea, model and window: "New Sleep Mod for R.M.A. 1.1.5", Mechanic, Shoker, Z.E.N.,
+-- Ab@dDon, Junk). No core hooks: the objects are created once and found by a scan of the server objects (nothing is saved), the use
+-- callback is set from the update slot. Switch: info portion srp_freeplay or fp_sleep. Savegame: nothing of its own. Not handled: a save made during sleep keeps the
 -- fast time factor (input is disabled, so only an autosave can catch it).
 
 local TAG = "[fp_sleep] "
@@ -20,6 +23,13 @@ local wake_at = 0
 local prev_factor = 8
 local radius_sqr = nil
 local slept_hours = 0
+local ENEMY_RADIUS = 15
+local MAT_SECTION = "fp_mattress"
+local SCAN_STEP = 4000
+local mats = {}          -- id -> server position of the world mattresses (all levels)
+local scan_next = 0      -- next id of the scan, nil when finished
+local mats_ready = false
+local mats_created = 0
 
 function is_enabled()
 	return has_alife_info("srp_freeplay") or has_alife_info("fp_sleep")
@@ -83,8 +93,13 @@ function on_item_use(obj)
 		tip("st_fp_sleep_no_place") return
 	end
 	if not is_night() then tip("st_fp_sleep_not_tired") return end
+	start_sleep(math.random(ini:r_u32("settings", "min_hours"), ini:r_u32("settings", "max_hours")))
+end
+
+-- the window and the bag both end here: sleep for `hours` game hours (the poller of on_update wakes the actor up)
+function start_sleep(hours)
+	if sleeping or db.actor == nil or hours < 1 then return end
 	local act = db.actor
-	local hours = math.random(ini:r_u32("settings", "min_hours"), ini:r_u32("settings", "max_hours"))
 	sleeping = true
 	slept_hours = hours
 	prev_factor = level.get_time_factor()
@@ -93,6 +108,7 @@ function on_item_use(obj)
 	if act.power < 1 then act.power = 1 end
 	act.psy_health = 1
 	level.disable_input()
+	pcall(act.hide_weapon, act)
 	level.add_pp_effector("mar_fade.ppe", FADE_ID, false)
 	level.set_time_factor(ini:r_float("settings", "time_factor"))
 	level.hide_indicators_safe()
@@ -104,9 +120,104 @@ local function wake_up()
 	level.set_time_factor(prev_factor)
 	level.enable_input()
 	level.show_indicators()
+	pcall(db.actor.restore_weapon, db.actor)
 	level.add_cam_effector("camera_effects\\fusker.anm", 76431, false, "")
 	tip("st_fp_sleep_woke")
 	if fp_fatigue ~= nil then fp_fatigue.on_rest(slept_hours) end
+end
+
+
+-- ---------------------------------------------------------------------------------------------------------------------
+-- world mattresses
+-- ---------------------------------------------------------------------------------------------------------------------
+function mattress_count() local n = 0 for _ in pairs(mats) do n = n + 1 end return n end
+
+-- the reason (string id) why the actor cannot sleep now, or nil
+local function cannot_sleep()
+	local act = db.actor
+	local pos = act:position()
+	for id, st in pairs(db.storage) do
+		local o = st.object
+		if o ~= nil and id ~= act:id() and o:alive() then
+			if IsMonster(o) or (IsStalker(o) and o:relation(act) == game_object.enemy) then
+				if o:position():distance_to(pos) < ENEMY_RADIUS then return "st_fp_sleep_enemy" end
+			end
+		end
+	end
+	if act.radiation > 0 then return "st_fp_sleep_radiation" end
+	return nil
+end
+
+-- callback.use_object of the mattress: F on the invisible object
+function on_mattress_use(obj, who)
+	if not is_enabled() or sleeping or db.actor == nil then return end
+	local why = cannot_sleep()
+	if why then tip(why) return end
+	level.start_stop_menu(fp_sleep_ui.sleep(get_hud()), true)
+end
+
+local function parse_point(v)
+	local nums = {}
+	for n in string.gmatch(v, "[%-%d%.]+") do nums[#nums + 1] = tonumber(n) end
+	return nums
+end
+
+-- one step of the scan of server objects: ids [scan_next, scan_next + SCAN_STEP)
+local function scan_step()
+	local sim = alife()
+	if sim == nil then return end
+	local last = math.min(scan_next + SCAN_STEP, 65535)
+	for i = scan_next, last - 1 do
+		local se = sim:object(i, true)
+		if se ~= nil and se:section_name() == MAT_SECTION then
+			mats[i] = vector():set(se.position.x, se.position.y, se.position.z)
+		end
+	end
+	if last >= 65535 then scan_next = nil else scan_next = last end
+end
+
+-- create the mattresses of this level that are not in the world yet
+local function create_missing()
+	local sect = "mattress_" .. level.name()
+	if not ini:section_exist(sect) then return end
+	local sim, act = alife(), db.actor
+	for i = 0, ini:line_count(sect) - 1 do
+		local _, name, v = ini:r_line(sect, i, "", "")
+		local n = parse_point(v)
+		local p = vector():set(n[1], n[2], n[3])
+		local exists = false
+		for _, mp in pairs(mats) do
+			if mp:distance_to(p) < 1 then exists = true break end
+		end
+		if not exists then
+			local lv = n[4] or level.vertex_id(p)
+			local gv = n[5] or act:game_vertex_id()
+			local se = sim:create(MAT_SECTION, p, lv, gv)
+			mats_created = mats_created + 1
+			if se then mats[se.id] = p end
+			dbglog("%s", string.format("[fp_sleep] mattress %s: %s lv=%s gv=%s id=%s", sect .. "." .. name, tostring(se ~= nil), tostring(lv), tostring(gv), tostring(se and se.id)))
+		end
+	end
+end
+
+-- every tick: the scan (once per level load), then the use callback on the objects that are online
+local function mattress_tick()
+	if not mats_ready then
+		if scan_next ~= nil then scan_step() end
+		if scan_next == nil then
+			mats_ready = true
+			create_missing()
+			dbglog("%s", "[fp_sleep] mattresses: " .. mattress_count() .. " in the world, created now: " .. mats_created)
+		end
+		return
+	end
+	for id in pairs(mats) do
+		local o = level.object_by_id(id)
+		if o ~= nil then
+			o:set_callback(callback.use_object, on_mattress_use)
+			o:set_tip_text("fp_tip_sleep")
+		end
+	end
 end
 
 -- the slot runs every second (reschedule is per slot, so a longer idle period would make the wake-up late: 5 s = 2 game hours at x1700)
@@ -127,6 +238,7 @@ function on_update(delta)
 		if game.time() >= wake_at then wake_up() end
 		return
 	end
+	mattress_tick()
 	idle_ticks = idle_ticks + 1
 	if idle_ticks >= IDLE_MS / SLEEP_MS then
 		idle_ticks = 0

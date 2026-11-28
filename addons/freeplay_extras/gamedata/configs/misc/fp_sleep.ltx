@@ -77,3 +77,9 @@ yantar = yan_space_restrictor_no_weapon_actor_base_cut2
 
 ; the item section [sleeping_bag] is in misc\fp_sleep_items.ltx (this file is also read by the script on its own, so it must not inherit
 ; from sections of system.ltx).
+
+; Mattress objects of the world (section fp_mattress), created by fp_sleep once per place (the check is "no such object within 1 m").
+; Value: x,y,z[,level_vertex,game_vertex]; without the vertices they are found at the moment of creation (the actor is on the level).
+; base_bed: the point where the hero wakes at the start of the game (all.spawn, object actor); the true bed is within 1-2 m of it.
+[mattress_marsh]
+base_bed = -180.563,4.791,-271.742

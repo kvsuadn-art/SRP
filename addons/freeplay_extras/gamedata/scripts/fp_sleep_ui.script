@@ -1,0 +1,66 @@
+-- fp_sleep_ui: window "Sleep until..." (24 hour buttons, a panorama of the sky, the hour labels).
+-- Based on ui_sleep.script of "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): the same window and xml,
+-- the 24 copy-pasted handlers replaced by one generator. Адаптация под SRP Freeplay: Eon
+-- The window only asks for the number of hours and passes it to fp_sleep.start_sleep(hours); nothing is stored.
+
+class "sleep" (CUIScriptWnd)
+
+local function make_handler(hours)
+	return function(self)
+		self:on_quit()
+		fp_sleep.start_sleep(hours)
+	end
+end
+
+function sleep:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function sleep:__finalize() end
+
+function sleep:InitControls()
+	self:Init(50, 50, 974, 718)
+
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_sleep_dialog.xml")
+
+	xml:InitStatic("background", self)
+	xml:InitStatic("time_scale_back", self)
+	xml:InitStatic("panorama_window", self)
+	local labels = {}
+	for i = 1, 24 do
+		labels[i] = xml:InitStatic("sleep_st_" .. i, self)
+	end
+	xml:InitStatic("sky_panorama_" .. level.get_time_hours(), self)
+	local cur_hours = level.get_time_hours()
+	local suffix = game.translate_string("st_fp_sleep_hours")
+	for i = 1, 24 do
+		labels[i]:SetText(((cur_hours + i) % 24) .. suffix)
+	end
+	for i = 1, 24 do
+		self:Register(xml:Init3tButton("btn_" .. i, self), "btn_" .. i)
+	end
+	self:Register(xml:Init3tButton("caption_1", self), "caption_1")
+	self:Register(xml:Init3tButton("btn_cancel", self), "btn_cancel")
+end
+
+function sleep:InitCallBacks()
+	for i = 1, 24 do
+		self:AddCallback("btn_" .. i, ui_events.BUTTON_CLICKED, make_handler(i), self)
+	end
+	self:AddCallback("btn_cancel", ui_events.BUTTON_CLICKED, self.on_quit, self)
+end
+
+function sleep:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED and dik == DIK_keys.DIK_ESCAPE then
+		self:on_quit()
+	end
+	return true
+end
+
+function sleep:on_quit()
+	self:GetHolder():start_stop_menu(self, true)
+end

@@ -9,7 +9,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b5"
+local BUILD = "2026-11-28 b6"
 
 local tools = {
 	{ key = "pos",     name = " оординаты в лог",       descr = "«аписать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
@@ -223,6 +223,8 @@ local function diag()
 	dbglog("%s", TAG .. "DIAG zone " .. zn .. " registered=" .. tostring(z ~= nil) .. " inside=" .. tostring(z ~= nil and z:inside(p)))
 	local ok, a, b = pcall(function() return fp_sleep.is_enabled(), fp_sleep.in_place() end)
 	dbglog("%s", TAG .. "DIAG sleep: " .. tostring(ok) .. " enabled=" .. tostring(a) .. " in_place=" .. tostring(b))
+	local ok2, n = pcall(fp_sleep.mattress_count)
+	dbglog("%s", TAG .. "DIAG mattresses (fp_mattress objects found): " .. tostring(ok2) .. " " .. tostring(n))
 	dbglog("%s", TAG .. "DIAG sleeping_bag in inventory=" .. tostring(act:object("sleeping_bag") ~= nil))
 	local old = alife():object("mar_physic_object_0039")
 	dbglog("%s", TAG .. "DIAG decorative rucksack mar_physic_object_0039 exists=" .. tostring(old ~= nil))

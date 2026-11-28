@@ -1303,4 +1303,19 @@
 	<string id="st_fp_hud_m">
 		<text>м</text>
 	</string>
+	<string id="fp_tip_sleep">
+		<text>Спать ($$ACTION_USE$$)</text>
+	</string>
+	<string id="st_fp_sleep_title">
+		<text>Спать до...</text>
+	</string>
+	<string id="st_fp_sleep_hours">
+		<text>ч</text>
+	</string>
+	<string id="st_fp_sleep_enemy">
+		<text>Вы не можете спать, когда рядом враги.</text>
+	</string>
+	<string id="st_fp_sleep_radiation">
+		<text>Вы не можете спать с высоким уровнем облучения.</text>
+	</string>
 </string_table>
