@@ -248,6 +248,7 @@ function cheat_menu:OnTabChange()
 		end
 	end
 	
+	if dev then fp_dev_tools.tab_opened(ids) end
 	self:FillList()
 	self.list:ResetFocusCapture()
 	self:OnListItemClicked()
@@ -359,7 +360,15 @@ function cheat_menu:OnBtnSpawn()
 	if dev_tab[self.tab_id] then
 		-- the number in the text field goes to the tools as a parameter (distance, money); nil when it is not a number
 		-- число из поля ввода передаётся инструментам как параметр (расстояние, деньги); nil, если это не число
-		if fp_dev_tools.run(self.tab_id, sect, tonumber(self.edit_box:GetText())) then
+		local r = fp_dev_tools.run(self.tab_id, sect, tonumber(self.edit_box:GetText()))
+		if r == "refresh" then
+			-- the tool changed its list (teleport: locations <-> points of a location)
+			-- инструмент поменял свой список (телепорт: локации <-> точки локации)
+			self:FillList()
+			self.list:ResetFocusCapture()
+			self:OnListItemClicked()
+			self.was_found = -1
+		elseif r then
 			self:CloseToGame()
 		end
 		return

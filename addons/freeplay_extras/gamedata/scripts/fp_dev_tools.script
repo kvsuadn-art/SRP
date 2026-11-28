@@ -18,7 +18,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b14"
+local BUILD = "2026-11-28 b15"
 
 local tools = {
 	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
@@ -68,9 +68,16 @@ local function tip(text)
 end
 
 -- list of a tab: array of { key, name, descr }
--- "teleport": every guide point of guiders_table on every level, named the way guides name them:
--- "<level>. <point name>", both localized.
-local function teleport_list()
+-- "teleport": two steps in one list. First the list of locations (levels that have guide points); "Execute" on a
+-- location opens the list of its points (named the way guides name them), the first entry goes back to the locations.
+-- «Телепорт»: два шага в одном списке. Сначала список локаций; «Выполнить» на локации открывает список её точек,
+-- первая строка возвращает к локациям.
+local tp_level = nil      -- system name of the opened location, nil = the list of locations
+local tp_prefix = "lvl:"
+local tp_back = "tp_back"
+
+-- every guide point that exists in the current simulation, with the localized level name
+local function teleport_points()
 	local res = {}
 	local cur = level.name()
 	local smarts = sim_board.get_sim_board().smarts_by_names
@@ -79,22 +86,58 @@ local function teleport_list()
 		if smart then
 			local ok, label = pcall(smart_names.get_smart_terrain_name, smart)
 			if not ok or not label then label = name end
-			local lvl = game.translate_string(d.level)
+			res[#res + 1] = { key = name, label = label, level = d.level, lvl = game.translate_string(d.level), here = (d.level == cur) }
+		end
+	end
+	return res
+end
+
+local function teleport_list()
+	local pts = teleport_points()
+	local res = {}
+	if tp_level == nil then
+		local levels, order = {}, {}
+		for _, p in ipairs(pts) do
+			local l = levels[p.level]
+			if not l then
+				l = { level = p.level, lvl = p.lvl, here = p.here, n = 0 }
+				levels[p.level] = l
+				order[#order + 1] = l
+			end
+			l.n = l.n + 1
+		end
+		table.sort(order, function(a, b)
+			if a.here ~= b.here then return a.here end
+			return a.lvl < b.lvl
+		end)
+		for _, l in ipairs(order) do
 			res[#res + 1] = {
-				key = name,
-				name = lvl .. ". " .. label,
-				descr = (d.level == cur) and "Точка на этом уровне." or "Точка на другом уровне: сначала переход через зону перехода, как у проводников, затем прыжок к точке.",
-				here = (d.level == cur) and 0 or 1,
-				lvl = lvl,
+				key = tp_prefix .. l.level,
+				name = l.lvl .. (l.here and " (вы здесь)" or "") .. ", точек: " .. l.n,
+				descr = "Открыть список точек локации. Кнопка «Выполнить» показывает точки, прыжок будет по выбору точки.",
+			}
+		end
+		return res
+	end
+	res[1] = { key = tp_back, name = "<< Назад к списку локаций", descr = "Вернуться к списку локаций." }
+	local mine = {}
+	for _, p in ipairs(pts) do
+		if p.level == tp_level then
+			mine[#mine + 1] = {
+				key = p.key,
+				name = p.label,
+				descr = p.here and "Точка на этом уровне." or "Точка на другом уровне: сначала переход через зону перехода, как у проводников, затем прыжок к точке.",
 			}
 		end
 	end
-	table.sort(res, function(a, b)
-		if a.here ~= b.here then return a.here < b.here end
-		if a.lvl ~= b.lvl then return a.lvl < b.lvl end
-		return a.name < b.name
-	end)
+	table.sort(mine, function(a, b) return a.name < b.name end)
+	for _, m in ipairs(mine) do res[#res + 1] = m end
 	return res
+end
+
+-- the spawn menu calls it when a tab is opened: the teleport tab starts from the list of locations
+function tab_opened(tab)
+	if tab == "teleport" then tp_level = nil end
 end
 
 function list(tab)
@@ -501,6 +544,9 @@ end
 function run(tab, key, n)
 	if not (db.actor and db.actor:alive()) then return false end
 	if tab == "teleport" then
+		if key == tp_back then tp_level = nil return "refresh" end
+		local lv = string.match(key, "^" .. tp_prefix .. "(.+)$")
+		if lv then tp_level = lv return "refresh" end
 		return teleport(key)
 	end
 	local bed = string.match(key, "^bed(%d+)$")
