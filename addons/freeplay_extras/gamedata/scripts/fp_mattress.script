@@ -1,0 +1,39 @@
+-- fp_mattress: binder of the invisible sleeping place (section fp_mattress, script_binding = fp_mattress.init).
+-- The same idea as bind_physic_object of "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk), but the binder is
+-- our own file, the core binder is not touched. Адаптация под SRP Freeplay: Eon
+-- When the object comes online it takes the "use" callback and the tip text; the sleep itself is in fp_sleep.
+
+local online = {}
+
+function init(obj)
+	obj:bind_object(mattress_binder(obj))
+end
+
+function online_count()
+	local n = 0
+	for _ in pairs(online) do n = n + 1 end
+	return n
+end
+
+class "mattress_binder" (object_binder)
+
+function mattress_binder:__init(obj) super(obj) end
+
+function mattress_binder:net_spawn(se_abstract)
+	if not object_binder.net_spawn(self, se_abstract) then return false end
+	local obj = self.object
+	online[obj:id()] = true
+	obj:set_callback(callback.use_object, mattress_binder.use_callback, self)
+	obj:set_tip_text("fp_tip_sleep")
+	return true
+end
+
+function mattress_binder:net_destroy()
+	online[self.object:id()] = nil
+	self.object:set_callback(callback.use_object, nil)
+	object_binder.net_destroy(self)
+end
+
+function mattress_binder:use_callback(obj, who)
+	fp_sleep.on_mattress_use(obj, who)
+end

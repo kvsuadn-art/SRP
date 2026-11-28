@@ -78,15 +78,14 @@ yantar = yan_space_restrictor_no_weapon_actor_base_cut2
 ; the item section [sleeping_bag] is in misc\fp_sleep_items.ltx (this file is also read by the script on its own, so it must not inherit
 ; from sections of system.ltx).
 
-; Mattress objects of the world (section fp_mattress), created by fp_sleep once per place (the check is "no such object within 1 m").
-; Value: x,y,z[,level_vertex,game_vertex]; without the vertices they are found at the moment of creation (the actor is on the level).
-; base_bed: the point where the hero wakes at the start of the game (all.spawn, object actor); the true bed is within 1-2 m of it.
+; Mattress objects of the world (section fp_mattress), created by fp_sleep once per level (info fp_mat_<level>; the dev tool "Матрасы: пересоздать"
+; makes them again after a change here). Value: x,y,z[,level_vertex,game_vertex]; without the vertices the level vertex under the
+; point is used (or the actor's, if there is none) and the actor's game vertex. The order in the game is alphabetical by name
+; (the ini reader sorts the keys), the dev tool "К матрасу N" uses the same order.
+; Checked in game 2026-11-28: the beds bed_2661, floor_2660 (group E) and bed_A (group A) are bare metal frames without a mattress, not taken.
+; base_bed: where the hero lies at the start of the game (the point recorded by the user's pos tool; the spawn point of all.spawn
+; -180.563,4.791,-271.742 is 3.8 m away from it).
+; bed_3340 (-143.181,1.624,-311.874): a mattress lies on the second shelf next to it: the point is a candidate, the height is not final.
 [mattress_marsh]
-base_bed = -180.563,4.791,-271.742
-; Single beds near the base, from the bounding boxes of level visuals (ChatGPT's parse of marsh/level: prop_bed1 / prop_mattress1). Centres of boxes,
-; not tested in game: the height is the box centre (bed1, box height 1.1 m) or just above the top (a mattress on the floor).
-bed_2661 = -155.747,2.800,-271.625
+base_bed = -177.800,4.78,-274.400
 bed_3340 = -143.181,1.624,-311.874
-floor_2660 = -179.405,0.310,-328.619
-; Marsh, outside the base: group A of the level parse (box 1.91 x 0.42 x 2.00 m), next to the SGM point mar_p3 (40.156,2.912,-245.449).
-bed_A = 38.849,3.184,-247.264

@@ -27,7 +27,7 @@ eat_portions_num = 1
 
 ; The sleeping place in the world: an invisible object (0.4 x 0.2 x 0.5 m) over a bed or mattress, "F" shows the tip and opens the sleep window.
 ; Idea and model: "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): section [mattress], model sleeping_decor_inviz.ogf.
-; Adaptation SRP Freeplay: Eon. The hook (callback.use_object) is set by scripts\fp_sleep.script, not by script_binding.
+; Adaptation SRP Freeplay: Eon. The hook (callback.use_object) is set by the binder scripts\fp_mattress.script (script_binding of this section).
 ; Without a parent: the includes of system.ltx are read before [script_object] (parent sections are not guaranteed to exist yet);
 ; the keys are copied from [script_object] of system.ltx.
 [fp_mattress]
@@ -39,3 +39,4 @@ Human = off
 cform = skeleton
 class = SCRPTOBJ
 visual = physics\decor\sleeping_decor_inviz.ogf
+script_binding = fp_mattress.init
