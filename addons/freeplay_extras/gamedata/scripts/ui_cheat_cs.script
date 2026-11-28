@@ -12,13 +12,14 @@ local icon_stretch = (vid_mode~="800x600" and vid_mode~="1024x768") and 3 or 4
 ----------------------------------------------------------------------------------
 class "list_item" (CUIListItemEx)
 
-function list_item:__init() super()
-	self:SetWndRect		(Frect():set(0,0,473,22))
+function list_item:__init(w) super()
+	w = w or 473
+	self:SetWndRect		(Frect():set(0,0,w,22))
 	
 	self.nm					= CUIStatic	()
 	self.nm:SetAutoDelete	(true)
 	self:AttachChild		(self.nm)
-	self.nm:SetWndRect		(Frect():set(0,0,418,22))
+	self.nm:SetWndRect		(Frect():set(0,0,w-55,22))
 	self.nm:SetText			("name")
 	self.nm:SetFont			(GetFontLetterica16Russian())
 	self.nm:SetTextColor	(255,255,234,104)
@@ -88,6 +89,22 @@ function cheat_menu:InitControls()
 	self.list = xml:InitList("main_dialog:list_window", 	dialog)
 	self:Register(self.list, "list_window")
 	
+	-- Freeplay: teleport tab = two lists (locations / points), tools tab = time slider
+	-- Freeplay: вкладка телепорта = два списка (локации / точки), вкладка инструментов = ползунок времени
+	xml:InitStatic("main_dialog:cap_loc", dialog)
+	xml:InitStatic("main_dialog:cap_pts", dialog)
+	self.list_loc = xml:InitList("main_dialog:list_loc", dialog)
+	self:Register(self.list_loc, "list_loc")
+	self.list_pts = xml:InitList("main_dialog:list_pts", dialog)
+	self:Register(self.list_pts, "list_pts")
+	self.track_time = xml:InitTrackBar("main_dialog:track_time", dialog)
+	self:Register(self.track_time, "track_time")
+	self.cap_time = xml:InitStatic("main_dialog:cap_time", dialog)
+	self.btn_time = xml:Init3tButton("main_dialog:btn_time", dialog)
+	self:Register(self.btn_time, "btn_time")
+	self.cap_loc_wnd = nil
+	self:ShowDevPanels(nil)
+	
 	local ctrl
 	ctrl = xml:Init3tButton("main_dialog:btn_spawn", dialog)
 	self:Register(ctrl, "btn_spawn")
@@ -148,6 +165,10 @@ function cheat_menu:InitCallBacks()
 	self:AddCallback("btn_spawn",		ui_events.BUTTON_CLICKED,			self.OnBtnSpawn,			self)
 	self:AddCallback("list_window",		ui_events.LIST_ITEM_CLICKED, 		self.OnListItemClicked,		self)
 	self:AddCallback("list_window",		ui_events.WINDOW_LBUTTON_DB_CLICK,	self.OnListItemDbClicked,	self)
+	self:AddCallback("list_loc",		ui_events.LIST_ITEM_CLICKED, 		self.OnLocClicked,			self)
+	self:AddCallback("list_pts",		ui_events.LIST_ITEM_CLICKED, 		self.OnPointClicked,		self)
+	self:AddCallback("list_pts",		ui_events.WINDOW_LBUTTON_DB_CLICK,	self.OnBtnSpawn,			self)
+	self:AddCallback("btn_time",		ui_events.BUTTON_CLICKED,			self.OnBtnTime,				self)
 end
 
 function cheat_menu:OnBtnClearText()
@@ -223,6 +244,78 @@ function cheat_menu:OnBtnDelItem()
 	end
 end
 
+-- time speed steps of the slider (position 0..5 = step 0.2)
+-- ступени ползунка времени (позиция 0..5 = шаг 0.2)
+local time_steps = {1, 2, 3, 5, 10, 20}
+local function time_mult(self)
+	local v = self.track_time:GetFValue() or 0
+	local i = math.floor(v * 5 + 0.5) + 1
+	return time_steps[math.max(1, math.min(i, #time_steps))]
+end
+
+function cheat_menu:ShowDevPanels(tab)
+	local tele = tab == "teleport"
+	self.list:Show(not tele)
+	self.list_loc:Show(tele)
+	self.list_pts:Show(tele)
+	self.track_time:Show(tab == "tools")
+	self.cap_time:Show(tab == "tools")
+	self.btn_time:Show(tab == "tools")
+end
+
+local function fill_list(lst, tbl, w)
+	if lst:GetSize() > 0 then lst:RemoveAll() end
+	for i = 1, #tbl do
+		local n = tbl[i].name
+		if #n > 60 then n = string.sub(n, 1, 60) .. "..." end
+		local it = list_item(w)
+		it.nm:SetText(n)
+		it.sct:SetText(tbl[i].key)
+		lst:AddItem(it)
+	end
+end
+
+function cheat_menu:FillTeleport()
+	self.loc_tbl = fp_dev_tools.teleport_locations()
+	fill_list(self.list_loc, self.loc_tbl, 180)
+	self.list_pts:RemoveAll()
+	self.pts_tbl = {}
+	self.cur_loc = nil
+	if #self.loc_tbl > 0 then
+		self.list_loc:SetFocusedItem(0)
+		self:OnLocClicked()
+	end
+end
+
+function cheat_menu:OnLocClicked()
+	local i = self.list_loc:GetSelectedItem()
+	if not i or i < 0 or i >= #self.loc_tbl then return end
+	self.list_loc:SetFocusedItem(i)
+	local lv = self.loc_tbl[i + 1].key
+	self.cur_loc = lv
+	self.pts_tbl = fp_dev_tools.teleport_points_of(lv)
+	fill_list(self.list_pts, self.pts_tbl, 296)
+	self.btn_spawn:Enable(db.actor ~= nil and #self.pts_tbl > 0)
+	self.descr:SetText(self.loc_tbl[i + 1].descr)
+	self.section_name:SetText(lv)
+	if #self.pts_tbl > 0 then
+		self.list_pts:SetFocusedItem(0)
+		self:OnPointClicked()
+	end
+end
+
+function cheat_menu:OnPointClicked()
+	local i = self.list_pts:GetSelectedItem()
+	if not i or i < 0 or i >= #self.pts_tbl then return end
+	self.list_pts:SetFocusedItem(i)
+	self.descr:SetText(self.pts_tbl[i + 1].descr)
+	self.section_name:SetText(self.pts_tbl[i + 1].key)
+end
+
+function cheat_menu:OnBtnTime()
+	fp_dev_tools.set_time_mult(time_mult(self))
+end
+
 function cheat_menu:OnTabChange()
 	local ids = self.tab:GetActiveId()
 	self.tab_id = ids
@@ -249,6 +342,17 @@ function cheat_menu:OnTabChange()
 	end
 	
 	if dev then fp_dev_tools.tab_opened(ids) end
+	self:ShowDevPanels(ids)
+	self.btn_spawn:SetText(dev and "Выполнить" or "Получить")
+	if ids == "teleport" then
+		self.btn_spawn:SetText("Телепорт")
+		self.icon:Show(false)
+		self.cost:SetText("")
+		self.weight:SetText("")
+		self:FillTeleport()
+		self.was_found = -1
+		return
+	end
 	self:FillList()
 	self.list:ResetFocusCapture()
 	self:OnListItemClicked()
@@ -350,6 +454,12 @@ function cheat_menu:SearchItem()
 end
 
 function cheat_menu:OnBtnSpawn()
+	if self.tab_id == "teleport" then
+		local i = self.list_pts:GetFocusedItem()
+		if not i or i < 0 or not self.pts_tbl or not self.pts_tbl[i + 1] then return end
+		if fp_dev_tools.run("teleport", self.pts_tbl[i + 1].key) then self:CloseToGame() end
+		return
+	end
 	if self.list:GetSize()==0 then return end
 	local itm_index = self.list:GetFocusedItem()
 	if (not itm_index) or itm_index < 0 then return end
@@ -384,6 +494,7 @@ end
 
 function cheat_menu:Update()
 	CUIScriptWnd.Update(self)
+	if self.tab_id == "tools" then self.cap_time:SetText("x" .. time_mult(self)) end
 	if self.change_text then
 		self.change_text = nil
 		self.tmr = time_global()

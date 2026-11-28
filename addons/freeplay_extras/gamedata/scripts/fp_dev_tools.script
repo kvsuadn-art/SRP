@@ -18,7 +18,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b15"
+local BUILD = "2026-11-28 b16"
 
 local tools = {
 	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
@@ -72,9 +72,6 @@ end
 -- location opens the list of its points (named the way guides name them), the first entry goes back to the locations.
 -- «Телепорт»: два шага в одном списке. Сначала список локаций; «Выполнить» на локации открывает список её точек,
 -- первая строка возвращает к локациям.
-local tp_level = nil      -- system name of the opened location, nil = the list of locations
-local tp_prefix = "lvl:"
-local tp_back = "tp_back"
 
 -- every guide point that exists in the current simulation, with the localized level name
 local function teleport_points()
@@ -92,52 +89,51 @@ local function teleport_points()
 	return res
 end
 
-local function teleport_list()
-	local pts = teleport_points()
-	local res = {}
-	if tp_level == nil then
-		local levels, order = {}, {}
-		for _, p in ipairs(pts) do
-			local l = levels[p.level]
-			if not l then
-				l = { level = p.level, lvl = p.lvl, here = p.here, n = 0 }
-				levels[p.level] = l
-				order[#order + 1] = l
-			end
-			l.n = l.n + 1
+-- two lists side by side in the menu: locations (left) and the points of the chosen location (right)
+-- два списка рядом: локации (слева) и точки выбранной локации (справа)
+function teleport_locations()
+	local levels, order = {}, {}
+	for _, p in ipairs(teleport_points()) do
+		local l = levels[p.level]
+		if not l then
+			l = { key = p.level, lvl = p.lvl, here = p.here, n = 0 }
+			levels[p.level] = l
+			order[#order + 1] = l
 		end
-		table.sort(order, function(a, b)
-			if a.here ~= b.here then return a.here end
-			return a.lvl < b.lvl
-		end)
-		for _, l in ipairs(order) do
-			res[#res + 1] = {
-				key = tp_prefix .. l.level,
-				name = l.lvl .. (l.here and " (вы здесь)" or "") .. ", точек: " .. l.n,
-				descr = "Открыть список точек локации. Кнопка «Выполнить» показывает точки, прыжок будет по выбору точки.",
-			}
-		end
-		return res
+		l.n = l.n + 1
 	end
-	res[1] = { key = tp_back, name = "<< Назад к списку локаций", descr = "Вернуться к списку локаций." }
+	table.sort(order, function(a, b)
+		if a.here ~= b.here then return a.here end
+		return a.lvl < b.lvl
+	end)
+	local res = {}
+	for _, l in ipairs(order) do
+		res[#res + 1] = { key = l.key, name = l.lvl .. (l.here and " (вы здесь)" or ""), descr = "Точек: " .. l.n .. ". Выберите точку справа и нажмите «Телепорт»." }
+	end
+	return res
+end
+
+function teleport_points_of(level_name)
 	local mine = {}
-	for _, p in ipairs(pts) do
-		if p.level == tp_level then
+	for _, p in ipairs(teleport_points()) do
+		if p.level == level_name then
 			mine[#mine + 1] = {
 				key = p.key,
 				name = p.label,
-				descr = p.here and "Точка на этом уровне." or "Точка на другом уровне: сначала переход через зону перехода, как у проводников, затем прыжок к точке.",
+				descr = p.here and "Точка на этом уровне: прямой прыжок." or "Точка на другом уровне: переход через зону перехода, как у проводников, затем прыжок к точке.",
 			}
 		end
 	end
 	table.sort(mine, function(a, b) return a.name < b.name end)
-	for _, m in ipairs(mine) do res[#res + 1] = m end
-	return res
+	return mine
+end
+
+local function teleport_list()
+	return teleport_locations()
 end
 
 -- the spawn menu calls it when a tab is opened: the teleport tab starts from the list of locations
 function tab_opened(tab)
-	if tab == "teleport" then tp_level = nil end
 end
 
 function list(tab)
@@ -541,12 +537,17 @@ end
 
 -- Runs an entry. Returns true when the window must be closed (the action needs the game to continue).
 -- n: number from the spawn menu text field or nil
+function set_time_mult(mult)
+	if not db.actor then return end
+	mult = math.floor(math.min(math.max(mult, 1), 100))
+	local tf = math.min(tf_default * mult, 1000)
+	level.set_time_factor(tf)
+	tip("Время x" .. mult .. " (таймфактор " .. tf .. ")")
+end
+
 function run(tab, key, n)
 	if not (db.actor and db.actor:alive()) then return false end
 	if tab == "teleport" then
-		if key == tp_back then tp_level = nil return "refresh" end
-		local lv = string.match(key, "^" .. tp_prefix .. "(.+)$")
-		if lv then tp_level = lv return "refresh" end
 		return teleport(key)
 	end
 	local bed = string.match(key, "^bed(%d+)$")

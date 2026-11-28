@@ -126,6 +126,26 @@
 			</text_color>
 		</btn_cancel>
 		
+		<list_loc x="76" y="169" width="180" height="270" item_height="18">
+			<font font="letterica16" r="216" g="186" b="140" />
+		</list_loc>
+		<list_pts x="266" y="169" width="296" height="270" item_height="18">
+			<font font="letterica16" r="216" g="186" b="140" />
+		</list_pts>
+		<cap_loc x="76" y="142" width="180" height="22">
+			<text font="letterica16" r="255" g="210" b="63">Локация</text>
+		</cap_loc>
+		<cap_pts x="266" y="142" width="296" height="22">
+			<text font="letterica16" r="255" g="210" b="63">Точка</text>
+		</cap_pts>
+		<track_time x="190" y="450" width="190" height="21" step="0.2"/>
+		<cap_time x="386" y="450" width="70" height="21">
+			<text font="letterica18" r="220" g="200" b="15" align="l"/>
+		</cap_time>
+		<btn_time x="458" y="445" width="112" height="29">
+			<text font="letterica16" align="c">Применить</text>
+			<texture>ui_button_ordinary</texture>
+		</btn_time>
 		<sect_wnd x="68" y="448" width="110" height="20">
 			<text font="letterica16" a="130" r="130" g="130" b="130" align="l"/>
 		</sect_wnd>
