@@ -3,14 +3,14 @@
 -- Adaptation for SRP Freeplay: Eon
 --
 -- Freeplay extras, module 1: "finds in the world".
---  * 15 secret documents are scattered over the Zone at the start of a Freeplay game and can be sold
---    to the leaders of the bases;
+--  * 15 secret documents and the weapon skill books are scattered over the Zone in the pockets of dead stalkers
+--    (as are the flash drives below, never on the ground: small items fall through textures) and can be
+--    found by searching corpses; the documents are sold to the leaders of the bases;
 --  * the mechanics' flash drives (flesh_up_*, the items of the "find_upgrade" tasks of misc\tm_upgrades.ltx) lie in
 --    the pockets of dead stalkers (spots below, the level of a flash is the one of its task: mar_/esc_/gar_/val_/agr_),
 --    so they do not depend on quests or on the reputation with a faction (as in OGSM). Placed once per game, also in
 --    old saves (info fp_loot_flashes); the list of skipped flashes and extra flashes: misc\fp_loot.ltx.
--- Differences from OGSM: native SRP flash drives (no second flash set), documents and books lie at the spots,
--- state is kept in info portions only, nothing runs per update.
+-- Differences from OGSM: native SRP flash drives (no second flash set), state is kept in info portions only, nothing runs per update.
 
 local INFO_SPAWNED = "fp_loot_spawned"
 
@@ -146,46 +146,20 @@ local doc_price = {
 }
 local doc_list = {"doc_1", "doc_2", "doc_3", "doc_4", "doc_5", "doc_6", "doc_7", "doc_8", "doc_9", "doc_10", "doc_11", "doc_12", "doc_13", "doc_14", "doc_15"}
 
--- called once per game (see freeplay_mode.prepare_world)
+-- called once per game (see freeplay_mode.prepare_world). Documents, books and flash drives are placed by
+-- ensure_flashes / ensure_loot (dead stalkers' pockets) on the first net_spawn, also in old saves.
 function startup_spawn()
 	if has_alife_info(INFO_SPAWNED) then
 		return
 	end
 	db.actor:give_info_portion(INFO_SPAWNED)
-
-	local sim = alife()
-	if not sim then
-		return
-	end
-
-	local free = {}
-	for i = 1, #coords do
-		free[i] = i
-	end
-
-	local function place(section)
-		if #free == 0 then
-			return
-		end
-		local k = math.random(#free)
-		local c = coords[free[k]]
-		table.remove(free, k)
-		sim:create(section, c[1], c[2], c[3])
-	end
-
-	for _, section in ipairs(doc_list) do
-		place(section)
-	end
-	-- weapon skill books (fp_skills)
-	for _, section in ipairs(fp_skills.book_list()) do
-		place(section)
-	end
 end
 
 -- ---------------------------------------------------------------------------------------------------------------
 -- Flash drives of the mechanics in the pockets of dead stalkers
 -- ---------------------------------------------------------------------------------------------------------------
 local INFO_FLASHES = "fp_loot_flashes"
+local INFO_CORPSES = "fp_loot_corpses"
 local BODY_SECTION = "sim_default_stalker_1"
 local task_level = { mar = "marsh", esc = "escape", gar = "garbage", val = "darkvalley", agr = "agroprom" }
 
@@ -227,41 +201,94 @@ function flash_levels()
 	return res, order
 end
 
+-- one dead stalker at spot c with the item in the pocket
+local function put_in_corpse(section, c)
+	local body = ogsm_packet.spawn_stalker(BODY_SECTION, c[1], c[2], c[3], "dead", "empty")
+	if not body then return end
+	local item = alife():create(section, body.position, body.m_level_vertex_id, body.m_game_vertex_id, body.id)
+	printf("[fp_loot] %s: corpse %s on %s (%.1f, %.1f, %.1f), item %s", section, body.id, c[4], c[1].x, c[1].y, c[1].z, item and item.id or "nil")
+end
+
+-- spots that are not taken yet (a spot is taken by a corpse placed earlier in the same pass)
+local function free_spots()
+	local free = {}
+	for i = 1, #coords do free[i] = i end
+	return free
+end
+
+local function take_spot(free, level)
+	local cand = {}
+	for k, i in ipairs(free) do
+		if level == nil or level == "any" or coords[i][4] == level then cand[#cand + 1] = k end
+	end
+	if #cand == 0 then
+		for k in ipairs(free) do cand[#cand + 1] = k end
+	end
+	if #cand == 0 then return nil end
+	local k = cand[math.random(#cand)]
+	local c = coords[free[k]]
+	table.remove(free, k)
+	return c
+end
+
 -- once per game (also for saves made before the module): a dead stalker with the flash drive in the pocket per flash
 function ensure_flashes()
 	if not (has_alife_info("srp_freeplay") or has_alife_info("fp_loot")) then return end
-	if has_alife_info(INFO_FLASHES) then return end
+	if not db.actor or not alife() then return end
+	if not has_alife_info(INFO_FLASHES) then
+		db.actor:give_info_portion(INFO_FLASHES)
+		local level_of, order = flash_levels()
+		local free = free_spots()
+		for _, section in ipairs(order) do
+			local c = take_spot(free, level_of[section])
+			if c then put_in_corpse(section, c) end
+		end
+	end
+	ensure_loot()
+end
+
+-- documents and skill books, also once per game. In saves where they already lie on the ground (older builds placed
+-- them at the spots) the ones lying on the ground are released and put into corpses; the ones somebody holds stay.
+function ensure_loot()
+	if has_alife_info(INFO_CORPSES) then return end
+	db.actor:give_info_portion(INFO_CORPSES)
 	local sim = alife()
-	if not sim or not db.actor then return end
-	db.actor:give_info_portion(INFO_FLASHES)
-	local level_of, order = flash_levels()
-	local free = {}
-	for i = 1, #coords do free[i] = i end
-	for _, section in ipairs(order) do
-		local cand = {}
-		for k, i in ipairs(free) do
-			if level_of[section] == "any" or coords[i][4] == level_of[section] then cand[#cand + 1] = k end
-		end
-		if #cand == 0 then
-			for k in ipairs(free) do cand[#cand + 1] = k end
-		end
-		if #cand > 0 then
-			local k = cand[math.random(#cand)]
-			local c = coords[free[k]]
-			table.remove(free, k)
-			local body = ogsm_packet.spawn_stalker(BODY_SECTION, c[1], c[2], c[3], "dead", "empty")
-			if body then
-				local item = sim:create(section, body.position, body.m_level_vertex_id, body.m_game_vertex_id, body.id)
-				printf("[fp_loot] flash %s: corpse %s on %s (%.1f, %.1f, %.1f), item %s", section, body.id, c[4], c[1].x, c[1].y, c[1].z, item and item.id or "nil")
+	local want = {}
+	for _, s in ipairs(doc_list) do want[s] = true end
+	for _, s in ipairs(fp_skills.book_list()) do want[s] = true end
+	if has_alife_info(INFO_SPAWNED) then
+		for id = 1, 65534 do
+			local o = sim:object(id)
+			if o ~= nil then
+				local s = o:section_name()
+				if want[s] then
+					if o.parent_id == 65535 then sim:release(o, true) else want[s] = nil end
+				end
 			end
 		end
 	end
+	local free = free_spots()
+	for section in pairs(want) do
+		local c = take_spot(free, "any")
+		if c then put_in_corpse(section, c) end
+	end
 end
 
--- list for the dev tools: { section, corpse id, level, position } for every flash that lies in a corpse
+-- every section that fp_loot puts into corpses: flash drives, documents, skill books
+function corpse_items()
+	local level_of, order = flash_levels()
+	local all = {}
+	for _, s in ipairs(order) do all[#all + 1] = s end
+	for _, s in ipairs(doc_list) do all[#all + 1] = s end
+	for _, s in ipairs(fp_skills.book_list()) do all[#all + 1] = s end
+	return all
+end
+
+-- list for the dev tools: { section, corpse id, position } for every such item that lies in a corpse
 function flash_holders()
 	local sim = alife()
-	local level_of = flash_levels()
+	local level_of = {}
+	for _, s in ipairs(corpse_items()) do level_of[s] = true end
 	local res = {}
 	for id = 1, 65534 do
 		local o = sim:object(id)
@@ -273,7 +300,11 @@ function flash_holders()
 			end
 		end
 	end
-	table.sort(res, function(a, b) return a.section < b.section end)
+	table.sort(res, function(a, b)
+		local ka, kb = string.find(a.section, "^flesh_up") and 0 or 1, string.find(b.section, "^flesh_up") and 0 or 1
+		if ka ~= kb then return ka < kb end
+		return a.section < b.section
+	end)
 	return res
 end
 
