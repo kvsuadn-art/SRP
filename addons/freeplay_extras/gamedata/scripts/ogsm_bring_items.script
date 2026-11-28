@@ -248,6 +248,8 @@ end
 function ensure_flashes()
 	if not (has_alife_info("srp_freeplay") or has_alife_info("fp_loot")) then return end
 	if not db.actor or not alife() then return end
+	-- the usual case (everything has been placed once): leave before anything is built
+	if has_alife_info(INFO_FLASHES) and has_alife_info(INFO_CORPSES) then return end
 	local free = free_spots()
 	if has_alife_info(INFO_FLASHES) and not has_alife_info(INFO_CORPSES) then
 		-- old save: the spots that already hold a corpse with an item are not free

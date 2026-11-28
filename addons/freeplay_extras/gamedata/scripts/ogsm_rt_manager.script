@@ -1002,10 +1002,20 @@ function CRandomTask:scan_targets()
 	for _, v in pairs(self.task_id_by_type["kill_stalker"] or {}) do
 		self.task_info[v].target_objects = nil
 	end
+	-- Squads instead of a pass over all 65534 object ids (that pass was a one-frame spike of tens of ms): every simulation
+	-- stalker is a member of a squad (squad_npc = ids). The targets of kill_stalker (sim_default_*, yan_stalker_zombied) are squad members.
+	-- ќтр€ды вместо прохода по всем 65534 id (проход был скачком в дес€тки мс за один кадр): все симул€ционные сталкеры
+	-- состо€т в отр€дах (squad_npc = id). ÷ели kill_stalker (sim_default_*, yan_stalker_zombied) - члены отр€дов.
 	local sim = alife()
-	for id = 1, 65534 do
-		local obj = sim:object(id)
-		if obj ~= nil then self:register_target(obj) end
+	local board = sim_board.get_sim_board()
+	if board == nil then return end
+	for _, squad in pairs(board.squads) do
+		if squad.squad_npc ~= nil then
+			for npc_id in pairs(squad.squad_npc) do
+				local obj = sim:object(npc_id)
+				if obj ~= nil then self:register_target(obj) end
+			end
+		end
 	end
 end
 
