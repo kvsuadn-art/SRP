@@ -4,15 +4,15 @@
 -- Not a port of the SGM task layer: quests are re-implemented on stock engine tasks (CGameTask, as in
 -- ogsm_rt_manager) and dialogs; data is in misc\fp_quests.ltx. Quest types:
 --   fetch   - a quest item is spawned at a place, the actor brings it to the giver for a reward;
---   capture - a smart terrain held by the enemy faction must stop belonging to it (checked every 5 s,
+--   capture - a smart terrain held by the enemy faction must stop belonging to it (checked every 2 s,
 --             only while such a quest is active), then report to the giver;
 --   kill    - an NPC (section 'npc') is spawned at 'spawn' when the quest starts; its death completes
---             the quest (checked every 5 s while the quest is active), then report to the giver;
+--             the quest (checked every 2 s while the quest is active), then report to the giver;
 --             optional loot (an item the actor must also take from the targets before it counts), optional count (NPCs per wave) and waves (the next wave appears when the previous is dead);
 --   talk    - an NPC (section 'npc') is spawned at 'spawn'; talking to it (a dialog action fp_quests.talked)
 --             completes the quest, then report to the giver;
 --   deliver - the actor brings an existing item (section 'item', nothing is spawned); it is noticed in the
---             inventory every 5 s while the quest is active, then report to the giver;
+--             inventory every 2 s while the quest is active, then report to the giver;
 --   bonus   - no task: a dialog reward available once all quests in 'requires' are rewarded.
 -- 'giver = profile:<name>': the giver is an NPC without a fixed object name, its id is stored at the start.
 -- Optional 'story_info': outside Freeplay the quest opens after this original story info portion.
@@ -313,7 +313,7 @@ end
 
 local capture_list = nil
 function fp_on_update(delta)
-	if mgr then mgr:reschedule(5000) end
+	if mgr then mgr:reschedule(2000) end
 	if db.actor == nil then return end
 	if not has_alife_info("fp_quests") then db.actor:give_info_portion("fp_quests") end
 	-- givers that are new NPCs: created once (in Freeplay, or in Story after the story_info of the quest), never respawned
