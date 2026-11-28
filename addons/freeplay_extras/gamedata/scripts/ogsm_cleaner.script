@@ -80,10 +80,11 @@ function on_update(delta)
 	for i = cursor, last do
 		local obj = sim:object(i)
 		if obj and gg:vertex(obj.m_game_vertex_id):level_id() ~= actor_level and can_release(obj) then
-			local nm = obj:name()
+			local nm, sc, tr = obj:name(), obj:section_name(), time_global()
 			sim:release(obj, true)
 			released = released + 1
-			fp_log.write("%s", "[ogsm_cleaner] released " .. tostring(nm))
+			-- releases are rare (the stray weapons of other levels), so they are always logged with the time they took
+			fp_log.always("%s", string.format("[ogsm_cleaner] released %s (%s) in %d ms", tostring(nm), tostring(sc), time_global() - tr))
 		end
 		if released >= 3 or time_global() - t0 >= 6 then stop = i break end
 	end
