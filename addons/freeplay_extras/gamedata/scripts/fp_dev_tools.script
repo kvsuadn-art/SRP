@@ -231,12 +231,13 @@ local function diag()
 	local n = 0
 	for i = 0, 65534 do
 		local se = alife():object(i, true)
-		if se and se:section_name() == "fp_base_stash" then
+		if se and (se:section_name() == "fp_base_stash" or se:section_name() == "fp_mattress") then
 			n = n + 1
-			dbglog("%s", TAG .. "DIAG fp_base_stash id=" .. se.id .. string.format(" pos=%.1f,%.1f,%.1f", se.position.x, se.position.y, se.position.z))
+			local o = level.object_by_id(se.id)
+			dbglog("%s", TAG .. "DIAG " .. se:section_name() .. " id=" .. se.id .. string.format(" pos=%.2f,%.2f,%.2f dist=%.1f lv=%s gv=%s", se.position.x, se.position.y, se.position.z, se.position:distance_to(p), tostring(se.m_level_vertex_id), tostring(se.m_game_vertex_id)) .. " online=" .. tostring(o ~= nil) .. (o and (" visual=" .. tostring(o:section())) or ""))
 		end
 	end
-	dbglog("%s", TAG .. "DIAG fp_base_stash count=" .. n)
+	dbglog("%s", TAG .. "DIAG fp_base_stash+fp_mattress count=" .. n)
 	tip("Диагностика записана в лог")
 end
 
