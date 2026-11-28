@@ -357,7 +357,9 @@ function cheat_menu:OnBtnSpawn()
 	if itm==nil then return end
 	local sect = itm.sct:GetText()
 	if dev_tab[self.tab_id] then
-		if fp_dev_tools.run(self.tab_id, sect) then
+		-- the number in the text field goes to the tools as a parameter (distance, money); nil when it is not a number
+		-- число из поля ввода передаётся инструментам как параметр (расстояние, деньги); nil, если это не число
+		if fp_dev_tools.run(self.tab_id, sect, tonumber(self.edit_box:GetText())) then
 			self:CloseToGame()
 		end
 		return

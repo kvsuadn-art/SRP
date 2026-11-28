@@ -18,9 +18,16 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b12"
+local BUILD = "2026-11-28 b13"
 
 local tools = {
+	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
+	{ key = "fwd10",   name = "Вперёд на 10 м",   descr = "То же, на 10 метров: например, через забор на территорию." },
+	{ key = "fwd30",   name = "Вперёд на 30 м",   descr = "То же, на 30 метров." },
+	{ key = "fwd100",  name = "Вперёд на 100 м",  descr = "То же, на 100 метров." },
+	{ key = "fwdn",    name = "Вперёд на N м (число в поле)", descr = "Расстояние берётся из поля ввода над списком (1–500 м); если там не число, 10 м." },
+	{ key = "money",   name = "Деньги: добавить N (число в поле)", descr = "Добавить игроку деньги: сумма из поля ввода (по умолчанию 10000, максимум 10000000)." },
+	{ key = "moneyminus", name = "Деньги: отнять N (число в поле)", descr = "Отнять деньги: сумма из поля ввода (по умолчанию 10000), не больше, чем есть у игрока." },
 	{ key = "spot",    name = "Точка для трупа: строка в лог", descr = "Записать в лог готовую строку для таблицы coords в ogsm_bring_items.script (строка SPOT): позиция игрока, level vertex, game vertex, короткое имя уровня. Встаньте там, где должен лежать труп с предметами." },
 	{ key = "store",   name = "Размер хранилища pstor",  descr = "Оценить, сколько байт занимает pstor игрока в сейве и какая это доля от практического лимита ~6 КБ на чанк актора (6*1024 в движке). Считается по формуле xr_logic.pstor_save_all; остальное содержимое чанка (погода и прочее) сюда не входит, поэтому это нижняя оценка. Подробности в логе: строки STORE." },
 	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
@@ -320,6 +327,34 @@ local function log_store()
 	tip(string.format("pstor: %d записей, ~%d байт (%.1f%% от ~6 КБ)", count, total, total * 100 / STORE_LIMIT))
 end
 
+-- Jump forward by m metres along the view direction (horizontal). Height: the nearest AI-net vertex, if it is close,
+-- otherwise the actor's height + 1 m. Прыжок вперёд на m метров по направлению взгляда; высота по ближайшей вершине AI-сетки.
+local function jump_forward(m)
+	local act = db.actor
+	local d, p = act:direction(), act:position()
+	local len = math.sqrt(d.x * d.x + d.z * d.z)
+	if len < 0.01 then tip("Смотрите не строго вверх или вниз") return end
+	local tx, tz = p.x + d.x / len * m, p.z + d.z / len * m
+	local y = p.y + 1.0
+	local ok, vid = pcall(level.vertex_id, vector():set(tx, p.y, tz))
+	if ok and vid then
+		local vp = level.vertex_position(vid)
+		if (vp.x - tx) * (vp.x - tx) + (vp.z - tz) * (vp.z - tz) <= 25 then y = vp.y + 0.3 end
+	end
+	act:set_actor_position(vector():set(tx, y, tz))
+	fp_log.always("%s", TAG .. string.format("JUMP %d m: %.1f,%.1f,%.1f -> %.1f,%.1f,%.1f (ai-net %s)", m, p.x, p.y, p.z, tx, y, tz, tostring(ok and vid or "none")))
+	tip("Вперёд на " .. m .. " м")
+end
+
+local function change_money(sign, n)
+	n = math.floor(math.min(math.max(n or 10000, 1), 10000000))
+	local act = db.actor
+	if sign < 0 then n = math.min(n, act:money()) end
+	if n <= 0 then tip("Денег нет") return end
+	act:give_money(sign * n)
+	tip((sign > 0 and "Деньги +" or "Деньги -") .. n)
+end
+
 local mat_n = 0
 local ray1 = nil
 
@@ -458,7 +493,8 @@ local function goto_flash(step)
 end
 
 -- Runs an entry. Returns true when the window must be closed (the action needs the game to continue).
-function run(tab, key)
+-- n: number from the spawn menu text field or nil
+function run(tab, key, n)
 	if not (db.actor and db.actor:alive()) then return false end
 	if tab == "teleport" then
 		return teleport(key)
@@ -466,6 +502,11 @@ function run(tab, key)
 	local bed = string.match(key, "^bed(%d+)$")
 	if bed then return goto_bed(tonumber(bed)) end
 	if key == "pdacorpse" then return goto_pda_corpse() end
+	local fwd = string.match(key, "^fwd(%d+)$")
+	if fwd then jump_forward(tonumber(fwd)) return true end
+	if key == "fwdn" then jump_forward(math.floor(math.min(math.max(n or 10, 1), 500))) return true end
+	if key == "money" then change_money(1, n) return false end
+	if key == "moneyminus" then change_money(-1, n) return false end
 	if key == "flashlist" then flash_list() return false end
 	if key == "flashnext" then return goto_flash(1) end
 	if key == "flashprev" then return goto_flash(-1) end
