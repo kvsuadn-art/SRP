@@ -67,10 +67,9 @@
 
 	<!-------------------------------------------------->
 
-	<!-- диалог отсрочен до возвращения Шрама из первого похода к наблюдательной вышке -->
+	<!-- Без гейта по сюжетному инфо: во Фриплее вступление пропускается и mar_tutorial_returned_to_base нигде не выдаётся -->
 	<dialog id="rt_holod_task_dialog">
 		<precondition>ogsm_rt_manager.is_enabled</precondition>
-		<has_info>mar_tutorial_returned_to_base</has_info>
 		<init_func>ogsm_rt_manager.init_holod_task_dialog</init_func>
 	</dialog>
 
@@ -80,10 +79,9 @@
 		<precondition>ogsm_rt_manager.has_active_vendor_task</precondition>
 	</dialog>
 
-	<!-- диалог отсрочен до возвращения Шрама из первого похода к наблюдательной вышке -->
+	<!-- Без гейта по сюжетному инфо: во Фриплее вступление пропускается и mar_tutorial_returned_to_base нигде не выдаётся -->
 	<dialog id="rt_kalancha_task_dialog">
 		<precondition>ogsm_rt_manager.is_enabled</precondition>
-		<has_info>mar_tutorial_returned_to_base</has_info>
 		<init_func>ogsm_rt_manager.init_kalancha_task_dialog</init_func>
 	</dialog>
 
@@ -93,10 +91,9 @@
 		<precondition>ogsm_rt_manager.has_active_vendor_task</precondition>
 	</dialog>
 
-	<!-- диалог отсрочен до достижения согласия между Шрамом и Лебедевым об очистке Болот от Ренегатов -->
+	<!-- Без гейта по сюжетному инфо (mar_intro_talk_with_commander_3_done): во Фриплее вступление пропускается -->
 	<dialog id="rt_lebedev_task_dialog">
 		<precondition>ogsm_rt_manager.is_enabled</precondition>
-		<has_info>mar_intro_talk_with_commander_3_done</has_info>
 		<init_func>ogsm_rt_manager.init_lebedev_task_dialog</init_func>
 	</dialog>
 
