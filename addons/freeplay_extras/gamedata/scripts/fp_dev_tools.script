@@ -9,7 +9,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b7"
+local BUILD = "2026-11-28 b8"
 
 local tools = {
 	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
@@ -25,6 +25,7 @@ local tools = {
 	{ key = "bed7",    name = "К матрасу 7",    descr = "Переместиться к точке 7 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
 	{ key = "bed8",    name = "К матрасу 8",    descr = "Переместиться к точке 8 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
 	{ key = "mats",   name = "Матрасы: пересоздать",    descr = "Удалить все объекты fp_mattress (всех уровней) и создать заново из секций [mattress_<уровень>] misc\\fp_sleep.ltx на этом уровне. Нужно после правки точек. Полный перебор id, на секунду может подвиснуть." },
+	{ key = "wpn",    name = "Оружие: достать",    descr = "Один вызов restore_weapon: если оружие осталось спрятанным после лечения или сна, нажмите; повторять только если всё ещё спрятано (счётчик движка)." },
 	{ key = "h1",      name = "Время +1 час",           descr = "Сдвинуть игровое время на час вперёд." },
 	{ key = "h6",      name = "Время +6 часов",         descr = "Сдвинуть игровое время на 6 часов вперёд." },
 	{ key = "d1",      name = "Время +1 сутки",         descr = "Сдвинуть игровое время на сутки вперёд." },
@@ -346,6 +347,7 @@ function run(tab, key)
 	end
 	local bed = string.match(key, "^bed(%d+)$")
 	if bed then return goto_bed(tonumber(bed)) end
+	if key == "wpn" then pcall(db.actor.restore_weapon, db.actor) tip("restore_weapon вызван") return true end
 	if key == "mats" then
 		local ok, a, b = pcall(fp_sleep.recreate_mattresses)
 		tip(ok and ("Матрасы: удалено " .. a .. ", создано " .. b) or "Ошибка пересоздания, см. лог")

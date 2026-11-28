@@ -30,7 +30,9 @@ function on_item_use(obj)
 		end
 	end
 	if not hide_list[obj:section()] then return end
-	db.actor:hide_weapon()
+	-- hide_weapon of the engine is a counter: a second hide while one is pending would need a second restore, and the
+	-- weapon stayed holstered for good (two medkits in a row). One hide per cycle, the next use only moves the timer.
+	if restore_at == nil then db.actor:hide_weapon() end
 	restore_at = time_global() + ini:r_u32("settings", "hide_ms")
 end
 

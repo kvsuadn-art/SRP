@@ -16,22 +16,23 @@ end
 
 local function fix_shell(obj)
 	local shell = obj:get_physics_shell()
-	if shell == nil then return false end
-	for i = 0, shell:get_elements_number() - 1 do
+	if shell == nil then return false, "no physics shell" end
+	local n = shell:get_elements_number()
+	for i = 0, n - 1 do
 		local el = shell:get_element_by_order(i)
 		if el ~= nil and not el:is_fixed() then el:fix() end
 	end
-	return true
+	return true, "elements: " .. n
 end
 
 function fp_stash_binder:update(delta)
 	bind_physic_object.generic_physics_binder.update(self, delta)
 	if self.fp_fixed or self.fp_tries == 0 then return end
 	self.fp_tries = (self.fp_tries or 30) - 1
-	local ok, done = pcall(fix_shell, self.object)
+	local ok, done, info = pcall(fix_shell, self.object)
 	self.fp_fixed = ok and done
 	if self.fp_fixed or self.fp_tries == 0 then
 		local pos = self.object:position()
-		dbglog("%s", "[fp_stash_box] fixed in place: " .. tostring(self.fp_fixed) .. string.format(" at %.2f,%.2f,%.2f", pos.x, pos.y, pos.z))
+		dbglog("%s", "[fp_stash_box] fixed in place: " .. tostring(self.fp_fixed) .. " (" .. tostring(ok and info or done) .. ")" .. string.format(" at %.2f,%.2f,%.2f", pos.x, pos.y, pos.z))
 	end
 end
