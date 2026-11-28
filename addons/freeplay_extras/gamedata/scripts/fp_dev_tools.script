@@ -18,7 +18,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b25"
+local BUILD = "2026-11-28 b26"
 
 local tools = {
 	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
@@ -56,6 +56,12 @@ local tools = {
 	{ key = "surge",   name = "Запустить выброс",       descr = "Немедленно запустить выброс (30 сек. до укрытия), если он сейчас не идёт." },
 	{ key = "eclipse", name = "Запустить затмение",     descr = "Выброс с эффектом затмения (fx_blackday)." },
 	{ key = "diag",    name = "Диагностика в лог",      descr = "Записать в лог состояние модулей Freeplay: тайник, сон, зона базы, версия сборки." },
+	{ key = "tsk_list", name = "Задания: список в лог", descr = "Записать в лог активные и завершённые задания fp_tasks (этап, статус)." },
+	{ key = "tsk_trader", name = "Задание: esc_trader_job", descr = "Выдать тестовое задание из конвертированного файла SoC (2 этапа, цель - торговец, если задан story id)." },
+	{ key = "tsk_samopal", name = "Задание: escape_tolik_samopal_task", descr = "Выдать тестовое 3-этапное задание. Условия: info samopal_done / функция have_samopal." },
+	{ key = "tsk_next", name = "Задание: следующий этап", descr = "Перевести первое активное задание fp_tasks на следующий этап." },
+	{ key = "tsk_done", name = "Задание: завершить", descr = "Завершить первое активное задание fp_tasks (с наградой и новостью)." },
+	{ key = "tsk_fail", name = "Задание: провалить", descr = "Провалить первое активное задание fp_tasks." },
 }
 
 local function tip(text)
@@ -135,6 +141,7 @@ local tool_group_defs = {
 	{ key = "g_actor", name = "Игрок и события",   descr = "Лечение, оружие, выброс и затмение.", keys = { "heal", "wpn", "surge", "eclipse" } },
 	{ key = "g_bed",   name = "Матрасы (сон)",     descr = "Точки матрасов для сна: переход к точкам, запись в лог, пересоздание.", keys = { "bed1", "bed2", "bed3", "bed4", "bed5", "bed6", "bed7", "bed8", "mats", "mat", "ray1", "ray2" } },
 	{ key = "g_debug", name = "Отладка и лог",     descr = "Записи в лог для настройки данных и диагностика.", keys = { "spot", "store", "pos", "flashlist", "diag" } },
+	{ key = "g_tasks", name = "Задания (fp_tasks)", descr = "Проверка единого менеджера заданий: выдача, этапы, завершение.", keys = { "tsk_list", "tsk_trader", "tsk_samopal", "tsk_next", "tsk_done", "tsk_fail" } },
 }
 
 function tool_groups()
@@ -615,6 +622,26 @@ function run(tab, key, n)
 	if key == "flashnext" then return goto_flash(1) end
 	if key == "flashprev" then return goto_flash(-1) end
 	if key == "wpn" then pcall(db.actor.restore_weapon, db.actor) tip("restore_weapon вызван") return true end
+	if string.sub(key, 1, 4) == "tsk_" then
+		local first = fp_tasks.list_active()[1]
+		local id = first and string.match(first, "^(.-):")
+		if key == "tsk_list" then
+			local a = fp_tasks.list_active()
+			fp_log.always("%s", "[fp_dev_tools] TASKS active: " .. (#a > 0 and table.concat(a, ", ") or "-"))
+			tip("Активных заданий: " .. #a .. " (см. лог)")
+			return false
+		elseif key == "tsk_trader" then tip(fp_tasks.give("esc_trader_job") and "Задание выдано" or "Уже выдано/завершено"); return true
+		elseif key == "tsk_samopal" then tip(fp_tasks.give("escape_tolik_samopal_task") and "Задание выдано" or "Уже выдано/завершено"); return true
+		elseif id == nil then tip("Нет активных заданий"); return false
+		elseif key == "tsk_next" then
+			local _, st = fp_tasks.status(id)
+			fp_tasks.set_stage(id, st + 1)
+			tip(id .. ": этап " .. (st + 1))
+		elseif key == "tsk_done" then fp_tasks.complete(id); tip(id .. ": завершено")
+		elseif key == "tsk_fail" then fp_tasks.fail(id); tip(id .. ": провалено")
+		end
+		return true
+	end
 	if key == "mats" then
 		local ok, a, b = pcall(fp_sleep.recreate_mattresses)
 		tip(ok and ("Матрасы: удалено " .. a .. ", создано " .. b) or "Ошибка пересоздания, см. лог")

@@ -1,0 +1,9 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras
+-- fp_task_funcs: condition / effect / text functions for fp_tasks.
+-- A function used as =name in misc\fp_tasks.ltx lives here (or in xr_conditions / xr_effects).
+-- Conditions get (task_id, stage) and return true/false; effects get (actor, npc, {task_id, stage}); text functors get
+-- (task_id, stage) and return a string id. Functions of the original Shadow of Chernobyl scripts are re-written here by name
+-- (tools/soc_tasks_to_ltx.py lists the names a converted file needs).
+
+-- stage conditions of the original scripts that are not ported yet answer "false" explicitly, so the task waits
+-- instead of aborting; port them when the quest is taken into the game.

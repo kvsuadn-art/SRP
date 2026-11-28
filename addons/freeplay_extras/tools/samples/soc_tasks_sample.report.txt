@@ -1,0 +1,102 @@
+info portions needed (27, not in --known-infos): add to info_portions.xml:
+	<info_portion id="PMA_esc_antigas_mis_given_gun"/>
+	<info_portion id="PMA_esc_antigas_mis_has_gun"/>
+	<info_portion id="agroprom_military_case"/>
+	<info_portion id="cit_fail_first_task"/>
+	<info_portion id="esc_dogs_return"/>
+	<info_portion id="esc_fanat_die"/>
+	<info_portion id="esc_find_doctor_done"/>
+	<info_portion id="esc_find_railroad_passage_done"/>
+	<info_portion id="esc_find_railroad_passage_find_stalker"/>
+	<info_portion id="esc_kill_bandits_quest_done"/>
+	<info_portion id="esc_kill_bandits_quest_have"/>
+	<info_portion id="esc_kill_bandits_quest_kill"/>
+	<info_portion id="esc_lager_destroyed"/>
+	<info_portion id="esc_petruha_die"/>
+	<info_portion id="esc_rma_antigas_stalker_dead"/>
+	<info_portion id="esc_serious_talk"/>
+	<info_portion id="escape_blockpost_case_done"/>
+	<info_portion id="escape_blockpost_case_have"/>
+	<info_portion id="escape_fox_heal"/>
+	<info_portion id="escape_lager_complete"/>
+	<info_portion id="escape_lager_killers_die"/>
+	<info_portion id="escape_stalker_done"/>
+	<info_portion id="garbage_meetstalker_start"/>
+	<info_portion id="samopal_done"/>
+	<info_portion id="samopal_gain"/>
+	<info_portion id="tutorial_artefact_gain"/>
+	<info_portion id="tutorial_wounded_give_info"/>
+functions to implement in fp_task_funcs.script (7):
+	esc_has_bm16   <- ogsm_quests.esc_has_bm16
+	have_samopal   <- PMA_escape.have_samopal
+	is_actor_enemy_lager   <- escape_tasks.is_actor_enemy_lager
+	petruha_talk   <- escape_tasks.petruha_talk
+	task_fox_complete   <- escape_tasks.task_fox_complete
+	task_lager_complete   <- escape_tasks.task_lager_complete
+	task_volk_fail   <- escape_tasks.task_volk_fail
+story ids without a CS number (12):
+	Escape_Trader
+	Escape_Tutorial_Artefact
+	Escape_blockpost_case
+	Escape_bridge_stalkers
+	Escape_novice_lager_volk
+	Escape_stalker_from_raid
+	Escape_tutorial_wounded
+	agr_doctor_spot
+	esc_bandits_factory
+	esc_dead_tunel_novice
+	esc_lager_leader
+	esc_leader_killers
+string ids to translate (52):
+	blokpost_case
+	esc_blockpost_case_to_trader
+	esc_blockpost_case_to_trader_0
+	esc_blockpost_case_to_trader_1
+	esc_blockpost_case_to_trader_2
+	esc_defend_lager
+	esc_defend_lager_from_killers_0
+	esc_defend_lager_from_killers_1
+	esc_defend_lager_from_killers_2
+	esc_dinamit_to_volk
+	esc_dinamit_to_volk_0
+	esc_dinamit_to_volk_1
+	esc_dinamit_to_volk_2
+	esc_dinamit_to_volk_3
+	esc_fox
+	esc_help_wounded_from_raid
+	esc_help_wounded_from_raid_0
+	esc_help_wounded_from_raid_1
+	esc_help_wounded_from_raid_2
+	esc_rma_antigas_mis
+	esc_rma_antigas_mis_0
+	esc_rma_antigas_mis_1
+	esc_rma_antigas_mis_2
+	esc_trader_job
+	esc_trader_job_text
+	escape_dinamit
+	escape_tolik_samopal_task
+	escape_tolik_samopal_task_0
+	escape_tolik_samopal_task_1
+	escape_tolik_samopal_task_2
+	escape_trader
+	find_railroad_passage
+	find_railroad_passage_1
+	find_railroad_passage_2
+	killers_team
+	meet_with_doctor
+	meet_with_doctor_1
+	meet_with_doctor_2
+	novice_leader
+	storyline_escape_eliminate_gunslinger
+	storyline_escape_find_gunslinger
+	tutorial_artefact
+	tutorial_find_artefact
+	tutorial_find_artefact_0
+	tutorial_find_artefact_1
+	tutorial_help_wounded
+	tutorial_help_wounded_1
+	tutorial_help_wounded_2
+	tutorial_help_wounded_3
+	tutorial_wounded
+	volk
+	wolfs_rangers
