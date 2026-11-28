@@ -1,4 +1,5 @@
 -- Freeplay extras: surge by the clock + eclipse (variety of surge).
+-- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): эффекты fx_blackday и вариант выброса; SRP: xr_surge_hide. Скрипт собран на их основе, авторам спасибо.
 -- Idea: eclipse (fx_eclipse_*: made from the SGM fx_blackday_* effects, with a light start) and the "darkness" surge variant from Sigerous Mod 3.10 (GeJorge);
 -- surge machinery (xr_surge_hide: phases, cover task, damage) is the SRP original and is NOT changed.
 -- Адаптация под SRP Freeplay: Eon

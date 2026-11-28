@@ -1,4 +1,5 @@
 -- Freeplay extras: developer tools, entry points (fp_dev, fp_dev_util, fp_dev_tools).
+-- Сборка решений и идей: универсальное спавн-меню naxac (collect_sections, ui_cheat_main, ui_cheat_cs). Скрипт собран на их основе, авторам спасибо.
 -- Spawn menu: naxac's universal spawn menu (collect_sections, ui_cheat_main, ui_cheat_cs), adapted.
 -- Tools (tabs "Teleport" and "Tools" of the same window: teleport, game time, surge/eclipse, heal): fp_dev_tools.
 -- Адаптация под SRP Freeplay: Eon

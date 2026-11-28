@@ -1,4 +1,5 @@
 -- fp_deserves: leaders' things. Idea, texts and stash coordinates: SGM (Sigerous Mod 3.10, GeJorge, sgm_callbacks / deserve_items).
+-- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): вещи лидеров, тексты, координаты тайников. Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- A leader carries a flash drive dv_<name>_case (misc\fp_deserves.ltx). "Using" it creates a stash (inventory_box) at

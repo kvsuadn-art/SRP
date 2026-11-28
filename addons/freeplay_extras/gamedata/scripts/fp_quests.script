@@ -1,4 +1,5 @@
 -- fp_quests: compact quest layer for quests ported from SGM (Sigerous Mod 3.10, GeJorge) ideas.
+-- —борка решений и идей: Sigerous Mod 3.10 (GeJorge): идеи и тексты квестов; OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_rt_manager (слой заданий CGameTask). —крипт собран на их основе, авторам спасибо.
 -- јдаптаци€ под SRP Freeplay: Eon
 --
 -- Not a port of the SGM task layer: quests are re-implemented on stock engine tasks (CGameTask, as in

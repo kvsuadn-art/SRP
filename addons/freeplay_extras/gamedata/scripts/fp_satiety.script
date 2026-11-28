@@ -1,4 +1,5 @@
 -- Freeplay extras: satiety (hunger emulation).
+-- Сборка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): эмулятор голода; Sigerous Mod 3.10 (GeJorge): уровни голода и сытность предметов. Скрипт собран на их основе, авторам спасибо.
 -- Ideas: OGSM "hunger emulator" (DEXXX) - a counter in game time that grows while the player does not eat and
 -- hurts the health when it is high; SGM 3.10 (GeJorge) - levels of hunger (70 / 120 / 200) and a per-item
 -- "satiety slake" value read from the item config, not from a hard-coded list.

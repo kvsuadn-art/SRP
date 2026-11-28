@@ -1,4 +1,5 @@
 -- Freeplay base layer (fp_*): actor binder subclass and signal emitter.
+-- Сборка решений и идей: ogse_signals: Malandrinus, OGS Evolution Team (система сигналов и слотов); SRP (Decane): биндер актора. Скрипт собран на их основе, авторам спасибо.
 -- Original bind_stalker.script is untouched: only script_binding in
 -- configs/creatures/actor.ltx is overridden by the addon.
 --

@@ -1,4 +1,5 @@
 -- fp_mutants: trilogy mutants (zombie, fracture, cat, chimera, burer, controller) in the Freeplay world.
+-- —борка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): отр€ды и логова мутантов трилогии. —крипт собран на их основе, авторам спасибо.
 -- Squads are described in misc\fp_squads.ltx (included from the addon copy of squad_descr.ltx),
 -- spawn smarts are in misc\fp_mutants.ltx. The module creates the squads once and re-creates
 -- a squad some game days after it was wiped out (and only far from the actor).

@@ -1,4 +1,5 @@
 -- fp_items: using medicine hides the weapon for a moment. Idea: OGSM Extended 2.0 (ogsm_items, DEXXX).
+-- —борка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_items (скрытие оружи€ при лечении). —крипт собран на их основе, авторам спасибо.
 -- јдаптаци€ под SRP Freeplay: Eon
 --
 -- Using a medkit, bandage or antirad (misc\fp_items.ltx [hide]) hides the weapon, so the animation is not disturbed and

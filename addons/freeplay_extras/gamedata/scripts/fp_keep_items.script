@@ -1,4 +1,5 @@
 -- fp_keep_items: quest items that must survive in the pockets of dead stalkers. Адаптация под SRP Freeplay: Eon
+-- Сборка решений и идей: SRP (Decane): death_manager.always_keep_item и release_body_manager. Скрипт собран на их основе, авторам спасибо.
 --
 -- The core (death_manager.keep_item) releases every item of a stalker that is not in misc\death_generic.ltx
 -- [keep_items] (death_manager.always_keep_item) when the stalker dies or is created dead, and

@@ -1,4 +1,5 @@
 -- SRP Freeplay (Eon): anomaly zone binder with extra artefacts.
+-- —борка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): артефакты и семейства аномальных зон. —крипт собран на их основе, авторам спасибо.
 -- Inherits bind_anomaly_zone.anomaly_zone_binder (no function substitution); attached through
 -- script_binding of [anomal_zone] in the addon system.ltx.
 -- In Freeplay (info srp_freeplay or fp_artefacts) it extends the artefact list of a zone with the

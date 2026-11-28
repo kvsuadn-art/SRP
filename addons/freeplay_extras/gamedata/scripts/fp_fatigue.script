@@ -1,4 +1,5 @@
 -- fp_fatigue: fatigue of the actor. Idea: OGSM Extended 2.0 (ogsm_sleep: counter "slp", energy drink, sleepy screen),
+-- Сборка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_sleep (усталость, энергетик). Скрипт собран на их основе, авторам спасибо.
 -- Copyright 2007-2010 xStream, Ab@dDon, DEXXX. Адаптация под SRP Freeplay: Eon
 --
 -- The actor gets tired after tired_hours of game time without rest (misc\fp_fatigue.ltx): the screen goes dim and a tip shows.

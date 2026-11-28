@@ -1,4 +1,5 @@
 -- fp_medals: medals for the rank. Idea, titles and rewards: SGM (Sigerous Mod 3.10, GeJorge, sgm_grant).
+-- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_grant (медали за ранг). Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- When the actor's rank reaches a threshold (misc\fp_medals.ltx [ranks]) the medal item medal_rank_<N> is given once

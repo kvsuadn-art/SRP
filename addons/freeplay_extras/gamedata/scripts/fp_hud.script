@@ -1,4 +1,5 @@
 -- fp_hud: two HUD elements. Idea and sprites: SGM (Sigerous Mod 3.10, GeJorge, sgm_huds, sgm_sleep_places).
+-- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_huds, sgm_sleep_places (панель оружия, иконка спальника). Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- 1) Weapon parameters (top right): the active pistol/rifle shows damage and range, a grenade shows blast radius and splinter radius.

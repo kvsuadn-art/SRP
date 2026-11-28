@@ -1,4 +1,5 @@
 -- fp_mattress: binder of the invisible sleeping place (section fp_mattress, script_binding = fp_mattress.init).
+-- —борка решений и идей: "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): биндер спальной точки. —крипт собран на их основе, авторам спасибо.
 -- The same idea as bind_physic_object of "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk), but the binder is
 -- our own file, the core binder is not touched. јдаптаци€ под SRP Freeplay: Eon
 -- When the object comes online it takes the "use" callback and the tip text; the sleep itself is in fp_sleep.

@@ -1,4 +1,5 @@
 -- fp_skills: weapon skill books. Idea and book sections: SGM (Sigerous Mod 3.10, GeJorge).
+-- —борка решений и идей: Sigerous Mod 3.10 (GeJorge): книги навыков. —крипт собран на их основе, авторам спасибо.
 -- јдаптаци€ под SRP Freeplay: Eon
 --
 -- A book (item section skill_book_*, misc\fp_skill_items.ltx) is "used" like food; the use gives the info

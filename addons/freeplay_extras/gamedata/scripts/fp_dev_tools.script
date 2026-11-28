@@ -1,4 +1,5 @@
 -- Freeplay extras: developer tools for the naxac window (tabs "Телепорт" and "Инструменты").
+-- Сборка решений и идей: универсальное спавн-меню naxac; SRP: данные проводников guiders_table. Скрипт собран на их основе, авторам спасибо.
 -- No window of its own: ui_cheat_cs asks this module for the list of a tab (list), the text for the description
 -- area (describe) and runs the chosen entry with the same "Получить" button (run).
 -- Teleport targets are taken from SRP's own guide data (guiders_table): the cross-level points

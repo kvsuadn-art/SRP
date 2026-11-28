@@ -1,4 +1,5 @@
 -- fp_sleep: sleep in known places. Idea, points and zones: SGM (Sigerous Mod 3.10, GeJorge, sgm_sleep_places, sgm_callbacks, sgm_effects).
+-- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_sleep_places, sgm_callbacks, sgm_effects; "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk); OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_sleep. Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- The sleeping bag (item "sleeping_bag", misc\fp_sleep.ltx) is "used": if the actor is in a sleeping place (hand-made points
