@@ -18,7 +18,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b18"
+local BUILD = "2026-11-28 b19"
 
 local tools = {
 	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
@@ -374,8 +374,7 @@ end
 local STORE_LIMIT = 6 * 1024
 local function log_store()
 	local st = db.storage and db.storage[db.actor:id()]
-	local ps = st and st.pstor
-	if not ps then tip("pstor пуст или недоступен") return end
+	local ps = (st and st.pstor) or {}
 	local total, count, rows = 4, 0, {}
 	for k, v in pairs(ps) do
 		local tv = type(v)
@@ -392,7 +391,35 @@ local function log_store()
 	for i = 1, math.min(10, #rows) do
 		fp_log.always("%s", TAG .. string.format("STORE %2d. %s: %d bytes", i, rows[i].k, rows[i].sz))
 	end
-	tip(string.format("pstor: %d записей, ~%d байт (%.1f%% от ~6 КБ)", count, total, total * 100 / STORE_LIMIT))
+	-- the whole actor chunk: the sizes taken by fp_binder at the last save + a per-module test write
+	-- весь блок актора: размеры, снятые fp_binder при последнем сохранении, + пробная запись каждого модуля
+	local b, ad = fp_binder.last_save_sizes()
+	if b then
+		fp_log.always("%s", TAG .. string.format("STORE last save: base %d + addons %d = %d of ~%d (%.1f%%)", b, ad, b + ad, STORE_LIMIT, (b + ad) * 100 / STORE_LIMIT))
+	else
+		fp_log.always("%s", TAG .. "STORE no save made in this session yet: save the game once, then press the button again")
+	end
+	local sum = 0
+	for _, m in ipairs(ogse_signals_addons_list.addons) do
+		local mod = _G[m]
+		local fn = mod and (mod.fp_on_save or mod.on_save)
+		if fn and m ~= "fp_dev_tools" then
+			local ok, size = pcall(function()
+				local pk = net_packet()
+				fn(pk)
+				return pk:w_tell()
+			end)
+			if ok then
+				sum = sum + size
+				if size > 0 then fp_log.always("%s", TAG .. string.format("STORE module %s: %d bytes", m, size)) end
+			else
+				fp_log.always("%s", TAG .. "STORE module " .. m .. ": test write failed: " .. tostring(size))
+			end
+		end
+	end
+	fp_log.always("%s", TAG .. string.format("STORE modules by test write: %d bytes", sum))
+	tip(string.format("pstor: %d зап., ~%d байт; модули ~%d байт; последнее сохранение: %s",
+		count, total, sum, b and string.format("%d из ~6144", b + ad) or "ещё не было"))
 end
 
 -- Jump forward by m metres along the view direction (horizontal). Height: the nearest AI-net vertex, if it is close,

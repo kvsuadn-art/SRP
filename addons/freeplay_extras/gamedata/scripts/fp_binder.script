@@ -113,9 +113,23 @@ function fp_actor_binder:take_item_from_box(box, item)
 	emit("on_take_from_box", box, item)
 end
 
+-- Size of the actor chunk of the last save (bytes): the base part (it holds pstor) and the part of our modules.
+-- The engine limit is about 6 KB per object chunk (see README), so both are measured with net_packet:w_tell().
+-- Размер блока актора при последнем сохранении (байт): базовая часть (в ней pstor) и часть наших модулей.
+local last_base, last_addons = nil, nil
+function last_save_sizes() return last_base, last_addons end
+
 function fp_actor_binder:save(packet)
+	local ok0, p0 = pcall(packet.w_tell, packet)
 	bind_stalker.actor_binder.save(self, packet)
+	local ok1, p1 = pcall(packet.w_tell, packet)
 	emit("on_save", packet)
+	local ok2, p2 = pcall(packet.w_tell, packet)
+	if ok0 and ok1 and ok2 and p0 and p1 and p2 then
+		last_base, last_addons = p1 - p0, p2 - p1
+		fp_log.always("%s", TAG .. string.format("SAVE actor chunk: base %d (with pstor) + addons %d = %d of ~6144 (%.1f%%)",
+			last_base, last_addons, last_base + last_addons, (last_base + last_addons) * 100 / 6144))
+	end
 end
 
 function fp_actor_binder:load(reader)
