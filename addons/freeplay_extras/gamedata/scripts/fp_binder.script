@@ -90,7 +90,12 @@ function fp_actor_binder:on_trade(item, sell_bye, money)
 end
 
 function fp_actor_binder:task_callback(_task, _state)
-	bind_stalker.actor_binder.task_callback(self, _task, _state)
+	-- The core callback reads tm.task_info[id] without a nil check, so it only gets the tasks of the task manager.
+	-- Tasks of Freeplay modules (fp_quests, ogsm_rt_manager) are not there and go to the on_task signal only.
+	local tm = task_manager.get_task_manager()
+	if tm ~= nil and tm.task_info[_task:get_id()] ~= nil then
+		bind_stalker.actor_binder.task_callback(self, _task, _state)
+	end
 	emit("on_task", _task, _state)
 end
 
