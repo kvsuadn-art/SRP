@@ -211,6 +211,7 @@ function actor_binder:task_callback(_task, _state)
 	local states = task -- global C++ enum
 	local task_id = _task:get_id()
 	local task = tm.task_info[task_id]
+	if task == nil then return end -- a task created outside task_manager (by a script or a mod) has no entry in tm.task_info
 	if _state == states.completed then
 		xr_logic.pick_section_from_condlist(actor, actor, task.on_complete)
 		news_manager.send_task(actor, "complete", _task)
