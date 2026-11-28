@@ -100,6 +100,10 @@ function cheat_menu:InitControls()
 	self.track_time = xml:InitTrackBar("main_dialog:track_time", dialog)
 	self:Register(self.track_time, "track_time")
 	self.cap_time = xml:InitStatic("main_dialog:cap_time", dialog)
+	-- separate number field for the tools (money, jump distance); the top field stays the search/count field
+	-- отдельное поле числа для инструментов (деньги, расстояние); верхнее поле остаётся поиском/количеством
+	self.edit_amount = xml:InitEditBox("main_dialog:edit_amount", dialog)
+	self.cap_amount = xml:InitStatic("main_dialog:cap_amount", dialog)
 	self.btn_time = xml:Init3tButton("main_dialog:btn_time", dialog)
 	self:Register(self.btn_time, "btn_time")
 	self.cap_loc_wnd = nil
@@ -258,9 +262,21 @@ function cheat_menu:ShowDevPanels(tab)
 	self.list:Show(not tele)
 	self.list_loc:Show(tele)
 	self.list_pts:Show(tele)
-	self.track_time:Show(tab == "tools")
-	self.cap_time:Show(tab == "tools")
-	self.btn_time:Show(tab == "tools")
+	self:ShowToolParam(nil)
+end
+
+-- the parameter control that goes with the selected tool: slider for time, number field for money / jump distance
+-- элемент параметра выбранного инструмента: ползунок для времени, поле числа для денег / расстояния
+local need_amount = {money = true, moneyminus = true, fwdn = true}
+function cheat_menu:ShowToolParam(key)
+	local t = key == "time"
+	local a = need_amount[key] == true
+	self.track_time:Show(t)
+	self.cap_time:Show(t)
+	self.btn_time:Show(t)
+	self.edit_amount:Show(a)
+	self.cap_amount:Show(a)
+	self.tool_key = key
 end
 
 local function fill_list(lst, tbl, w)
@@ -380,6 +396,7 @@ function cheat_menu:ShowDescription(indx)
 	if dev_tab[self.tab_id] then
 		self.btn_del:Enable(false)
 		self.icon:Show(false)
+		self:ShowToolParam(self.tab_id == "tools" and sect or nil)
 		self.descr:SetText(fp_dev_tools.describe(self.tab_id, sect))
 		self.cost:SetText("")
 		self.weight:SetText("")
@@ -470,7 +487,8 @@ function cheat_menu:OnBtnSpawn()
 	if dev_tab[self.tab_id] then
 		-- the number in the text field goes to the tools as a parameter (distance, money); nil when it is not a number
 		-- число из поля ввода передаётся инструментам как параметр (расстояние, деньги); nil, если это не число
-		local r = fp_dev_tools.run(self.tab_id, sect, tonumber(self.edit_box:GetText()))
+		if sect == "time" then self:OnBtnTime() return end
+		local r = fp_dev_tools.run(self.tab_id, sect, tonumber(self.edit_amount:GetText()) or tonumber(self.edit_box:GetText()))
 		if r == "refresh" then
 			-- the tool changed its list (teleport: locations <-> points of a location)
 			-- инструмент поменял свой список (телепорт: локации <-> точки локации)
@@ -494,7 +512,7 @@ end
 
 function cheat_menu:Update()
 	CUIScriptWnd.Update(self)
-	if self.tab_id == "tools" then self.cap_time:SetText("x" .. time_mult(self)) end
+	if self.tool_key == "time" then self.cap_time:SetText("x" .. time_mult(self)) end
 	if self.change_text then
 		self.change_text = nil
 		self.tmr = time_global()
