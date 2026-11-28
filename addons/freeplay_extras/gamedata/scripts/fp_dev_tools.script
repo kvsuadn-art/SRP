@@ -18,7 +18,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b17"
+local BUILD = "2026-11-28 b18"
 
 local tools = {
 	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
@@ -125,6 +125,36 @@ end
 
 local function teleport_list()
 	return teleport_locations()
+end
+
+-- tools are grouped: left list = groups, right list = tools of the group
+-- инструменты сгруппированы: слева разделы, справа инструменты раздела
+local tool_group_defs = {
+	{ key = "g_move",  name = "Перемещение",       descr = "Прыжки вперёд, к трупам с предметами и к трупу с КПК.", keys = { "fwd5", "fwd10", "fwd30", "fwd100", "fwdn", "flashnext", "flashprev", "pdacorpse" } },
+	{ key = "g_money", name = "Деньги и время",    descr = "Деньги, сдвиг времени и скорость хода времени.", keys = { "money", "moneyminus", "time", "h1", "h6", "d1" } },
+	{ key = "g_actor", name = "Игрок и события",   descr = "Лечение, оружие, выброс и затмение.", keys = { "heal", "wpn", "surge", "eclipse" } },
+	{ key = "g_bed",   name = "Матрасы (сон)",     descr = "Точки матрасов для сна: переход к точкам, запись в лог, пересоздание.", keys = { "bed1", "bed2", "bed3", "bed4", "bed5", "bed6", "bed7", "bed8", "mats", "mat", "ray1", "ray2" } },
+	{ key = "g_debug", name = "Отладка и лог",     descr = "Записи в лог для настройки данных и диагностика.", keys = { "spot", "store", "pos", "flashlist", "diag" } },
+}
+
+function tool_groups()
+	local res = {}
+	for i, g in ipairs(tool_group_defs) do res[i] = { key = g.key, name = g.name, descr = g.descr } end
+	return res
+end
+
+function tool_items(group)
+	local res = {}
+	for _, g in ipairs(tool_group_defs) do
+		if g.key == group then
+			for _, k in ipairs(g.keys) do
+				for _, t in ipairs(tools) do
+					if t.key == k then res[#res + 1] = t break end
+				end
+			end
+		end
+	end
+	return res
 end
 
 -- the spawn menu calls it when a tab is opened: the teleport tab starts from the list of locations

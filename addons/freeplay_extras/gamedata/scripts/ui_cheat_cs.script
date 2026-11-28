@@ -39,6 +39,7 @@ class "cheat_menu"  (CUIScriptWnd)
 local id2index = {weapons = 1, ammo = 2, addons = 3, outfits = 4, tools = 5, artefacts = 6, items = 7, quest_items = 8, mobs = 9, teleport = 10}
 local index2id = {"weapons","ammo","addons","outfits","tools","artefacts","items","quest_items","mobs","teleport"}
 local dev_tab = {tools = true, teleport = true}
+local two_tab = {tools = true, teleport = true}   -- tabs with two lists: left = group / location, right = item / point
 local TAB_ROW, TAB_STEP = 5, 101
 
 function cheat_menu:__init(owner) super()
@@ -91,8 +92,8 @@ function cheat_menu:InitControls()
 	
 	-- Freeplay: teleport tab = two lists (locations / points), tools tab = time slider
 	-- Freeplay: вкладка телепорта = два списка (локации / точки), вкладка инструментов = ползунок времени
-	xml:InitStatic("main_dialog:cap_loc", dialog)
-	xml:InitStatic("main_dialog:cap_pts", dialog)
+	self.cap_loc = xml:InitStatic("main_dialog:cap_loc", dialog)
+	self.cap_pts = xml:InitStatic("main_dialog:cap_pts", dialog)
 	self.list_loc = xml:InitList("main_dialog:list_loc", dialog)
 	self:Register(self.list_loc, "list_loc")
 	self.list_pts = xml:InitList("main_dialog:list_pts", dialog)
@@ -258,10 +259,12 @@ local function time_mult(self)
 end
 
 function cheat_menu:ShowDevPanels(tab)
-	local tele = tab == "teleport"
+	local tele = two_tab[tab] == true
 	self.list:Show(not tele)
 	self.list_loc:Show(tele)
 	self.list_pts:Show(tele)
+	self.cap_loc:Show(tele)
+	self.cap_pts:Show(tele)
 	self:ShowToolParam(nil)
 end
 
@@ -292,7 +295,10 @@ local function fill_list(lst, tbl, w)
 end
 
 function cheat_menu:FillTeleport()
-	self.loc_tbl = fp_dev_tools.teleport_locations()
+	local tools = self.tab_id == "tools"
+	self.cap_loc:SetText(tools and "Раздел" or "Локация")
+	self.cap_pts:SetText(tools and "Действие" or "Точка")
+	self.loc_tbl = tools and fp_dev_tools.tool_groups() or fp_dev_tools.teleport_locations()
 	fill_list(self.list_loc, self.loc_tbl, 180)
 	self.list_pts:RemoveAll()
 	self.pts_tbl = {}
@@ -309,11 +315,12 @@ function cheat_menu:OnLocClicked()
 	self.list_loc:SetFocusedItem(i)
 	local lv = self.loc_tbl[i + 1].key
 	self.cur_loc = lv
-	self.pts_tbl = fp_dev_tools.teleport_points_of(lv)
+	self.pts_tbl = (self.tab_id == "tools") and fp_dev_tools.tool_items(lv) or fp_dev_tools.teleport_points_of(lv)
 	fill_list(self.list_pts, self.pts_tbl, 296)
 	self.btn_spawn:Enable(db.actor ~= nil and #self.pts_tbl > 0)
 	self.descr:SetText(self.loc_tbl[i + 1].descr)
 	self.section_name:SetText(lv)
+	self:ShowToolParam(nil)
 	if #self.pts_tbl > 0 then
 		self.list_pts:SetFocusedItem(0)
 		self:OnPointClicked()
@@ -326,6 +333,7 @@ function cheat_menu:OnPointClicked()
 	self.list_pts:SetFocusedItem(i)
 	self.descr:SetText(self.pts_tbl[i + 1].descr)
 	self.section_name:SetText(self.pts_tbl[i + 1].key)
+	self:ShowToolParam(self.tab_id == "tools" and self.pts_tbl[i + 1].key or nil)
 end
 
 function cheat_menu:OnBtnTime()
@@ -360,8 +368,8 @@ function cheat_menu:OnTabChange()
 	if dev then fp_dev_tools.tab_opened(ids) end
 	self:ShowDevPanels(ids)
 	self.btn_spawn:SetText(dev and "Выполнить" or "Получить")
-	if ids == "teleport" then
-		self.btn_spawn:SetText("Телепорт")
+	if two_tab[ids] then
+		self.btn_spawn:SetText(ids == "teleport" and "Телепорт" or "Выполнить")
 		self.icon:Show(false)
 		self.cost:SetText("")
 		self.weight:SetText("")
@@ -471,10 +479,13 @@ function cheat_menu:SearchItem()
 end
 
 function cheat_menu:OnBtnSpawn()
-	if self.tab_id == "teleport" then
+	if two_tab[self.tab_id] then
 		local i = self.list_pts:GetFocusedItem()
 		if not i or i < 0 or not self.pts_tbl or not self.pts_tbl[i + 1] then return end
-		if fp_dev_tools.run("teleport", self.pts_tbl[i + 1].key) then self:CloseToGame() end
+		local key = self.pts_tbl[i + 1].key
+		if key == "time" then self:OnBtnTime() return end
+		local n = tonumber(self.edit_amount:GetText()) or tonumber(self.edit_box:GetText())
+		if fp_dev_tools.run(self.tab_id, key, n) then self:CloseToGame() end
 		return
 	end
 	if self.list:GetSize()==0 then return end
