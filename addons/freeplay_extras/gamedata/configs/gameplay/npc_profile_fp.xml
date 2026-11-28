@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+	<!-- Freeplay extras: profiles of the NPCs added by the addon (character_profile in creatures\fp_stalkers.ltx refers to these).
+	     The specific characters themselves are in character_desc_*.xml. Adaptation SRP Freeplay: Eon -->
+	<character id="fp_renegade_baron">
+		<class>fp_renegade_baron</class>
+	</character>
+	<character id="fp_tunnel_novice">
+		<class>fp_tunnel_novice</class>
+	</character>
+	<character id="fp_exo_bandit">
+		<class>fp_exo_bandit</class>
+	</character>
+	<character id="fp_army_colonel">
+		<class>fp_army_colonel</class>
+	</character>
+	<character id="fp_bus_killer">
+		<class>fp_bus_killer</class>
+	</character>
+	<character id="fp_bus_hostage">
+		<class>fp_bus_hostage</class>
+	</character>
+	<character id="val_freedom_squads_commander">
+		<class>val_freedom_squads_commander</class>
+	</character>
+</xml>
