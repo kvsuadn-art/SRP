@@ -233,7 +233,11 @@ local function take_spot(free, level)
 	if #cand == 0 then
 		for k in ipairs(free) do cand[#cand + 1] = k end
 	end
-	if #cand == 0 then return nil end
+	if #cand == 0 then
+		-- all spots are taken (more items than spots): start a new round, spots are shared only as the last resort
+		for i = 1, #coords do free[i] = i end
+		for k in ipairs(free) do cand[#cand + 1] = k end
+	end
 	local k = cand[math.random(#cand)]
 	local c = coords[free[k]]
 	table.remove(free, k)
@@ -244,21 +248,29 @@ end
 function ensure_flashes()
 	if not (has_alife_info("srp_freeplay") or has_alife_info("fp_loot")) then return end
 	if not db.actor or not alife() then return end
+	local free = free_spots()
+	if has_alife_info(INFO_FLASHES) and not has_alife_info(INFO_CORPSES) then
+		-- old save: the spots that already hold a corpse with an item are not free
+		for _, h in ipairs(flash_holders()) do
+			for k = #free, 1, -1 do
+				if coords[free[k]][1]:distance_to(h.pos) < 3 then table.remove(free, k) end
+			end
+		end
+	end
 	if not has_alife_info(INFO_FLASHES) then
 		db.actor:give_info_portion(INFO_FLASHES)
 		local level_of, order = flash_levels()
-		local free = free_spots()
 		for _, section in ipairs(order) do
 			local c = take_spot(free, level_of[section])
 			if c then put_in_corpse(section, c) end
 		end
 	end
-	ensure_loot()
+	ensure_loot(free)
 end
 
 -- documents and skill books, also once per game. In saves where they already lie on the ground (older builds placed
 -- them at the spots) the ones lying on the ground are released and put into corpses; the ones somebody holds stay.
-function ensure_loot()
+function ensure_loot(free)
 	if has_alife_info(INFO_CORPSES) then return end
 	db.actor:give_info_portion(INFO_CORPSES)
 	local sim = alife()
@@ -276,7 +288,7 @@ function ensure_loot()
 			end
 		end
 	end
-	local free = free_spots()
+	free = free or free_spots()
 	for section in pairs(want) do
 		local c = take_spot(free, "any")
 		if c then put_in_corpse(section, c) end

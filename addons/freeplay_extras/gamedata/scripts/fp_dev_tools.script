@@ -18,7 +18,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b10"
+local BUILD = "2026-11-28 b11"
 
 local tools = {
 	{ key = "pos",     name = " оординаты в лог",       descr = "«аписать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
