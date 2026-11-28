@@ -1,5 +1,5 @@
 -- fp_stash: stashes restored in the world (misc\fp_stash.ltx). Idea: the rucksack in the start room of the Clear Sky base,
--- a decoration in the original game; the base has no place to leave things. Adaptation SRP Freeplay: Eon
+-- a decoration in the original game; the base has no place to leave things. Адаптация под SRP Freeplay: Eon
 --
 -- Once (info fp_stash_done2) a usable box with the same model is created at the place of the decorative object, which is removed,
 -- and a map spot is added. Switch: info portion srp_freeplay or fp_stash. Savegame: nothing of its own (the box is a normal object).

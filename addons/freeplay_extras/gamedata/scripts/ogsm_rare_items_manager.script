@@ -1,6 +1,6 @@
 ------------------------ Copyright 2010-2012 Minister, Kirgudu ------------------------
 -------------------------- Rare goods of the traders (orders) --------------------------
--- Adaptation SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 -- Differences from OGSM: no core hooks (ogse_signals via fp_binder instead of bind_stalker/ogsm.g_start_timer);
 -- the re-roll time of each trader is kept as last roll time + interval in days; price multiplier and interval
 -- are in misc\rare_items.ltx [settings]; texts are string ids. Switch: info srp_freeplay or fp_rare_items.

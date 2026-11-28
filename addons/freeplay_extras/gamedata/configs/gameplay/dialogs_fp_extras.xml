@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <game_dialogs>
 	<dialog id="saharov_items_dialog">
-		<precondition>fp_loot.check_documents</precondition>
+		<precondition>ogsm_bring_items.check_documents</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>saharov_items_dialog_0</text>
@@ -9,7 +9,7 @@
 			</phrase>
 			<phrase id="1">
 				<text>saharov_items_dialog_1</text>
-				<action>fp_loot.relocate_documents</action>
+				<action>ogsm_bring_items.relocate_documents</action>
 				<next>2</next>
 			</phrase>
 			<phrase id="2">
@@ -19,7 +19,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="mar_csky_leader_items_dialog">
-		<precondition>fp_loot.check_documents</precondition>
+		<precondition>ogsm_bring_items.check_documents</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>mar_csky_leader_items_dialog_0</text>
@@ -27,7 +27,7 @@
 			</phrase>
 			<phrase id="1">
 				<text>mar_csky_leader_items_dialog_1</text>
-				<action>fp_loot.relocate_documents</action>
+				<action>ogsm_bring_items.relocate_documents</action>
 				<next>2</next>
 			</phrase>
 			<phrase id="2">
@@ -37,7 +37,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="val_freedom_leader_items_dialog">
-		<precondition>fp_loot.check_documents</precondition>
+		<precondition>ogsm_bring_items.check_documents</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>val_freedom_leader_items_dialog_0</text>
@@ -45,7 +45,7 @@
 			</phrase>
 			<phrase id="1">
 				<text>val_freedom_leader_items_dialog_1</text>
-				<action>fp_loot.relocate_documents</action>
+				<action>ogsm_bring_items.relocate_documents</action>
 				<next>2</next>
 			</phrase>
 			<phrase id="2">
@@ -55,7 +55,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="agr_duty_base_commander_items_dialog">
-		<precondition>fp_loot.check_documents</precondition>
+		<precondition>ogsm_bring_items.check_documents</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>agr_duty_base_commander_items_dialog_0</text>
@@ -63,7 +63,7 @@
 			</phrase>
 			<phrase id="1">
 				<text>agr_duty_base_commander_items_dialog_1</text>
-				<action>fp_loot.relocate_documents</action>
+				<action>ogsm_bring_items.relocate_documents</action>
 				<next>2</next>
 			</phrase>
 			<phrase id="2">
@@ -73,7 +73,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="stalker_base_commander_items_dialog">
-		<precondition>fp_loot.check_documents</precondition>
+		<precondition>ogsm_bring_items.check_documents</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>stalker_base_commander_items_dialog_0</text>
@@ -81,7 +81,7 @@
 			</phrase>
 			<phrase id="1">
 				<text>stalker_base_commander_items_dialog_1</text>
-				<action>fp_loot.relocate_documents</action>
+				<action>ogsm_bring_items.relocate_documents</action>
 				<next>2</next>
 			</phrase>
 			<phrase id="2">
@@ -91,7 +91,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="bandit_base_commander_items_dialog">
-		<precondition>fp_loot.check_documents</precondition>
+		<precondition>ogsm_bring_items.check_documents</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>bandit_base_commander_items_dialog_0</text>
@@ -99,7 +99,7 @@
 			</phrase>
 			<phrase id="1">
 				<text>bandit_base_commander_items_dialog_1</text>
-				<action>fp_loot.relocate_documents</action>
+				<action>ogsm_bring_items.relocate_documents</action>
 				<next>2</next>
 			</phrase>
 			<phrase id="2">

@@ -2,7 +2,7 @@
 -- Squads are described in misc\fp_squads.ltx (included from the addon copy of squad_descr.ltx),
 -- spawn smarts are in misc\fp_mutants.ltx. The module creates the squads once and re-creates
 -- a squad some game days after it was wiped out (and only far from the actor).
--- Works through ogse_signals (fp_binder), no core hooks. Adaptation SRP Freeplay: Eon
+-- Works through ogse_signals (fp_binder), no core hooks. Адаптация под SRP Freeplay: Eon
 -- Squads and lairs: CSOGSM (OGSM Extended 2.0).
 
 local ini = ini_file("misc\\fp_mutants.ltx")

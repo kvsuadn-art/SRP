@@ -1,10 +1,10 @@
--- fp_keep_items: quest items that must survive in the pockets of dead stalkers. Adaptation SRP Freeplay: Eon
+-- fp_keep_items: quest items that must survive in the pockets of dead stalkers. Адаптация под SRP Freeplay: Eon
 --
 -- The core (death_manager.keep_item) releases every item of a stalker that is not in misc\death_generic.ltx
 -- [keep_items] (death_manager.always_keep_item) when the stalker dies or is created dead, and
 -- release_body_manager.moving_dead_body does not put a corpse with such an item into the release list. Items the
 -- addon puts into corpses (PDA of the random orders, quest loot, the mechanics' flash drives, documents, skill books) are added to the same
--- table here, from misc\fp_keep_items.ltx [keep_items] and from the items of fp_loot (flash drives, documents, books). Only data is added to the
+-- table here, from misc\fp_keep_items.ltx [keep_items] and from the items of ogsm_bring_items (flash drives, documents, books). Only data is added to the
 -- table, no core function is replaced. Cost: one pass at the creation of the signal manager.
 
 function attach(m)
@@ -16,5 +16,5 @@ function attach(m)
 			keep[section] = true
 		end
 	end
-	for _, section in ipairs(fp_loot.corpse_items()) do keep[section] = true end
+	for _, section in ipairs(ogsm_bring_items.corpse_items()) do keep[section] = true end
 end

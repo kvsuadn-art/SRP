@@ -2,7 +2,7 @@
 -- Ideas: OGSM "hunger emulator" (DEXXX) - a counter in game time that grows while the player does not eat and
 -- hurts the health when it is high; SGM 3.10 (GeJorge) - levels of hunger (70 / 120 / 200) and a per-item
 -- "satiety slake" value read from the item config, not from a hard-coded list.
--- Adaptation for SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- How it works:
 --  * hunger (0..MAX) grows by 1 every GAME_MIN_PER_UNIT game minutes (so sleeping or the time factor count);

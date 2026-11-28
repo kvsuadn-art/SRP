@@ -1,5 +1,5 @@
 -- fp_medals: medals for the rank. Idea, titles and rewards: SGM (Sigerous Mod 3.10, GeJorge, sgm_grant).
--- Adaptation SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- When the actor's rank reaches a threshold (misc\fp_medals.ltx [ranks]) the medal item medal_rank_<N> is given once
 -- (info portion fp_medal_<N> marks it). "Using" the medal gives its medal_money. Unlike SGM no item callbacks are needed.

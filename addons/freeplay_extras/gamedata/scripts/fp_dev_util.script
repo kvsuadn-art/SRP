@@ -1,7 +1,7 @@
 -- Freeplay extras: small helpers for the developer tools (fp_dev*).
 -- They replace the global patches that naxac's add_cheat_spawn.script made (ini_file.r_*_ex,
 -- string.lower1, math.normalize): here they are ordinary functions of this module.
--- Adaptation for SRP Freeplay: Eon (helpers originally by naxac)
+-- Адаптация под SRP Freeplay: Eon (helpers originally by naxac)
 
 function r_clsid_ex(ini, section, line, def)
 	if ini:section_exist(section) and ini:line_exist(section, line) then

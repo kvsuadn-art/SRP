@@ -1,5 +1,5 @@
 -- For 'Clear Sky'
--- naxac, universal spawn menu. -- Adaptation for SRP Freeplay: Eon (see addons/freeplay_extras/README.md: no global patches, no cache file, no main-menu substitution)
+-- naxac, universal spawn menu. -- Àהאןעאצטÿ ןמה SRP Freeplay: Eon (see addons/freeplay_extras/README.md: no global patches, no cache file, no main-menu substitution)
 local sys_ini = system_ini()
 local eng = [[qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?!@#$%^&*()-_+=\| 0123456789]]
 local rus = [[יצףךוםדרשחץתפûגאןנמכהז‎ÿקסלטעüב‏.ÉÖÓÊÅÍÃØÙÇÕÚÔÛÂÀÏÐÎËÄÆÝ‗×ÑÌÈÒÜÁÞ,!"¹;%:?*()-_+=\/ 0123456789]]

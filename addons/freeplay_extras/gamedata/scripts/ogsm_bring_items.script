@@ -1,6 +1,7 @@
 ------------------------- Copyright 2007-2011 DEXXX, Alex Ros -------------------------
--- Original: ogsm_bring_items.script (OGSM for S.T.A.L.K.E.R.: Clear Sky) - hidden items and documents.
--- Adaptation for SRP Freeplay: Eon
+---------------------- Функции управления уникальными предметами ----------------------
+-- Original: OGSM Extended 2.0 for S.T.A.L.K.E.R.: Clear Sky (ogsm_bring_items.script) - hidden items and documents.
+-- Адаптация под SRP Freeplay: Eon
 --
 -- Freeplay extras, module 1: "finds in the world".
 --  * 15 secret documents and the weapon skill books are scattered over the Zone in the pockets of dead stalkers

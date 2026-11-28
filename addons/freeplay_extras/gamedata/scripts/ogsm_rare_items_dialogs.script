@@ -1,6 +1,6 @@
 ---------------------- Copyright 2010-2011 Minister -----------------------------
 -------------------- Dialogs of rare goods orders (OGSM) ------------------------
--- Adaptation SRP Freeplay: Eon (texts are string ids st_fp_rare_*, the state is read from ogsm_rare_items_manager)
+-- Адаптация под SRP Freeplay: Eon (texts are string ids st_fp_rare_*, the state is read from ogsm_rare_items_manager)
 
 local function items_of(npc)
 	return ogsm_rare_items_manager.get_items(npc:name()) or {}

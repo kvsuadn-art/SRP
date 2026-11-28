@@ -1,6 +1,6 @@
--- fp_sleep_ui: window "Sleep until..." (24 hour buttons, a panorama of the sky, the hour labels).
+-- ui_sleep: window "Sleep until..." (24 hour buttons, a panorama of the sky, the hour labels).
 -- Based on ui_sleep.script of "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): the same window and xml,
--- the 24 copy-pasted handlers replaced by one generator. Адаптация под SRP Freeplay: Eon
+-- the 24 copy-pasted handlers replaced by one generator. Адаптация под SRP Freeplay: Eon (the former name of this module: fp_sleep_ui)
 -- The window only asks for the number of hours and passes it to fp_sleep.start_sleep(hours); nothing is stored.
 
 class "sleep" (CUIScriptWnd)

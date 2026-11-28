@@ -5,7 +5,7 @@
 -- (cross_level_teleport) and the guide points of the current level (teleport_points). The jump itself is
 -- the one SRP guides use: db.actor:set_actor_position(patrol point). guiders.start_teleport is not used (its fade chain
 -- and level.show_weapon are not needed for a tool, the first version without them worked).
--- Adaptation for SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
@@ -379,7 +379,7 @@ local function where(game_vertex_id)
 end
 
 local function flash_list()
-	local list = fp_loot.flash_holders()
+	local list = ogsm_bring_items.flash_holders()
 	for i, h in ipairs(list) do
 		local sobj = alife():object(h.id)
 		local lvl = sobj and where(sobj.m_game_vertex_id) or "?"
@@ -391,7 +391,7 @@ end
 
 local flash_idx = 0
 local function goto_flash(step)
-	local list = fp_loot.flash_holders()
+	local list = ogsm_bring_items.flash_holders()
 	if #list == 0 then tip("Предметов в трупах не найдено") return false end
 	flash_idx = (flash_idx + step - 1) % #list + 1
 	local n = flash_idx

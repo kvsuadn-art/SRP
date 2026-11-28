@@ -1,5 +1,5 @@
 -- fp_skills: weapon skill books. Idea and book sections: SGM (Sigerous Mod 3.10, GeJorge).
--- Adaptation SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- A book (item section skill_book_*, misc\fp_skill_items.ltx) is "used" like food; the use gives the info
 -- portion with the same name. While the weapon from skill_target is in the actor's hands, a share of the wear
@@ -45,7 +45,7 @@ local function init()
 	end
 end
 
--- book sections for fp_loot (one list, same order as in the config)
+-- book sections for ogsm_bring_items (one list, same order as in the config)
 function book_list()
 	init()
 	local list = {}

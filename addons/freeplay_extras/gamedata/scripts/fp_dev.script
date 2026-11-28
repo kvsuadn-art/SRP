@@ -1,7 +1,7 @@
 -- Freeplay extras: developer tools, entry points (fp_dev, fp_dev_util, fp_dev_tools).
 -- Spawn menu: naxac's universal spawn menu (collect_sections, ui_cheat_main, ui_cheat_cs), adapted.
 -- Tools (tabs "Teleport" and "Tools" of the same window: teleport, game time, surge/eclipse, heal): fp_dev_tools.
--- Adaptation for SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- Two ways to open (both work with the signals layer, nothing in the normal game runs by itself):
 --  1. In game: use one of two items (they are in the spawn menu, tab "Items"):

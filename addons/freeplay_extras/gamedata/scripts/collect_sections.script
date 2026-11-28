@@ -5,7 +5,7 @@
 	Last update       : 03.12.2015
 	Copyright         : naxac / naxac.spaces.ru /
 --]]
--- Adaptation for SRP Freeplay: Eon (changes against the original: log through dbglog; r_*_ex helpers from fp_dev_util instead of
+-- Адаптация под SRP Freeplay: Eon (changes against the original: log through dbglog; r_*_ex helpers from fp_dev_util instead of
 -- global ini_file patches; ver_prefix fixed to 'cs'; the spawn_list.ltx cache is NOT written when the scan found nothing)---------------------------------------------------------------------------------------
 local ver_prefix = "cs"
 local sys_ini = system_ini()

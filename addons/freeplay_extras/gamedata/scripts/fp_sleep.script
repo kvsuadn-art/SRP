@@ -1,12 +1,12 @@
 -- fp_sleep: sleep in known places. Idea, points and zones: SGM (Sigerous Mod 3.10, GeJorge, sgm_sleep_places, sgm_callbacks, sgm_effects).
--- Adaptation SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- The sleeping bag (item "sleeping_bag", misc\fp_sleep.ltx) is "used": if the actor is in a sleeping place (hand-made points
 -- and zones of the config) and it is night, he sleeps 1-6 hours: the screen fades, time runs fast, health, power and psy-health
 -- are restored. Unlike SGM nothing runs per frame: the place is checked at the moment of use (SGM polled 38 distances 
 -- every update and showed a HUD static), the poller runs only while the actor sleeps (1 s).
 -- Second way (SoC style): an invisible object fp_mattress over a bed (world mattresses, [mattress_<level>] of the config), "F" shows
--- the tip and opens the hour window fp_sleep_ui (idea, model and window: "New Sleep Mod for R.M.A. 1.1.5", Mechanic, Shoker, Z.E.N.,
+-- the tip and opens the hour window ui_sleep (idea, model and window: "New Sleep Mod for R.M.A. 1.1.5", Mechanic, Shoker, Z.E.N.,
 -- Ab@dDon, Junk). No core hooks: the objects are created once per level (info fp_mat_<level>) and take the use
 -- callback from their own binder fp_mattress; nothing is saved by the module. Switch: info portion srp_freeplay or fp_sleep. Savegame: nothing of its own. Not handled: a save made during sleep keeps the
 -- fast time factor (input is disabled, so only an autosave can catch it).
@@ -149,7 +149,7 @@ function on_mattress_use(obj, who)
 	if not is_enabled() or sleeping or db.actor == nil then return end
 	local why = cannot_sleep()
 	if why then tip(why) return end
-	level.start_stop_menu(fp_sleep_ui.sleep(get_hud()), true)
+	level.start_stop_menu(ui_sleep.sleep(get_hud()), true)
 end
 
 local function parse_point(v)

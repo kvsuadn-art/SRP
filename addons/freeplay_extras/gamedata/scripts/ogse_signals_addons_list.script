@@ -15,10 +15,10 @@ addons = {
 	"fp_medals",
 	"fp_deserves",
 	"fp_keep_items",
-	"fp_loot",
+	"ogsm_bring_items",
 	"fp_sleep",
 	"fp_items",
-	"fp_stash", "fp_cleaner", "fp_hud",
+	"fp_stash", "ogsm_cleaner", "fp_hud",
 	"ogsm_rare_items_manager",
 	"fp_fatigue", -- must stay last: its save chunk is read only if present (older saves)
 }

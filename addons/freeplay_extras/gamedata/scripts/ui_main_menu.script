@@ -5,7 +5,7 @@
 -- Copyright:    2004 GSC Game World
 -- Author:       Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
 -- Version:      0.9
--- Adaptation for SRP Freeplay: Eon: one hook line in main_menu:OnKeyboard (fp_dev.on_menu_key); delete this file from the addon to switch it off
+-- Адаптация под SRP Freeplay: Eon: one hook line in main_menu:OnKeyboard (fp_dev.on_menu_key); delete this file from the addon to switch it off
 
 class "main_menu" (CUIScriptWnd)
 

@@ -1,4 +1,4 @@
--- COPY of scripts\freeplay_mode.script from SRP Freeplay with one added call (fp_loot.startup_spawn at the end of prepare_world).
+-- COPY of scripts\freeplay_mode.script from SRP Freeplay with one added call (ogsm_bring_items.startup_spawn at the end of prepare_world).
 -- Freeplay mode: the single source of truth for "is Freeplay active".
 --
 -- The mode is stored as the info portion below, NOT as a Lua variable:
@@ -82,5 +82,5 @@ function prepare_world()
 	end
 
 	-- Freeplay extras addon (addons/freeplay_extras): hidden flash drives and secret documents
-	fp_loot.startup_spawn()
+	ogsm_bring_items.startup_spawn()
 end

@@ -1,5 +1,5 @@
 -- fp_quests: compact quest layer for quests ported from SGM (Sigerous Mod 3.10, GeJorge) ideas.
--- Adaptation SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- Not a port of the SGM task layer: quests are re-implemented on stock engine tasks (CGameTask, as in
 -- ogsm_rt_manager) and dialogs; data is in misc\fp_quests.ltx. Quest types:

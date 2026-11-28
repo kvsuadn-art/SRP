@@ -1,6 +1,8 @@
--- fp_cleaner: removes stray weapons lying on levels the player is not on (they only bloat the savegame).
--- Based on: ogsm_cleaner.script, OGSM Extended 2.0 -- Copyright 2010-2011 Minister
--- РђРґР°РїС‚Р°С†РёСЏ РїРѕРґ SRP Freeplay: Eon
+---------------------------- Copyright 2010-2011 Minister -----------------------------
+---------------- Уборщик бесхозного оружия и залежалых трупов мутантов ----------------
+-- Адаптация под SRP Freeplay: Eon
+--
+-- fp_cleaner (the former name of this module): removes stray weapons lying on levels the player is not on (they only bloat the savegame).
 --
 -- Differences from the original: the pass is spread over many 1 s ticks (no freeze), only weapons are touched (no corpses),
 -- and everything that can be a quest object is skipped: items with story id, quest_item sections, sections and names from

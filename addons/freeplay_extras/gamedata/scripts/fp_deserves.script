@@ -1,5 +1,5 @@
 -- fp_deserves: leaders' things. Idea, texts and stash coordinates: SGM (Sigerous Mod 3.10, GeJorge, sgm_callbacks / deserve_items).
--- Adaptation SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- A leader carries a flash drive dv_<name>_case (misc\fp_deserves.ltx). "Using" it creates a stash (inventory_box) at
 -- deserve_pos with deserve_items, adds a map spot and a tip. Unlike SGM no item callbacks in the actor binder are needed.

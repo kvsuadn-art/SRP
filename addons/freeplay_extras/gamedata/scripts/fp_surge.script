@@ -1,7 +1,7 @@
 -- Freeplay extras: surge by the clock + eclipse (variety of surge).
 -- Idea: eclipse (fx_eclipse_*: made from the SGM fx_blackday_* effects, with a light start) and the "darkness" surge variant from Sigerous Mod 3.10 (GeJorge);
 -- surge machinery (xr_surge_hide: phases, cover task, damage) is the SRP original and is NOT changed.
--- Adaptation for SRP Freeplay: Eon
+-- Адаптация под SRP Freeplay: Eon
 --
 -- Two triggers, one behaviour (everything is done by xr_surge_hide.activate_surge):
 --  1. Clock surge (like in Call of Pripyat): once per game day, at an hour that depends on the date

@@ -5,7 +5,7 @@
  Last update       : 17.05.2015
  Copyright         : naxac
 --]]
--- Adaptation for SRP Freeplay: Eon (see addons/freeplay_extras/README.md: no global patches, no cache file, no main-menu substitution)-----------------------------------------------------------------------------------------------
+-- Адаптация под SRP Freeplay: Eon (see addons/freeplay_extras/README.md: no global patches, no cache file, no main-menu substitution)-----------------------------------------------------------------------------------------------
 local log = function(fmt, ...)
 	dbglog("%s", string.format(fmt, ...))
 end
