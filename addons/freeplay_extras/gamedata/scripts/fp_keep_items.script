@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: SRP (Decane): death_manager.always_keep_item, release_body_manager.
+-- —борка на основе решений и идей: SRP (Decane): death_manager.always_keep_item, release_body_manager. јвторам спасибо за их труд.
 -- fp_keep_items: quest items that must survive in the pockets of dead stalkers. јдаптаци€ под SRP Freeplay: Eon
--- —борка решений и идей: SRP (Decane): death_manager.always_keep_item и release_body_manager. —крипт собран на их основе, авторам спасибо.
 --
 -- The core (death_manager.keep_item) releases every item of a stalker that is not in misc\death_generic.ltx
 -- [keep_items] (death_manager.always_keep_item) when the stalker dies or is created dead, and
@@ -7,6 +9,13 @@
 -- addon puts into corpses (PDA of the random orders, quest loot, the mechanics' flash drives, documents, skill books) are added to the same
 -- table here, from misc\fp_keep_items.ltx [keep_items] and from the items of ogsm_bring_items (flash drives, documents, books). Only data is added to the
 -- table, no core function is replaced. Cost: one pass at the creation of the signal manager.
+-- ќписание на русском:
+--  вестовые предметы, которые должны остатьс€ в карманах убитых сталкеров. ядро (death_manager.keep_item) удал€ет у сталкера всЄ,
+-- чего нет в misc\death_generic.ltx [keep_items] (death_manager.always_keep_item), когда он умирает или создан мЄртвым; а
+-- release_body_manager.moving_dead_body не ставит в список удалени€ труп с таким предметом. ѕредметы, которые аддон кладЄт в трупы
+-- ( ѕ  случайных заказов, лут квестов, флешки механиков, документы, книги навыков), добавл€ютс€ в ту же таблицу из
+-- misc\fp_keep_items.ltx [keep_items] и из списка предметов ogsm_bring_items. ƒобавл€ютс€ только данные, функции €дра не подмен€ютс€.
+-- ÷ена: один проход при создании менеджера сигналов.
 
 function attach(m)
 	local keep = death_manager.always_keep_item

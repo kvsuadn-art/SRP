@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros et al.): ogsm_sleep (fatigue, energy drink).
+-- Сборка на основе решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_sleep (усталость, энергетик). Авторам спасибо за их труд.
 -- fp_fatigue: fatigue of the actor. Idea: OGSM Extended 2.0 (ogsm_sleep: counter "slp", energy drink, sleepy screen),
--- Сборка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_sleep (усталость, энергетик). Скрипт собран на их основе, авторам спасибо.
 -- Copyright 2007-2010 xStream, Ab@dDon, DEXXX. Адаптация под SRP Freeplay: Eon
 --
 -- The actor gets tired after tired_hours of game time without rest (misc\fp_fatigue.ltx): the screen goes dim and a tip shows.
@@ -9,6 +11,13 @@
 -- Savegame: one u32 (game minute of the last full rest) and one u8 (drinks); this module must be LAST in
 -- ogse_signals_addons_list so that older saves (no chunk, r_elapsed() == 0) still load.
 -- Cost: one slot every 30 s that compares two numbers; no pstor.
+-- Описание на русском:
+-- Усталость персонажа. Идея из OGSM (ogsm_sleep: счётчик «slp», энергетик, сонный экран). Персонаж устаёт через tired_hours игровых
+-- часов без отдыха (misc\fp_fatigue.ltx): экран темнеет, появляется подсказка. Сон (fp_sleep) снимает rest_per_hour часов усталости
+-- за час сна; энергетик отодвигает усталость на 3, 2, 1 час (до 3 банок за период бодрствования, как в OGSM). Включение: info
+-- srp_freeplay или fp_fatigue; выключение: fp_fatigue_off. Не из OGSM: обморок на 36 часу (эффект экрана только усиливается) и таймер
+-- «men» после энергетика. Сохранение: один u32 (игровая минута последнего полного отдыха) и один u8 (банки); модуль должен стоять
+-- ПОСЛЕДНИМ в ogse_signals_addons_list, чтобы старые сохранения (без блока) загружались. Цена: слот раз в 30 с, сравнение двух чисел; pstor нет.
 
 local TAG = "[fp_fatigue] "
 local PP_ID = 76440

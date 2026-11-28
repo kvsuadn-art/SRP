@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: Sigerous Mod 3.10 (GeJorge): sgm_sleep_places, sgm_callbacks, sgm_effects; "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk); OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros et al.): ogsm_sleep.
+-- Сборка на основе решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_sleep_places, sgm_callbacks, sgm_effects; "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk); OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_sleep. Авторам спасибо за их труд.
 -- fp_sleep: sleep in known places. Idea, points and zones: SGM (Sigerous Mod 3.10, GeJorge, sgm_sleep_places, sgm_callbacks, sgm_effects).
--- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_sleep_places, sgm_callbacks, sgm_effects; "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk); OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_sleep. Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- The sleeping bag (item "sleeping_bag", misc\fp_sleep.ltx) is "used": if the actor is in a sleeping place (hand-made points
@@ -11,6 +13,15 @@
 -- Ab@dDon, Junk). No core hooks: the objects are created once per level (info fp_mat_<level>) and take the use
 -- callback from their own binder fp_mattress; nothing is saved by the module. Switch: info portion srp_freeplay or fp_sleep. Savegame: nothing of its own. Not handled: a save made during sleep keeps the
 -- fast time factor (input is disabled, so only an autosave can catch it).
+-- Описание на русском:
+-- Сон в известных местах. Идея, точки и зоны из SGM. Спальник (предмет sleeping_bag, misc\fp_sleep.ltx) «используется»: если
+-- персонаж в месте для сна (точки и зоны из конфига) и сейчас ночь, он спит 1–6 часов: экран темнеет, время идёт быстро, здоровье,
+-- сила и пси-здоровье восстанавливаются. В отличие от SGM ничего не опрашивается каждый кадр: место проверяется в момент
+-- использования, опрос идёт только пока персонаж спит (раз в секунду). Второй способ (в стиле ТЧ): невидимый объект fp_mattress над
+-- кроватью (матрасы мира, [mattress_<уровень>] конфига), «F» показывает подсказку и открывает окно часов ui_sleep (идея, модель и окно:
+-- New Sleep Mod). Без хуков в ядро: объекты создаются один раз на уровень (info fp_mat_<уровень>) и берут колбэк «использовать» из
+-- своего биндера fp_mattress; модуль ничего не сохраняет. Включение: info srp_freeplay или fp_sleep. Не обработано: сохранение,
+-- сделанное во время сна, сохраняет быстрый фактор времени (ввод отключён, поймать может только автосохранение).
 
 local TAG = "[fp_sleep] "
 local IDLE_MS = 5000

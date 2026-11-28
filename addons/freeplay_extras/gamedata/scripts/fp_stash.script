@@ -1,8 +1,16 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: the decorative rucksack of the original Clear Sky base room.
+-- Сборка на основе решений и идей: декоративный рюкзак в стартовой комнате базы Чистого Неба оригинальной игры. Авторам спасибо за их труд.
 -- fp_stash: stashes restored in the world (misc\fp_stash.ltx). Idea: the rucksack in the start room of the Clear Sky base,
 -- a decoration in the original game; the base has no place to leave things. Адаптация под SRP Freeplay: Eon
 --
 -- Once (info fp_stash_done2) a usable box with the same model is created at the place of the decorative object, which is removed,
 -- and a map spot is added. Switch: info portion srp_freeplay or fp_stash. Savegame: nothing of its own (the box is a normal object).
+-- Описание на русском:
+-- Восстановленные тайники в мире (misc\fp_stash.ltx). Идея: рюкзак в стартовой комнате базы Чистого Неба — декорация оригинальной игры;
+-- на базе негде оставить вещи. Один раз (info fp_stash_done2) на месте декоративного объекта, который удаляется, создаётся
+-- используемый ящик с той же моделью и добавляется метка на карте. Включение: info srp_freeplay или fp_stash.
+-- Сохранение: своих данных нет (ящик — обычный объект).
 
 local ini = ini_file("misc\\fp_stash.ltx")
 local mgr = nil

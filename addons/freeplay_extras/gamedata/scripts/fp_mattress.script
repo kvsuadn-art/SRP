@@ -1,8 +1,14 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): the sleeping place binder.
+-- Сборка на основе решений и идей: "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): биндер места для сна. Авторам спасибо за их труд.
 -- fp_mattress: binder of the invisible sleeping place (section fp_mattress, script_binding = fp_mattress.init).
--- Сборка решений и идей: "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): биндер спальной точки. Скрипт собран на их основе, авторам спасибо.
 -- The same idea as bind_physic_object of "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk), but the binder is
 -- our own file, the core binder is not touched. Адаптация под SRP Freeplay: Eon
 -- When the object comes online it takes the "use" callback and the tip text; the sleep itself is in fp_sleep.
+-- Описание на русском:
+-- Биндер невидимого места для сна (секция fp_mattress, script_binding = fp_mattress.init). Та же идея, что у bind_physic_object
+-- в «New Sleep Mod for R.M.A. 1.1.5», но биндер — наш отдельный файл, биндер ядра не тронут. Когда объект выходит онлайн, он берёт
+-- колбэк «использовать» и текст подсказки; сам сон — в fp_sleep.
 
 local online = {}
 

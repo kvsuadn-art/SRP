@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros et al.): hunger emulator; Sigerous Mod 3.10 (GeJorge): hunger levels and the satiety of items.
+-- —борка на основе решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): эмул€тор голода; Sigerous Mod 3.10 (GeJorge): уровни голода и сытность предметов. јвторам спасибо за их труд.
 -- Freeplay extras: satiety (hunger emulation).
--- —борка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): эмул€тор голода; Sigerous Mod 3.10 (GeJorge): уровни голода и сытность предметов. —крипт собран на их основе, авторам спасибо.
 -- Ideas: OGSM "hunger emulator" (DEXXX) - a counter in game time that grows while the player does not eat and
 -- hurts the health when it is high; SGM 3.10 (GeJorge) - levels of hunger (70 / 120 / 200) and a per-item
 -- "satiety slake" value read from the item config, not from a hard-coded list.
@@ -13,6 +15,14 @@
 --  * at STARVING the player slowly loses health, but never below HEALTH_FLOOR (hunger itself does not kill).
 -- Switch: info portion srp_freeplay, or fp_satiety alone. Cost: one subscriber rescheduled every CHECK_MS,
 -- reading the game time. Savegame: one u16 (hunger * 10), always written, so the format does not depend on the switch.
+-- ќписание на русском:
+-- —ытость (эмул€ци€ голода). »деи: Ђэмул€тор голодаї OGSM (DEXXX) Ч счЄтчик игрового времени, растущий, пока игрок не ест, и
+-- вред€щий здоровью при высоком значении; SGM 3.10 (GeJorge) Ч уровни голода (70 / 120 / 200) и значение Ђнасыщени€ї у предмета,
+-- читаемое из конфига, а не из жЄсткого списка.  ак работает: голод (0..MAX) растЄт на 1 каждые GAME_MIN_PER_UNIT игровых минут
+-- (сон и фактор времени учитываютс€); съеденный предмет снижает его на своЄ значение (fp_satiety_slake, иначе
+-- eat_satiety * SLAKE_PER_EAT_SATIETY); три уровн€ (HUNGRY / VERY / STARVING) дают сообщение при достижении и выходе; при STARVING
+-- здоровье медленно падает, но не ниже HEALTH_FLOOR (голод сам не убивает). ¬ключение: info srp_freeplay или fp_satiety.
+-- —охранение: один u16 (голод * 10), пишетс€ всегда, чтобы формат не зависел от переключател€.
 
 local TAG = "[fp_satiety] "
 

@@ -1,10 +1,17 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros et al.): squads and lairs of the trilogy mutants (CSOGSM).
+-- Сборка на основе решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): отряды и логова мутантов трилогии (CSOGSM). Авторам спасибо за их труд.
 -- fp_mutants: trilogy mutants (zombie, fracture, cat, chimera, burer, controller) in the Freeplay world.
--- Сборка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): отряды и логова мутантов трилогии. Скрипт собран на их основе, авторам спасибо.
 -- Squads are described in misc\fp_squads.ltx (included from the addon copy of squad_descr.ltx),
 -- spawn smarts are in misc\fp_mutants.ltx. The module creates the squads once and re-creates
 -- a squad some game days after it was wiped out (and only far from the actor).
 -- Works through ogse_signals (fp_binder), no core hooks. Адаптация под SRP Freeplay: Eon
 -- Squads and lairs: CSOGSM (OGSM Extended 2.0).
+-- Описание на русском:
+-- Мутанты трилогии (зомби, излом, кот, химера, бюрер, контролёр) в мире Freeplay. Отряды описаны в misc\fp_squads.ltx
+-- (подключается из копии squad_descr.ltx аддона), смарты спавна — в misc\fp_mutants.ltx. Модуль создаёт отряды один раз и
+-- пересоздаёт отряд через несколько игровых дней после его уничтожения (и только вдали от игрока). Работает через ogse_signals
+-- (fp_binder), без хуков в ядро. Отряды и логова: CSOGSM (OGSM Extended 2.0).
 
 local ini = ini_file("misc\\fp_mutants.ltx")
 

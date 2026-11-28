@@ -12,6 +12,14 @@
 --    so they do not depend on quests or on the reputation with a faction (as in OGSM). Placed once per game, also in
 --    old saves (info fp_loot_flashes); the list of skipped flashes and extra flashes: misc\fp_loot.ltx.
 -- Differences from OGSM: native SRP flash drives (no second flash set), state is kept in info portions only, nothing runs per update.
+-- Описание на русском:
+-- Порт ogsm_bring_items.script из OGSM Extended 2.0 (копирайт и название оригинала сохранены выше). Модуль 1 аддона: «находки в Зоне».
+-- 15 секретных документов и книги навыков лежат в карманах мёртвых сталкеров по всей Зоне (как и флешки ниже; на земле мелкие предметы
+-- проваливаются под текстуры) и находятся обыском трупов; документы продаются лидерам баз. Флешки механиков (flesh_up_*, предметы
+-- заданий find_upgrade из misc\tm_upgrades.ltx) лежат в карманах мёртвых сталкеров на уровне своего задания (mar_/esc_/gar_/val_/agr_),
+-- поэтому не зависят от квестов и репутации фракций (как в OGSM). Размещаются один раз за игру, в том числе в старых сохранениях
+-- (info fp_loot_flashes, fp_loot_corpses). Пропуск и дополнительные флешки: misc\fp_loot.ltx. Отличия от OGSM: родные флешки SRP
+-- (без второго набора), состояние только в info, в update ничего не выполняется.
 
 local INFO_SPAWNED = "fp_loot_spawned"
 

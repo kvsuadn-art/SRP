@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: ogse_signals: Malandrinus, OGS Evolution Team (signals and slots); SRP (Decane): the actor binder.
+-- Сборка на основе решений и идей: ogse_signals: Malandrinus, OGS Evolution Team (система сигналов и слотов); SRP (Decane): биндер актора. Авторам спасибо за их труд.
 -- Freeplay base layer (fp_*): actor binder subclass and signal emitter.
--- Сборка решений и идей: ogse_signals: Malandrinus, OGS Evolution Team (система сигналов и слотов); SRP (Decane): биндер актора. Скрипт собран на их основе, авторам спасибо.
 -- Original bind_stalker.script is untouched: only script_binding in
 -- configs/creatures/actor.ltx is overridden by the addon.
 --
@@ -25,6 +27,12 @@
 -- Errors in subscribers are NOT swallowed on purpose: a swallowed error would leave
 -- ogse_signals with a half-processed queue.
 -- Адаптация под SRP Freeplay: Eon
+-- Описание на русском:
+-- Базовый слой Freeplay: подкласс биндера актора и источник сигналов. Оригинальный bind_stalker.script не тронут: аддон переопределяет
+-- только script_binding в configs/creatures/actor.ltx. Подкласс вызывает базовый метод, затем отправляет сигнал через ogse_signals.
+-- Модули подписываются в своём attach(mgr) (список в ogse_signals_addons_list.addons), этот файл для них менять не нужно.
+-- Сигналы перечислены выше (аргументы в скобках). Ошибки в подписчиках намеренно не проглатываются: проглоченная ошибка оставила бы
+-- очередь ogse_signals обработанной наполовину.
 
 function actor_init(obj)
 	obj:bind_object(fp_actor_binder(obj))

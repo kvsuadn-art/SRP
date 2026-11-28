@@ -1,11 +1,18 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros et al.): artefacts and families of anomaly zones.
+-- Сборка на основе решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): артефакты и семейства аномальных зон. Авторам спасибо за их труд.
 -- SRP Freeplay (Eon): anomaly zone binder with extra artefacts.
--- Сборка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): артефакты и семейства аномальных зон. Скрипт собран на их основе, авторам спасибо.
 -- Inherits bind_anomaly_zone.anomaly_zone_binder (no function substitution); attached through
 -- script_binding of [anomal_zone] in the addon system.ltx.
 -- In Freeplay (info srp_freeplay or fp_artefacts) it extends the artefact list of a zone with the
 -- artefacts ported from OGSM Extended 2.0 (af_mica, af_slug, af_ball, af_thorn), following the
 -- OGSM zone families: gravitational zones get mica/slug/ball, thermal zones get thorn.
 -- The lists in all.spawn are not touched: the zone's own list is only extended in memory.
+-- Описание на русском:
+-- Биндер аномальной зоны с дополнительными артефактами. Наследует bind_anomaly_zone.anomaly_zone_binder (без подмены функций),
+-- подключается через script_binding секции [anomal_zone] в system.ltx аддона. Во Freeplay (info srp_freeplay или fp_artefacts)
+-- расширяет список артефактов зоны артефактами из OGSM (af_mica, af_slug, af_ball, af_thorn) по семействам зон OGSM:
+-- гравитационные зоны получают mica/slug/ball, термические получают thorn. Списки в all.spawn не меняются: список зоны расширяется только в памяти.
 
 local gravi_marks = { af_medusa = true, af_vyvert = true, af_cristall_flower = true, af_gravi = true, af_gold_fish = true }
 local gravi_extra = { "af_mica", "af_slug", "af_ball" }

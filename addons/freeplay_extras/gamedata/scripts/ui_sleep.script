@@ -2,6 +2,10 @@
 -- Based on ui_sleep.script of "New Sleep Mod for R.M.A. 1.1.5" (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): the same window and xml,
 -- the 24 copy-pasted handlers replaced by one generator. јдаптаци€ под SRP Freeplay: Eon (the former name of this module: fp_sleep_ui)
 -- The window only asks for the number of hours and passes it to fp_sleep.start_sleep(hours); nothing is stored.
+-- ќписание на русском:
+-- ќкно Ђ—пать доЕї (24 кнопки часов, панорама неба, подписи часов). ќсновано на ui_sleep.script ЂNew Sleep Mod for R.M.A. 1.1.5ї
+-- (Mechanic, Shoker, Z.E.N., Ab@dDon, Junk): то же окно и xml, 24 скопированных обработчика заменены одним генератором; прежнее им€
+-- модул€ Ч fp_sleep_ui. ќкно только спрашивает число часов и передаЄт его в fp_sleep.start_sleep(hours); ничего не хранит.
 
 class "sleep" (CUIScriptWnd)
 

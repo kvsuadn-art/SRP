@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: Sigerous Mod 3.10 (GeJorge): skill books.
+-- Сборка на основе решений и идей: Sigerous Mod 3.10 (GeJorge): книги навыков. Авторам спасибо за их труд.
 -- fp_skills: weapon skill books. Idea and book sections: SGM (Sigerous Mod 3.10, GeJorge).
--- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): книги навыков. Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- A book (item section skill_book_*, misc\fp_skill_items.ltx) is "used" like food; the use gives the info
@@ -7,6 +9,11 @@
 -- it takes (misc\fp_skills.ltx [settings] wear_save) is given back. Unlike SGM no NPC hit callbacks are needed.
 -- Switch: info portion srp_freeplay or fp_skills. Cost: one subscriber, 1 s period, only reads the active item.
 -- Savegame: nothing of its own (the state is in info portions).
+-- Описание на русском:
+-- Книги навыков оружия. Идея и секции книг из SGM. Книга (секция skill_book_*, misc\fp_skill_items.ltx) «используется» как еда;
+-- использование выдаёт info с тем же именем. Пока в руках оружие из skill_target, часть износа (misc\fp_skills.ltx [settings]
+-- wear_save) возвращается. В отличие от SGM колбэки попаданий по NPC не нужны. Включение: info srp_freeplay или fp_skills.
+-- Цена: один подписчик, период 1 с, читается только активный предмет. Сохранение: своих данных нет (info).
 
 local TAG = "[fp_skills] "
 local CHECK_MS = 1000

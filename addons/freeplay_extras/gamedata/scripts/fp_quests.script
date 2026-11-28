@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: Sigerous Mod 3.10 (GeJorge): ideas and texts of the quests; OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros et al.): ogsm_rt_manager (CGameTask layer).
+-- —борка на основе решений и идей: Sigerous Mod 3.10 (GeJorge): идеи и тексты квестов; OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_rt_manager (слой заданий CGameTask). јвторам спасибо за их труд.
 -- fp_quests: compact quest layer for quests ported from SGM (Sigerous Mod 3.10, GeJorge) ideas.
--- —борка решений и идей: Sigerous Mod 3.10 (GeJorge): идеи и тексты квестов; OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_rt_manager (слой заданий CGameTask). —крипт собран на их основе, авторам спасибо.
 -- јдаптаци€ под SRP Freeplay: Eon
 --
 -- Not a port of the SGM task layer: quests are re-implemented on stock engine tasks (CGameTask, as in
@@ -22,6 +24,16 @@
 -- Dialog ids: <quest>_give (start), <quest>_complete (hand over). Stage flags are info portions:
 -- <quest>_start, <quest>_complete (item found), <quest>_reward (finished) - same names as in SGM.
 -- Switch: info srp_freeplay or fp_quests. Savegame: u8 count; per started quest: name + u16 item id.
+-- ќписание на русском:
+--  омпактный слой квестов дл€ квестов, перенесЄнных по иде€м SGM. Ёто не порт сло€ заданий SGM: квесты переписаны на штатных задани€х
+-- движка (CGameTask, как в ogsm_rt_manager) и диалогах; данные Ч в misc\fp_quests.ltx. “ипы квестов: fetch (предмет создаЄтс€ в месте,
+-- персонаж несЄт его заказчику), capture (смарт, зан€тый вражеской фракцией, должен ей перестать принадлежать), kill (NPC создаЄтс€
+-- при старте квеста, его смерть завершает квест; необ€зательно лут, count и waves), talk (разговор с созданным NPC), deliver
+-- (персонаж приносит существующий предмет), bonus (награда в диалоге, когда выполнены все квесты из 'requires'). 'giver = profile:<им€>':
+-- заказчик Ч NPC без фиксированного имени объекта, его id запоминаетс€ при старте. 'story_info': вне Freeplay квест открываетс€ после
+-- этого сюжетного info. 'faction' (stalker/csky): персонаж должен вступить во фракцию. ћодуль включает себ€ сам (info fp_quests) при
+-- первом update. ƒиалоги: <квест>_give (вз€ть), <квест>_complete (сдать). Ётапы Ч info: <квест>_start, _complete, _reward (как в SGM).
+-- ¬ключение: info srp_freeplay или fp_quests. —охранение: u8 Ч число, на каждый начатый квест им€ и u16 id предмета.
 
 local TAG = "[fp_quests] "
 local ini = ini_file("misc\\fp_quests.ltx")

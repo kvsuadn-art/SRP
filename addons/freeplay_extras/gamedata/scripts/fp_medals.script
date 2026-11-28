@@ -1,11 +1,18 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: Sigerous Mod 3.10 (GeJorge): sgm_grant (medals for the rank).
+-- Сборка на основе решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_grant (медали за ранг). Авторам спасибо за их труд.
 -- fp_medals: medals for the rank. Idea, titles and rewards: SGM (Sigerous Mod 3.10, GeJorge, sgm_grant).
--- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_grant (медали за ранг). Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- When the actor's rank reaches a threshold (misc\fp_medals.ltx [ranks]) the medal item medal_rank_<N> is given once
 -- (info portion fp_medal_<N> marks it). "Using" the medal gives its medal_money. Unlike SGM no item callbacks are needed.
 -- Switch: info portion srp_freeplay or fp_medals. Cost: one subscriber, 10 s period, one rank read.
 -- Savegame: nothing of its own (info portions).
+-- Описание на русском:
+-- Медали за ранг. Идея, названия и награды из SGM. Когда ранг персонажа достигает порога (misc\fp_medals.ltx [ranks]), один раз
+-- выдаётся предмет medal_rank_<N> (info fp_medal_<N> это помечает). «Использование» медали даёт medal_money. В отличие от SGM
+-- колбэки предметов не нужны. Включение: info srp_freeplay или fp_medals. Цена: один подписчик, период 10 с, одно чтение ранга.
+-- Сохранение: своих данных нет (info).
 
 local CHECK_MS = 10000
 

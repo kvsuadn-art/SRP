@@ -1,11 +1,18 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: Sigerous Mod 3.10 (GeJorge): leaders' things, texts, stash coordinates.
+-- Сборка на основе решений и идей: Sigerous Mod 3.10 (GeJorge): вещи лидеров, тексты, координаты тайников. Авторам спасибо за их труд.
 -- fp_deserves: leaders' things. Idea, texts and stash coordinates: SGM (Sigerous Mod 3.10, GeJorge, sgm_callbacks / deserve_items).
--- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): вещи лидеров, тексты, координаты тайников. Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- A leader carries a flash drive dv_<name>_case (misc\fp_deserves.ltx). "Using" it creates a stash (inventory_box) at
 -- deserve_pos with deserve_items, adds a map spot and a tip. Unlike SGM no item callbacks in the actor binder are needed.
 -- Switch: info portion srp_freeplay or fp_deserves. Cost: one on_item_use subscriber, nothing per update.
 -- Savegame: nothing of its own (the stash is a normal server object, the spot is saved with the level).
+-- Описание на русском:
+-- Вещи лидеров. Идея, тексты и координаты тайников из SGM. У лидера есть флешка dv_<имя>_case (misc\fp_deserves.ltx). «Использование»
+-- создаёт тайник (inventory_box) в точке deserve_pos с набором deserve_items, добавляет метку на карту и подсказку. В отличие от SGM
+-- колбэки предметов в биндере актора не нужны. Включение: info srp_freeplay или fp_deserves. Цена: один подписчик on_item_use, в update ничего.
+-- Сохранение: своих данных нет (тайник — обычный серверный объект, метка сохраняется вместе с уровнем).
 
 local function is_enabled()
 	return has_alife_info("srp_freeplay") or has_alife_info("fp_deserves")

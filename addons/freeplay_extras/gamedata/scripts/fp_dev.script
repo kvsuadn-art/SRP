@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: naxac's universal spawn menu (collect_sections, ui_cheat_main, ui_cheat_cs).
+-- —борка на основе решений и идей: универсальное спавн-меню naxac (collect_sections, ui_cheat_main, ui_cheat_cs). јвторам спасибо за их труд.
 -- Freeplay extras: developer tools, entry points (fp_dev, fp_dev_util, fp_dev_tools).
--- —борка решений и идей: универсальное спавн-меню naxac (collect_sections, ui_cheat_main, ui_cheat_cs). —крипт собран на их основе, авторам спасибо.
 -- Spawn menu: naxac's universal spawn menu (collect_sections, ui_cheat_main, ui_cheat_cs), adapted.
 -- Tools (tabs "Teleport" and "Tools" of the same window: teleport, game time, surge/eclipse, heal): fp_dev_tools.
 -- јдаптаци€ под SRP Freeplay: Eon
@@ -11,6 +13,12 @@
 --  2. Main menu (Esc): F1 - spawn menu, F2 - the "Tools" tab. Needs the addon copy of ui_main_menu.script.
 --
 -- State: none (nothing is written to the savegame, no info portions).
+-- ќписание на русском:
+-- »нструменты разработчика, точки входа (fp_dev, fp_dev_util, fp_dev_tools). —павн-меню Ч универсальное меню naxac, адаптировано.
+-- ¬кладки Ђ“елепортї и Ђ»нструментыї того же окна (телепорт, игровое врем€, выброс/затмение, лечение) Ч в fp_dev_tools.
+-- ƒва способа открыть: 1) в игре: предметы fp_dev_console (спавн-меню) и fp_dev_tools (то же окно на вкладке Ђ»нструментыї);
+-- предмет при использовании возвращаетс€ в инвентарь; 2) главное меню (Esc): F1 Ч спавн-меню, F2 Ч вкладка Ђ»нструментыї
+-- (нужна копи€ ui_main_menu.script из аддона). —осто€ни€ нет: в сохранение ничего не пишетс€, info нет.
 
 local TAG = "[fp_dev] "
 local ITEMS = { fp_dev_console = true, fp_dev_tools = true }

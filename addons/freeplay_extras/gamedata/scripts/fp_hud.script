@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: Sigerous Mod 3.10 (GeJorge): sgm_huds, sgm_sleep_places (weapon panel, sleeping bag icon).
+-- Сборка на основе решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_huds, sgm_sleep_places (панель оружия, иконка спальника). Авторам спасибо за их труд.
 -- fp_hud: two HUD elements. Idea and sprites: SGM (Sigerous Mod 3.10, GeJorge, sgm_huds, sgm_sleep_places).
--- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): sgm_huds, sgm_sleep_places (панель оружия, иконка спальника). Скрипт собран на их основе, авторам спасибо.
 -- Адаптация под SRP Freeplay: Eon
 --
 -- 1) Weapon parameters (top right): the active pistol/rifle shows damage and range, a grenade shows blast radius and splinter radius.
@@ -7,6 +9,12 @@
 -- Unlike SGM: nothing is read blindly (a weapon without hit_power/fire_distance just shows no panel, no error), the text is rewritten
 -- only when it changes, the sleeping place is checked every 3 s, no pstor, no save data. Textures: ui\fp_hud.dds (cut from SGM's atlas).
 -- Switch: info portion srp_freeplay or fp_hud; off: fp_hud_off. Statics: configs\ui\ui_custom_msgs.xml (addon copy).
+-- Описание на русском:
+-- Два элемента HUD. Идея и спрайты из SGM. 1) Параметры оружия (справа вверху): активный пистолет/винтовка показывает урон и дальность,
+-- граната — радиус взрыва и осколков. 2) Иконка спальника, пока персонаж стоит в месте для сна (fp_sleep). В отличие от SGM:
+-- ничего не читается вслепую (оружие без hit_power/fire_distance просто не показывает панель, без ошибки), текст перезаписывается только
+-- при изменении, место для сна проверяется раз в 3 с, pstor и данных в сохранении нет. Текстуры: ui\fp_hud.dds (вырезаны из атласа SGM).
+-- Включение: info srp_freeplay или fp_hud; выключение: fp_hud_off. Статики: configs\ui\ui_custom_msgs.xml (копия аддона).
 
 local TAG = "[fp_hud] "
 local TICK_MS = 500

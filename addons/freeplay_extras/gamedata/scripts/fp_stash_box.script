@@ -1,7 +1,15 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: SRP: bind_physic_object (generic_physics_binder).
+-- Сборка на основе решений и идей: SRP: bind_physic_object (generic_physics_binder). Авторам спасибо за их труд.
 -- fp_stash_box: binder of the Freeplay stash box (section fp_base_stash, script_binding = fp_stash_box.init).
 -- A subclass of the core generic_physics_binder (bind_physic_object): everything the core does with a box stays, and after the
 -- first update the physics shell is fixed in place. The decorative rucksack of all.spawn stood on the table as a fixed
 -- physic_object; a box created from a script is a free body and fell under the table. Адаптация под SRP Freeplay: Eon
+-- Описание на русском:
+-- Биндер ящика-тайника Freeplay (секция fp_base_stash, script_binding = fp_stash_box.init). Подкласс generic_physics_binder ядра
+-- (bind_physic_object): всё, что ядро делает с ящиком, остаётся, а после первого update физическая оболочка фиксируется на месте.
+-- Декоративный рюкзак из all.spawn стоял на столе как неподвижный physic_object; ящик, созданный скриптом, — свободное тело и
+-- проваливался под стол.
 
 function init(obj)
 	obj:bind_object(fp_stash_binder(obj))

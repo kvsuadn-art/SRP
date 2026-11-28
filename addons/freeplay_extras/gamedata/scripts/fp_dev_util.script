@@ -1,8 +1,13 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: naxac's universal spawn menu (add_cheat_spawn).
+-- Сборка на основе решений и идей: универсальное спавн-меню naxac (add_cheat_spawn). Авторам спасибо за их труд.
 -- Freeplay extras: small helpers for the developer tools (fp_dev*).
--- Сборка решений и идей: универсальное спавн-меню naxac (add_cheat_spawn). Скрипт собран на их основе, авторам спасибо.
 -- They replace the global patches that naxac's add_cheat_spawn.script made (ini_file.r_*_ex,
 -- string.lower1, math.normalize): here they are ordinary functions of this module.
 -- Адаптация под SRP Freeplay: Eon (helpers originally by naxac)
+-- Описание на русском:
+-- Небольшие помощники инструментов разработчика (fp_dev*). Заменяют глобальные патчи add_cheat_spawn.script naxac
+-- (ini_file.r_*_ex, string.lower1, math.normalize): здесь это обычные функции модуля. Помощники исходно написаны naxac.
 
 function r_clsid_ex(ini, section, line, def)
 	if ini:section_exist(section) and ini:line_exist(section, line) then

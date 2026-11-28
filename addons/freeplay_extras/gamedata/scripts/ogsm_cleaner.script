@@ -8,6 +8,12 @@
 -- and everything that can be a quest object is skipped: items with story id, quest_item sections, sections and names from
 -- misc\fp_cleaner.ltx, weapons carried by someone (parent_id), weapons on the actor's current level.
 -- Switch: info portion srp_freeplay or fp_cleaner; off: fp_cleaner_off. Savegame: nothing of its own.
+-- Описание на русском:
+-- Порт ogsm_cleaner.script из OGSM Extended 2.0 (копирайт и название оригинала сохранены выше); прежнее имя модуля — fp_cleaner.
+-- Убирает бесхозное оружие на уровнях, где игрока нет (оно только раздувает сохранение). Отличия от оригинала: проход растянут на
+-- множество тиков по 1 с (без подвисаний), трогается только оружие (трупы нет), пропускается всё, что может быть квестовым объектом:
+-- предметы со story id, секции quest_item, секции и имена из misc\fp_cleaner.ltx, оружие в чужих руках (parent_id), оружие на текущем
+-- уровне игрока. Включение: info srp_freeplay или fp_cleaner; выключение: fp_cleaner_off. Сохранение: своих данных нет.
 
 local ini = ini_file("misc\\fp_cleaner.ltx")
 local mgr = nil

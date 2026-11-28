@@ -1,10 +1,17 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros et al.): ogsm_items (hiding the weapon while healing).
+-- —борка на основе решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_items (скрытие оружи€ при лечении). јвторам спасибо за их труд.
 -- fp_items: using medicine hides the weapon for a moment. Idea: OGSM Extended 2.0 (ogsm_items, DEXXX).
--- —борка решений и идей: OGSM Extended 2.0 (Minister, Kirgudu, DEXXX, xStream, Ab@dDon, Alex Ros и др.): ogsm_items (скрытие оружи€ при лечении). —крипт собран на их основе, авторам спасибо.
 -- јдаптаци€ под SRP Freeplay: Eon
 --
 -- Using a medkit, bandage or antirad (misc\fp_items.ltx [hide]) hides the weapon, so the animation is not disturbed and
 -- a reload is interrupted; after hide_ms it is restored. Switch: info portion srp_freeplay or fp_items; off: fp_items_off.
 -- Cost: one on_item_use subscriber and a 1 s slot that only compares a timer. Savegame: nothing of its own.
+-- ќписание на русском:
+-- »спользование лекарства на мгновение пр€чет оружие. »де€ из OGSM (ogsm_items, DEXXX). јптечка, бинт или антирад (misc\fp_items.ltx
+-- [hide]) пр€чет оружие, чтобы не мешала анимаци€ и прерывалась перезар€дка; через hide_ms оно возвращаетс€. ¬ключение: info
+-- srp_freeplay или fp_items; выключение: fp_items_off. ÷ена: один подписчик on_item_use и слот раз в секунду, сравнивающий таймер.
+-- —охранение: своих данных нет.
 
 local ini = ini_file("misc\\fp_items.ltx")
 local mgr = nil

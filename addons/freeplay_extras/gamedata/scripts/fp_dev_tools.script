@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: naxac's universal spawn menu; SRP: guide data (guiders_table).
+-- Сборка на основе решений и идей: универсальное спавн-меню naxac; SRP: данные проводников (guiders_table). Авторам спасибо за их труд.
 -- Freeplay extras: developer tools for the naxac window (tabs "Телепорт" and "Инструменты").
--- Сборка решений и идей: универсальное спавн-меню naxac; SRP: данные проводников guiders_table. Скрипт собран на их основе, авторам спасибо.
 -- No window of its own: ui_cheat_cs asks this module for the list of a tab (list), the text for the description
 -- area (describe) and runs the chosen entry with the same "Получить" button (run).
 -- Teleport targets are taken from SRP's own guide data (guiders_table): the cross-level points
@@ -7,6 +9,12 @@
 -- the one SRP guides use: db.actor:set_actor_position(patrol point). guiders.start_teleport is not used (its fade chain
 -- and level.show_weapon are not needed for a tool, the first version without them worked).
 -- Адаптация под SRP Freeplay: Eon
+-- Описание на русском:
+-- Инструменты разработчика для окна naxac (вкладки «Телепорт» и «Инструменты»). Своего окна нет: ui_cheat_cs запрашивает у модуля
+-- список вкладки (list), текст описания (describe) и выполняет выбранную строку той же кнопкой «Получить» (run).
+-- Цели телепорта берутся из данных проводников SRP (guiders_table): межуровневые точки (cross_level_teleport) и точки проводников
+-- текущего уровня (teleport_points). Сам прыжок — как у проводников SRP: db.actor:set_actor_position(патрульная точка).
+-- guiders.start_teleport не используется: цепочка затемнения и level.show_weapon инструменту не нужны.
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10

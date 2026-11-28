@@ -1,5 +1,7 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- Based on solutions and ideas of: Sigerous Mod 3.10 (GeJorge): fx_blackday effects and the darkness surge variant; SRP: xr_surge_hide.
+-- Сборка на основе решений и идей: Sigerous Mod 3.10 (GeJorge): эффекты fx_blackday и вариант выброса; SRP: xr_surge_hide. Авторам спасибо за их труд.
 -- Freeplay extras: surge by the clock + eclipse (variety of surge).
--- Сборка решений и идей: Sigerous Mod 3.10 (GeJorge): эффекты fx_blackday и вариант выброса; SRP: xr_surge_hide. Скрипт собран на их основе, авторам спасибо.
 -- Idea: eclipse (fx_eclipse_*: made from the SGM fx_blackday_* effects, with a light start) and the "darkness" surge variant from Sigerous Mod 3.10 (GeJorge);
 -- surge machinery (xr_surge_hide: phases, cover task, damage) is the SRP original and is NOT changed.
 -- Адаптация под SRP Freeplay: Eon
@@ -18,6 +20,16 @@
 --
 -- Switches (info portions): srp_freeplay turns both on; fp_surge_clock / fp_eclipse turn one on separately.
 -- Cost: one subscriber on on_update, rescheduled every CHECK_MS; with no surge it reads a few variables.
+-- Описание на русском:
+-- Выброс по часам и затмение (вариант выброса). Идея: затмение (fx_eclipse_*: сделано из эффектов SGM fx_blackday_* с лёгким стартом)
+-- и вариант выброса «темнота» из Sigerous Mod 3.10 (GeJorge); механика выброса (xr_surge_hide: фазы, задание укрытия, урон) —
+-- оригинал SRP и НЕ меняется. Два триггера, одно поведение (всё делает xr_surge_hide.activate_surge): 1) выброс по часам (как в ЗП): раз в
+-- игровые сутки, в час 08..20, зависящий от даты, на уровне из xr_surge_hide.levels_surge_table с истинным condlist; «уже сегодня»
+-- читается из xr_surge_hide.initialization_time, поэтому модуль состояния не имеет и в сохранение не пишет (побочный эффект: в первые
+-- игровые сутки новой игры выброса по часам нет); 2) затмение: когда выброс стартует вскоре после входа на уровень и не по часам,
+-- эффект погоды подменяется на затмение (fx_eclipse_clear / fx_eclipse_rain): первые 20 с светло, затем за 15 с темнеет, так что время
+-- добежать до укрытия есть. Задание укрытия, урон и поведение NPC не меняются. Включение: srp_freeplay включает оба; fp_surge_clock /
+-- fp_eclipse — по отдельности. Цена: один подписчик on_update, период CHECK_MS.
 
 local TAG = "[fp_surge] "
 
