@@ -161,58 +161,35 @@ end
 
 local function task_id(q) return "fpq_" .. q end
 
--- Notification of a task event (the core does it for its own tasks; ours are created by this module, so it is done here):
--- the news line with the icon, and during a dialog also a message in the talk window. kind: new / update / completed.
--- Уведомление о событии задания (ядро делает это для своих заданий, наши создаёт этот модуль, поэтому делаем здесь):
--- строка новостей с иконкой, а во время диалога ещё и сообщение в окне разговора. kind: new / update / completed.
-local news_caption = { new = "rt_task_new", update = "rt_task_update", completed = "rt_task_completed" }
+-- Notifications and the engine task are handled by fp_tasks (one place for all Freeplay modules); here only the quest data is mapped.
+-- Уведомления и задание движка ведёт fp_tasks (одно место для всех модулей Freeplay); здесь только данные квеста.
 local news_icon = { fetch = "ui_iconsTotal_found_thing", kill = "ui_iconsTotal_eliminate_squad", capture = "ui_iconsTotal_eliminate_smart" }
 local function send_news(q, kind)
-	local act = db.actor
-	if act == nil then return end
 	local c = cfg(q)
-	local title = game.translate_string(news_caption[kind])
-	local text = game.translate_string(q)
-	local icon = (c and news_icon[c.type]) or "ui_iconsTotal_found_thing"
-	fp_log.always("%s", TAG .. "news " .. kind .. ": " .. q .. " (talking: " .. tostring(act:is_talking()) .. ")")
-	pcall(xr_sound.set_sound_play, act:id(), "pda_task")
-	local ok, err = pcall(act.give_game_news, act, title, text, icon, 0, 5000, 1)
-	if not ok then fp_log.always("%s", TAG .. "give_game_news failed: " .. tostring(err)) end
-	if act:is_talking() then
-		ok, err = pcall(act.give_talk_message2, act, title, text, icon, "iconed_answer_item")
-		if not ok then fp_log.always("%s", TAG .. "give_talk_message2 failed: " .. tostring(err)) end
-	end
+	fp_tasks.news(kind, game.translate_string(q), (c and news_icon[c.type]) or "ui_iconsTotal_found_thing")
 end
 
 local function set_task_stage(q, back)
-	local task = db.actor:get_task(task_id(q), true)
-	if task == nil then return end
 	local c = cfg(q)
+	local s = { silent = true }
 	if back then
-		task:set_title(game.translate_string(q .. "_back"))
-		task:set_description(game.translate_string(q .. "_back_text"))
-		local gid = giver_id(c, q)
-		if gid then task:change_map_location("secondary_task_location", gid) end
-		send_news(q, "update")
+		s.title = game.translate_string(q .. "_back")
+		s.text = game.translate_string(q .. "_back_text")
+		s.target = giver_id(c, q)
 	else
-		task:set_title(game.translate_string(q))
-		task:set_description(game.translate_string(q .. "_text"))
+		s.title = game.translate_string(q)
+		s.text = game.translate_string(q .. "_text")
 	end
+	if fp_tasks.update(task_id(q), s) and back then send_news(q, "update") end
 end
 
 local function give_task(q)
 	local c = cfg(q)
-	local task = CGameTask()
-	task:set_id(task_id(q))
-	task:set_title(game.translate_string(q))
-	task:set_description(game.translate_string(q .. "_text"))
-	task:set_icon_name("ui_pda2_mtask_overlay")
-	task:set_type(1)
-	task:add_complete_func("fp_quests.task_complete")
-	task:set_map_hint(q)
-	task:set_map_location("secondary_task_location")
-	task:set_map_object_id((items[q] and items[q][1]) or smart_id(c) or giver_id(c, q) or 0)
-	db.actor:give_task(task, 0, false)
+	fp_tasks.give({
+		id = task_id(q), title = game.translate_string(q), text = game.translate_string(q .. "_text"), hint = q,
+		target = (items[q] and items[q][1]) or smart_id(c) or giver_id(c, q) or 0,
+		complete = "fp_quests.task_complete", silent = true,
+	})
 	send_news(q, "new")
 	if has_alife_info(q .. "_complete") then set_task_stage(q, true) end
 end

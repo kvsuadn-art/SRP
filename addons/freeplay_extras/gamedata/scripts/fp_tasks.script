@@ -1,213 +1,41 @@
 -- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras
--- fp_tasks: the unified task manager of Freeplay (pilot).
--- Idea: one task class driven by data (misc\fp_tasks.ltx); the same format serves quests (SGM) and orders (OGSM).
--- A task is a list of stages ("objectives" of the Shadow of Chernobyl game_task format). Every stage has a text,
--- an optional map target (story id), conditions to complete / fail it and effects. The file is made from the original
--- tasks.xml by tools/soc_tasks_to_ltx.py, or written by hand.
--- Inspired by the Call of Pripyat task manager (functor titles, condition lists, throttled checks, update news).
--- Built on the stock Clear Sky API only: CGameTask, give_task, map spots, info portions. No core file is copied.
+-- fp_tasks: the single point where Freeplay modules talk to the engine about tasks.
+-- A facade over the stock Clear Sky API (CGameTask, give_task, set_task_state, game news). It owns no task state:
+-- the engine keeps the tasks in the savegame together with the names of their complete / fail functions, and the module
+-- that gives a task (fp_quests, ogsm_rt_manager, later others) keeps its own world state. It does not use or copy the
+-- core task manager (task_manager.script) - core tasks stay with the core.
 --
--- Condition syntax (complete_N, fail_N, on_complete_N, on_fail, on_complete):
---   +info   info portion given        -info   info portion not given
---   =name   function returns true     !name   function returns false/nil
---   terms are separated by spaces (AND), alternatives by '|' (OR). Functions are looked up in fp_task_funcs, then in xr_conditions.
---   effects: +info gives the portion, -info disables it, =name calls fp_task_funcs[name] / xr_effects[name].
--- Text fields (title, text_N): a string id, or =name -> fp_task_funcs[name](task_id, stage) returns the string id (functor).
---
--- Storage: one frame "fp_tasks" in fp_store (active tasks: id + stage; finished: id + result). Nothing in pstor.
+--   give{ id, title, text, news_icon, kind, prio, time, target, spot, hint, complete, fail, silent }
+--       id        engine task id (unique, a string)
+--       title     already translated title;  text - already translated description
+--       kind      1 = additional (default), 0 = storyline;  prio - priority (default 0)
+--       target    server id of the object for the map mark (optional), spot - map spot type (default secondary_task_location),
+--                 hint - string id of the map hint (default id)
+--       time      time limit in game seconds, 0/nil = none
+--       complete / fail   "module.function": the engine polls it with the task id, true = the task is done / failed
+--       news_icon icon of the news line;  silent - no "new task" news
+--   update(id, { title, text, target, spot, silent })   change a given task, news "update" unless silent
+--   finish(id, ok, news_text)                            set the engine state (completed / failed) and send the news
+--   news(kind, text, icon)                               kind: new / update / completed / failed / reversed
+--   state(id)                                            nil (no such task) or "active" / "completed" / "failed"
 
 local TAG = "[fp_tasks] "
-local CFG = "misc\\fp_tasks.ltx"
-local CHECK_MS = 700
+local DEFAULT_SPOT = "secondary_task_location"
+local DEFAULT_ICON = "ui_iconsTotal_found_thing"
 
-local mgr
-local ini
-local defs = {}      -- id -> parsed definition, false if missing
-local active = {}    -- id -> { stage = n }
-local finished = {}  -- id -> true (completed) / false (failed)
-local warned = {}
-local next_check = 0
+local captions = {
+	new = "rt_task_new", update = "rt_task_update", completed = "rt_task_completed",
+	failed = "rt_task_failed", fail = "rt_task_failed", reversed = "rt_task_reversed",
+}
 
-local function warn(key, fmt, ...)
-	if warned[key] then return end
-	warned[key] = true
-	fp_log.always("%s", TAG .. string.format(fmt, ...))
-end
-
-local function get_ini()
-	if ini == nil then ini = ini_file(CFG) end
-	return ini
-end
-
-local function field(sec, name, default)
-	local i = get_ini()
-	if i:line_exist(sec, name) then
-		local v = i:r_string(sec, name)
-		if v ~= nil and v ~= "" then return v end
-	end
-	return default
-end
-
-local function engine_id(id) return "fpt_" .. id end
-
--------------------------------------------------------------- definitions
-local function flag(v) return v == "true" or v == "1" or v == "on" end
-
-local function def(id)
-	local d = defs[id]
-	if d ~= nil then return d or nil end
-	if not get_ini():section_exist(id) then
-		defs[id] = false
-		warn("nodef" .. id, "no task [%s] in %s", id, CFG)
-		return nil
-	end
-	d = {
-		id = id,
-		title = field(id, "title", id),
-		prio = tonumber(field(id, "prio", "0")) or 0,
-		kind = field(id, "kind", "additional"),
-		count = tonumber(field(id, "count", "1")) or 1,
-		repeatable = flag(field(id, "repeatable", "false")),
-		on_complete = field(id, "on_complete"),
-		on_fail = field(id, "on_fail"),
-		reward_money = tonumber(field(id, "reward_money", "0")) or 0,
-		reward_items = field(id, "reward_items"),
-		stages = {},
-	}
-	for n = 1, d.count do
-		local s = tostring(n)
-		d.stages[n] = {
-			text = field(id, "text_" .. s),
-			target = field(id, "target_" .. s),
-			spot = field(id, "spot_" .. s, "secondary_task_location"),
-			hint = field(id, "hint_" .. s),
-			hidden = flag(field(id, "hidden_" .. s, "false")),
-			complete = field(id, "complete_" .. s),
-			fail = field(id, "fail_" .. s),
-			on_complete = field(id, "on_complete_" .. s),
-		}
-	end
-	defs[id] = d
-	return d
-end
-
--------------------------------------------------------------- conditions and effects
-local function call_func(name, a, b)
-	local f = fp_task_funcs[name]
-	if f == nil then f = xr_conditions[name] end
-	if f == nil then
-		warn("fn" .. name, "unknown condition function '%s' (add it to fp_task_funcs.script)", name)
-		return false
-	end
-	local ok, res = pcall(f, a, b)
-	if not ok then
-		warn("fe" .. name, "function '%s' failed: %s", name, tostring(res))
-		return false
-	end
-	return res and true or false
-end
-
-local function term_ok(t, tid, n)
-	local c, rest = string.sub(t, 1, 1), string.sub(t, 2)
-	if c == "+" then return has_alife_info(rest) end
-	if c == "-" then return not has_alife_info(rest) end
-	if c == "=" then return call_func(rest, tid, n) end
-	if c == "!" then return not call_func(rest, tid, n) end
-	return false
-end
-
--- nil/empty = no condition (returns nil so callers can tell "none" from "false")
-local function cond(str, tid, n)
-	if str == nil or str == "" then return nil end
-	for group in string.gmatch(str .. "|", "([^|]*)|") do
-		local all, any = true, false
-		for t in string.gmatch(group, "%S+") do
-			any = true
-			if not term_ok(t, tid, n) then all = false break end
-		end
-		if any and all then return true end
-	end
-	return false
-end
-
-local function effects(str, tid, n)
-	if str == nil or str == "" or db.actor == nil then return end
-	for t in string.gmatch(str, "%S+") do
-		local c, rest = string.sub(t, 1, 1), string.sub(t, 2)
-		if c == "+" then
-			if not has_alife_info(rest) then db.actor:give_info_portion(rest) end
-		elseif c == "-" then
-			if has_alife_info(rest) then db.actor:disable_info_portion(rest) end
-		elseif c == "=" then
-			local f = fp_task_funcs[rest] or xr_effects[rest]
-			if f == nil then
-				warn("ef" .. rest, "unknown effect function '%s'", rest)
-			else
-				local ok, err = pcall(f, db.actor, nil, { tid, n })
-				if not ok then warn("ee" .. rest, "effect '%s' failed: %s", rest, tostring(err)) end
-			end
-		end
-	end
-end
-
-local function text_of(v, tid, n)
-	if v == nil then return "" end
-	if string.sub(v, 1, 1) == "=" then
-		local f = fp_task_funcs[string.sub(v, 2)]
-		if f ~= nil then
-			local ok, res = pcall(f, tid, n)
-			if ok and res then return game.translate_string(res) end
-		end
-		return ""
-	end
-	return game.translate_string(v)
-end
-
--------------------------------------------------------------- map targets
--- target_N is a story id: a number, or a name from the [sid_map] section of the config (SoC string ids -> CS numbers)
-local function target_oid(s)
-	if s == nil then return nil end
-	local sid = tonumber(s)
-	if sid == nil then
-		local i = get_ini()
-		if i:section_exist("sid_map") and i:line_exist("sid_map", s) then
-			sid = tonumber(i:r_string("sid_map", s))
-		end
-		if sid == nil then
-			warn("sid" .. s, "story id '%s' is not in [sid_map]: no map mark", s)
-			return nil
-		end
-	end
-	return id_by_sid(sid)
-end
-
-local function spot_off(sg)
-	if sg == nil or sg.target == nil then return end
-	local oid = target_oid(sg.target)
-	if oid and level.map_has_object_spot(oid, sg.spot) ~= 0 then level.map_remove_object_spot(oid, sg.spot) end
-end
-
-local function spot_on(sg)
-	if sg == nil or sg.target == nil or sg.hidden then return true end
-	local oid = target_oid(sg.target)
-	if oid == nil then return false end
-	if level.map_has_object_spot(oid, sg.spot) == 0 then
-		level.map_add_object_spot(oid, sg.spot, sg.hint ~= nil and game.translate_string(sg.hint) or "")
-	end
-	return true
-end
-
--------------------------------------------------------------- news
-local news_caption = { new = "rt_task_new", update = "rt_task_update", completed = "rt_task_completed", failed = "general_fail_task" }
-local default_icon = "ui_iconsTotal_found_thing"
-
--- public: other modules (fp_quests, ogsm_rt_manager) can use it for their own tasks
+-- news line with the icon; during a dialog also a message in the talk window
+-- (give_talk_message2 takes 4 arguments, the 4th is the template as in news_manager)
 function news(kind, text, icon)
 	local act = db.actor
 	if act == nil then return end
-	local title = game.translate_string(news_caption[kind] or "rt_task_update")
-	icon = icon or default_icon
-	fp_log.always("%s", TAG .. "news " .. kind .. ": " .. tostring(text) .. " (talking: " .. tostring(act:is_talking()) .. ")")
+	local title = game.translate_string(captions[kind] or "rt_task_update")
+	icon = icon or DEFAULT_ICON
+	fp_log.always("%s", TAG .. "news " .. tostring(kind) .. ": " .. tostring(text) .. " (talking: " .. tostring(act:is_talking()) .. ")")
 	pcall(xr_sound.set_sound_play, act:id(), "pda_task")
 	local ok, err = pcall(act.give_game_news, act, title, text, icon, 0, 5000, 1)
 	if not ok then fp_log.always("%s", TAG .. "give_game_news failed: " .. tostring(err)) end
@@ -217,162 +45,52 @@ function news(kind, text, icon)
 	end
 end
 
--------------------------------------------------------------- task life cycle
-local function apply_stage(id, notify)
-	local d = def(id)
-	local st = active[id]
-	if d == nil or st == nil or db.actor == nil then return end
-	local sg = d.stages[st.stage]
-	local t = db.actor:get_task(engine_id(id), true)
-	local descr = text_of(sg.text, id, st.stage)
-	if t ~= nil then
-		t:set_title(text_of(d.title, id, st.stage))
-		t:set_description(descr)
-	end
-	spot_on(sg)
-	if notify then news("update", descr) end
-end
-
-local function give_reward(d)
-	local act = db.actor
-	if d.reward_money > 0 then act:give_money(d.reward_money) end
-	if d.reward_items ~= nil then
-		for item in string.gmatch(d.reward_items, "[^,%s]+") do
-			local sect, cnt = string.match(item, "^([%w_]+):?(%d*)$")
-			for _ = 1, tonumber(cnt) or 1 do
-				_G.sim:create(sect, act:position(), act:level_vertex_id(), act:game_vertex_id(), act:id())
-			end
-		end
-	end
-end
-
-local function finish(id, ok)
-	local d = def(id)
-	local st = active[id]
-	if d == nil or st == nil then return end
-	spot_off(d.stages[st.stage])
-	active[id] = nil
-	finished[id] = ok and true or false
-	local act = db.actor
-	if act == nil then return end
-	if ok then effects(d.on_complete, id, st.stage) else effects(d.on_fail, id, st.stage) end
-	if ok then give_reward(d) end
-	local t = act:get_task(engine_id(id), true)
-	if t ~= nil then act:set_task_state(ok and task.completed or task.fail, engine_id(id)) end
-	news(ok and "completed" or "failed", text_of(d.title, id, st.stage))
-	fp_log.always("%s", TAG .. (ok and "completed " or "failed ") .. id)
-end
-
--- public API ---------------------------------------------------
-function give(id)
-	local d = def(id)
-	if d == nil or db.actor == nil then return false end
-	if active[id] ~= nil then return false end
-	if finished[id] ~= nil and not d.repeatable then return false end
-	finished[id] = nil
-	active[id] = { stage = 1 }
+function give(s)
+	if db.actor == nil or s == nil or s.id == nil then return false end
 	local t = CGameTask()
-	t:set_id(engine_id(id))
-	t:set_title(text_of(d.title, id, 1))
-	t:set_description(text_of(d.stages[1].text, id, 1))
+	t:set_id(s.id)
+	t:set_title(s.title or s.id)
+	t:set_description(s.text or "")
 	t:set_icon_name("ui_pda2_mtask_overlay")
-	t:set_type(d.kind == "storyline" and task.storyline or task.additional)
-	t:set_priority(d.prio)
-	db.actor:give_task(t, 0, false)
-	news("new", text_of(d.title, id, 1))
-	apply_stage(id, false)
-	fp_log.always("%s", TAG .. "given " .. id)
+	t:set_type(s.kind or 1)
+	t:set_priority(s.prio or 0)
+	t:set_map_hint(s.hint or s.id)
+	if s.complete then t:add_complete_func(s.complete) end
+	if s.fail then t:add_fail_func(s.fail) end
+	if s.target then
+		t:set_map_location(s.spot or DEFAULT_SPOT)
+		t:set_map_object_id(s.target)
+	end
+	db.actor:give_task(t, s.time or 0, false)
+	if not s.silent then news("new", s.title or s.id, s.news_icon) end
 	return true
 end
 
-function complete(id) finish(id, true) end
-function fail(id) finish(id, false) end
-
-function set_stage(id, n)
-	local d, st = def(id), active[id]
-	if d == nil or st == nil or n < 1 or n > d.count then return end
-	spot_off(d.stages[st.stage])
-	st.stage = n
-	apply_stage(id, true)
+function update(id, s)
+	local act = db.actor
+	local t = act and act:get_task(id, true)
+	if t == nil then return false end
+	if s.title then t:set_title(s.title) end
+	if s.text then t:set_description(s.text) end
+	if s.target then t:change_map_location(s.spot or DEFAULT_SPOT, s.target) end
+	if not s.silent then news("update", s.title or t:get_title(), s.news_icon) end
+	return true
 end
 
-function status(id)
-	if active[id] ~= nil then return "active", active[id].stage end
-	if finished[id] ~= nil then return finished[id] and "completed" or "failed" end
-	return nil
+function finish(id, ok, news_text, icon)
+	local act = db.actor
+	if act == nil then return end
+	local t = act:get_task(id, true)
+	if t == nil then return end
+	act:set_task_state(ok and task.completed or task.fail, id)
+	news(ok and "completed" or "failed", news_text or t:get_title(), icon)
 end
 
-function list_active()
-	local res = {}
-	for id, st in pairs(active) do res[#res + 1] = id .. ":" .. st.stage end
-	table.sort(res)
-	return res
-end
-
--- one check of one task: fail first, then complete (and walk over the stages whose condition is already true)
-local function check(id)
-	local d, st = def(id), active[id]
-	if d == nil or st == nil then return end
-	for _ = 1, d.count do
-		local sg = d.stages[st.stage]
-		if cond(sg.fail, id, st.stage) == true then finish(id, false) return end
-		if cond(sg.complete, id, st.stage) ~= true then break end
-		effects(sg.on_complete, id, st.stage)
-		if st.stage >= d.count then finish(id, true) return end
-		spot_off(sg)
-		st.stage = st.stage + 1
-		apply_stage(id, true)
-	end
-	if not spot_on(d.stages[st.stage]) then
-		-- the target is not online yet: tried again at the next check
-	end
-end
-
-function fp_on_update(delta)
-	if mgr then mgr:reschedule(CHECK_MS) end
-	if db.actor == nil then return end
-	local now = time_global()
-	if now < next_check then return end
-	next_check = now + CHECK_MS
-	for id in pairs(active) do check(id) end
-end
-
--------------------------------------------------------------- storage frame
-function fp_on_save(packet)
-	local n = 0
-	for _ in pairs(active) do n = n + 1 end
-	packet:w_u8(n)
-	for id, st in pairs(active) do
-		packet:w_stringZ(id)
-		packet:w_u8(st.stage)
-	end
-	n = 0
-	for _ in pairs(finished) do n = n + 1 end
-	packet:w_u8(n)
-	for id, ok in pairs(finished) do
-		packet:w_stringZ(id)
-		packet:w_u8(ok and 1 or 0)
-	end
-end
-
-function fp_on_load(reader, version)
-	active, finished = {}, {}
-	for _ = 1, reader:r_u8() do
-		local id = reader:r_stringZ()
-		active[id] = { stage = reader:r_u8() }
-	end
-	for _ = 1, reader:r_u8() do
-		local id = reader:r_stringZ()
-		finished[id] = reader:r_u8() == 1
-	end
-end
-
-function fp_on_reset()
-	active, finished, next_check = {}, {}, 0
-end
-
-function attach(m)
-	mgr = m
-	m:subscribe({ script_name = "fp_tasks.fp_on_update", signal = "on_update", fun = fp_on_update })
-	fp_store.register({ name = "fp_tasks", version = 1, save = fp_on_save, load = fp_on_load, reset = fp_on_reset })
+function state(id)
+	local act = db.actor
+	if act == nil or act:get_task(id, true) == nil then return nil end
+	local s = act:get_task_state(id)
+	if s == task.completed then return "completed" end
+	if s == task.fail then return "failed" end
+	return "active"
 end

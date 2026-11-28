@@ -390,53 +390,46 @@ end
 
 --Выдача задания
 function CRandomTask:action_give_task(actor, npc, dialog_id, phrase_id)
-	local task = CGameTask()
+	-- the engine task is made by fp_tasks; the branches below only choose its title, map spot and target
+	local title, spot, target
 	local task_desc = self.task_info[self.task_id_by_yes_phrase_id[tonumber(phrase_id)]]
 
-	task:set_id(task_desc.name)
-	task:set_title(game.translate_string(task_desc.name))
-	task:set_icon_name("ui_pda2_mtask_overlay")
-	task:set_description(infa_o_taske(nil, npc, nil, nil, task_desc.name, true))
-	task:set_type(1)
-
-	task:add_complete_func("ogsm_rt_manager.task_complete")
-	task:add_fail_func("ogsm_rt_manager.task_fail")
-
-	task:set_map_hint(task_desc.name)
+	title = game.translate_string(task_desc.name)
+	spot = "secondary_task_location"
 	if task_desc.type == "kill_stalker" then
 		task_desc.selected_target = task_desc.target_objects[math.random(#task_desc.target_objects)]
-		task:set_map_location("secondary_task_location")
-		task:set_map_object_id(task_desc.selected_target)
+		target = task_desc.selected_target
 -- Kirgudu
 		task_desc.stalker_killer = nil
 -- Kirgudu
 	elseif task_desc.type == "eliminate_monster_lager" then
 		local smart_id = sim_board.get_sim_board().smarts_by_names[task_desc.target].id
-		task:set_map_location("secondary_task_location_complex_capture_smart")
-		task:set_map_object_id(smart_id)
+		spot = "secondary_task_location_complex_capture_smart"
+		target = smart_id
 	elseif task_desc.type == "squad_courier" then
 -- Kirgudu
-		task:set_map_location("secondary_task_location")
-		task:set_title(game.translate_string("rt_take_ammo_from_trader"))
-		task:set_map_object_id(task_desc.target_npc_id)
+		title = game.translate_string("rt_take_ammo_from_trader")
+		target = task_desc.target_npc_id
 		task_desc.selected_target = nil
 		task_desc.selected_squad_id = nil
 		task_desc.dialog_flag = false
 -- Kirgudu
 	elseif task_desc.type == "find_pda" then
-		task:set_map_location("crlc_mdl")
-		task:set_map_object_id(task_desc.selected_target_smart)
+		spot = "crlc_mdl"
+		target = task_desc.selected_target_smart
 	elseif task_desc.type == "courier" then
-		task:set_map_location("secondary_task_location")
-		task:set_map_object_id(task_desc.target_npc_id)
+		target = task_desc.target_npc_id
 	else
-		task:set_map_location("secondary_task_location")
-		task:set_map_object_id(task_desc.parent_id)
+		target = task_desc.parent_id
 	end
 
 	task_desc.status = "selected"
 
-	db.actor:give_task(task, task_desc.time, false)
+	fp_tasks.give({
+		id = task_desc.name, title = title, text = infa_o_taske(nil, npc, nil, nil, task_desc.name, true), hint = task_desc.name,
+		spot = spot, target = target, time = task_desc.time,
+		complete = "ogsm_rt_manager.task_complete", fail = "ogsm_rt_manager.task_fail", silent = true,
+	})
 	self:send_news(task_desc.name, "new")
 
 	self.active_tasks[task_desc.name] = true
@@ -794,27 +787,10 @@ end
 
 --Отсылка новостей о начале, обновлении, завершении таска
 --В таблице содержатся заголовки новостей
-local news_title = {
-	fail = "rt_task_failed",
-	completed = "rt_task_completed",
-	new = "rt_task_new",
-	update = "rt_task_update",
-	reversed = "rt_task_reversed"
-}
+
 function CRandomTask:send_news(task_name, type)
 	local task_desc = self.task_info[task_name]
-	xr_sound.set_sound_play(db.actor:id(), "pda_task")
-	local title, text = game.translate_string(news_title[type]), game.translate_string(task_desc.name)
-	local icon = icon_by_type[task_desc.type] or "ui_iconsTotal_found_thing"
-	fp_log.always("%s", "[ogsm_rt_manager] news " .. type .. ": " .. tostring(task_name) .. " (talking: " .. tostring(db.actor:is_talking()) .. ")")
-	local ok, err = pcall(db.actor.give_game_news, db.actor, title, text, icon, 0, 5000, 1)
-	if not ok then fp_log.always("%s", "[ogsm_rt_manager] give_game_news failed: " .. tostring(err)) end
-	-- during a dialog the news go into the talk window; the engine function takes 4 arguments (the 4th is the template, as in news_manager)
-	-- во время диалога новость идёт в окно разговора; функция движка берёт 4 аргумента (4-й шаблон, как в news_manager)
-	if db.actor:is_talking() then
-		ok, err = pcall(db.actor.give_talk_message2, db.actor, title, text, icon, "iconed_answer_item")
-		if not ok then fp_log.always("%s", "[ogsm_rt_manager] give_talk_message2 failed: " .. tostring(err)) end
-	end
+	fp_tasks.news(type, game.translate_string(task_desc.name), icon_by_type[task_desc.type])
 end
 
 ---------------------------------------------------------

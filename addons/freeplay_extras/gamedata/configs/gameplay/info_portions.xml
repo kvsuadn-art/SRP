@@ -387,36 +387,4 @@
 	<info_portion id="gar_treasure_quest_reward_in_anomaly"/>
 	<info_portion id="gar_treasure_quest_old_pda"/>
 
-<!--	fp_tasks pilot start	-->
-
-	<info_portion id="PMA_esc_antigas_mis_given_gun"/>
-	<info_portion id="PMA_esc_antigas_mis_has_gun"/>
-	<info_portion id="agroprom_military_case"/>
-	<info_portion id="cit_fail_first_task"/>
-	<info_portion id="esc_dogs_return"/>
-	<info_portion id="esc_fanat_die"/>
-	<info_portion id="esc_find_doctor_done"/>
-	<info_portion id="esc_find_railroad_passage_done"/>
-	<info_portion id="esc_find_railroad_passage_find_stalker"/>
-	<info_portion id="esc_kill_bandits_quest_done"/>
-	<info_portion id="esc_kill_bandits_quest_have"/>
-	<info_portion id="esc_kill_bandits_quest_kill"/>
-	<info_portion id="esc_lager_destroyed"/>
-	<info_portion id="esc_petruha_die"/>
-	<info_portion id="esc_rma_antigas_stalker_dead"/>
-	<info_portion id="esc_serious_talk"/>
-	<info_portion id="escape_blockpost_case_done"/>
-	<info_portion id="escape_blockpost_case_have"/>
-	<info_portion id="escape_fox_heal"/>
-	<info_portion id="escape_lager_complete"/>
-	<info_portion id="escape_lager_killers_die"/>
-	<info_portion id="escape_stalker_done"/>
-	<info_portion id="garbage_meetstalker_start"/>
-	<info_portion id="samopal_done"/>
-	<info_portion id="samopal_gain"/>
-	<info_portion id="tutorial_artefact_gain"/>
-	<info_portion id="tutorial_wounded_give_info"/>
-
-<!--	fp_tasks pilot end	-->
-
 </game_information_portions>

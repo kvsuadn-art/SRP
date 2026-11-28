@@ -19,7 +19,6 @@ addons = {
 	"fp_mutants",
 	"fp_skills",
 	"fp_quests",
-	"fp_tasks",
 	"fp_medals",
 	"fp_deserves",
 	"fp_keep_items",
