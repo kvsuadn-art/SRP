@@ -69,37 +69,59 @@ end
 -- ---------------------------------------------------------------------------------------------------------------
 -- save / load (called by fp_binder)
 -- ---------------------------------------------------------------------------------------------------------------
-function save(packet)
+-- A scratch packet must be started with w_begin(0) (as the core does in dunin_ammo): a bare net_packet() may hold a garbage
+-- write position. w_begin writes a 2-byte header, so the data of a frame lies at [2, w_tell).
+-- Пробный пакет надо начинать с w_begin(0) (как делает ядро в dunin_ammo): у голого net_packet() позиция записи может быть
+-- мусорной. w_begin пишет 2 байта заголовка, поэтому данные кадра лежат в [2, w_tell).
+local HEADER = 2
+
+-- phase 1: every module writes into its own scratch packet; nothing touches the real packet here
+local function build_frames()
 	local frames = {}
 	for _, m in ipairs(mods) do
 		local pk = net_packet()
+		pk:w_begin(0)
 		local ok, err = pcall(m.save, pk)
 		if ok then
-			local n = pk:w_tell()
+			local n = pk:w_tell() - HEADER
 			if n > MAX_FRAME then
 				fp_log.always("%s", TAG .. "frame of " .. m.name .. " is too big (" .. n .. "), skipped")
 			else
-				pk:r_seek(0)
+				pk:r_seek(HEADER)
 				frames[#frames + 1] = { m = m, pk = pk, n = n }
 			end
 		else
 			fp_log.always("%s", TAG .. "save of " .. m.name .. " failed: " .. tostring(err))
 		end
 	end
-	local start = packet:w_tell()
-	packet:w_u32(MAGIC)
-	packet:w_u8(FORMAT)
-	packet:w_u8(#frames)
-	local sizes = {}
-	for _, f in ipairs(frames) do
-		packet:w_stringZ(f.m.name)
-		packet:w_u8(f.m.version)
-		packet:w_u16(f.n)
-		for _ = 1, f.n do packet:w_u8(f.pk:r_u8()) end
-		sizes[#sizes + 1] = f.m.name .. "=" .. f.n
+	return frames
+end
+
+-- Called by fp_binder inside the engine's save of the actor. An error here would be swallowed by the engine (the binder
+-- data of the actor would be lost and the savegame could not be loaded any more), so nothing may throw out of this function.
+function save(packet)
+	local ok, frames = pcall(build_frames)
+	if not ok then
+		fp_log.always("%s", TAG .. "SAVE FAILED while building frames, an empty container is written: " .. tostring(frames))
+		frames = {}
 	end
-	last_sizes = sizes
-	fp_log.always("%s", TAG .. string.format("SAVE %d frames, %d bytes: %s", #frames, packet:w_tell() - start, table.concat(sizes, " ")))
+	local ok2, err2 = pcall(function()
+		local start = packet:w_tell()
+		packet:w_u32(MAGIC)
+		packet:w_u8(FORMAT)
+		packet:w_u8(#frames)
+		local sizes = {}
+		for _, f in ipairs(frames) do
+			packet:w_stringZ(f.m.name)
+			packet:w_u8(f.m.version)
+			packet:w_u16(f.n)
+			for _ = 1, f.n do packet:w_u8(f.pk:r_u8()) end
+			sizes[#sizes + 1] = f.m.name .. "=" .. f.n
+		end
+		last_sizes = sizes
+		fp_log.always("%s", TAG .. string.format("SAVE %d frames, %d bytes: %s", #frames, packet:w_tell() - start, table.concat(sizes, " ")))
+	end)
+	if not ok2 then fp_log.always("%s", TAG .. "SAVE FAILED while writing: " .. tostring(err2)) end
 end
 
 local function load_legacy(reader)

@@ -18,7 +18,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b23"
+local BUILD = "2026-11-28 b24"
 
 local tools = {
 	{ key = "fwd5",    name = "Вперёд на 5 м",    descr = "Переместить игрока на 5 метров вперёд по направлению взгляда (горизонтально). Высота берётся по ближайшей точке AI-сетки; если сетки рядом нет, высота игрока +1 м." },
@@ -406,8 +406,9 @@ local function log_store()
 		if fn and m ~= "fp_dev_tools" then
 			local ok, size = pcall(function()
 				local pk = net_packet()
+				pk:w_begin(0)
 				fn(pk)
-				return pk:w_tell()
+				return pk:w_tell() - 2
 			end)
 			if ok then
 				sum = sum + size
