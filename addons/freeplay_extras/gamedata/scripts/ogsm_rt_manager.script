@@ -804,8 +804,17 @@ local news_title = {
 function CRandomTask:send_news(task_name, type)
 	local task_desc = self.task_info[task_name]
 	xr_sound.set_sound_play(db.actor:id(), "pda_task")
-	db.actor:give_game_news(game.translate_string(news_title[type]), game.translate_string(task_desc.name), icon_by_type[task_desc.type], 0, 5000, 1)
-	if db.actor:is_talking() then db.actor:give_talk_message2(game.translate_string(news_title[type]), game.translate_string(task_desc.name), icon_by_type[task_desc.type]) end
+	local title, text = game.translate_string(news_title[type]), game.translate_string(task_desc.name)
+	local icon = icon_by_type[task_desc.type] or "ui_iconsTotal_found_thing"
+	fp_log.always("%s", "[ogsm_rt_manager] news " .. type .. ": " .. tostring(task_name) .. " (talking: " .. tostring(db.actor:is_talking()) .. ")")
+	local ok, err = pcall(db.actor.give_game_news, db.actor, title, text, icon, 0, 5000, 1)
+	if not ok then fp_log.always("%s", "[ogsm_rt_manager] give_game_news failed: " .. tostring(err)) end
+	-- during a dialog the news go into the talk window; the engine function takes 4 arguments (the 4th is the template, as in news_manager)
+	-- во время диалога новость идёт в окно разговора; функция движка берёт 4 аргумента (4-й шаблон, как в news_manager)
+	if db.actor:is_talking() then
+		ok, err = pcall(db.actor.give_talk_message2, db.actor, title, text, icon, "iconed_answer_item")
+		if not ok then fp_log.always("%s", "[ogsm_rt_manager] give_talk_message2 failed: " .. tostring(err)) end
+	end
 end
 
 ---------------------------------------------------------
