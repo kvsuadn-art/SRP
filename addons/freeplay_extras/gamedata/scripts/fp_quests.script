@@ -90,6 +90,9 @@ local function cfg(q)
 	end
 	c.story_info = ini:line_exist(q, "story_info") and ini:r_string(q, "story_info") or nil
 	c.money = ini:line_exist(q, "reward_money") and ini:r_u32(q, "reward_money") or 0
+	-- rank points and reputation for the quest: the trader assortment depends on them; defaults follow the money reward
+	c.rank = ini:line_exist(q, "reward_rank") and ini:r_u32(q, "reward_rank") or math.max(5, math.floor(c.money / 200))
+	c.reputation = ini:line_exist(q, "reward_reputation") and ini:r_u32(q, "reward_reputation") or 5
 	c.rewards = {}
 	if ini:line_exist(q, "reward_items") then
 		for s in string.gmatch(ini:r_string(q, "reward_items"), "[^,%s]+") do c.rewards[#c.rewards + 1] = s end
@@ -238,6 +241,8 @@ function finish(actor, npc, dialog_id, phrase_id)
 	if c.ally and has_alife_info(q .. "_alive") then money = money + c.bonus_money end
 	if money > 0 then dialogs.relocate_money(npc, money, "in") end
 	for _, s in ipairs(c.rewards) do dialogs.relocate_item_section_to_actor(actor, npc, s, 1) end
+	db.actor:set_character_rank(db.actor:character_rank() + c.rank)
+	db.actor:change_character_reputation(c.reputation)
 	db.actor:give_info_portion(q .. "_reward")
 	items[q] = nil
 	items[q .. ".ally"] = nil

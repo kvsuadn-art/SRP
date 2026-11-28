@@ -115,6 +115,8 @@ function CRandomTask:__init()
 			end
 
 			self.task_info[id].reward_money = utils.cfg_get_number(self.task_ini, id, "reward_money", nil, false)
+			self.task_info[id].reward_rank = utils.cfg_get_number(self.task_ini, id, "reward_rank", nil, false)
+			self.task_info[id].reward_reputation = utils.cfg_get_number(self.task_ini, id, "reward_reputation", nil, false)
 			self.task_info[id].condlist = xr_logic.parse_condlist(db.actor, "rt_manager", "condlist", utils.cfg_get_string(self.task_ini, id, "condlist", nil, false, "", "true"))
 
 			self.task_info[id].init_phrase_id = self:get_id()
@@ -686,8 +688,11 @@ function CRandomTask:spawn_corpse_pda(task_id)
 --		local npc = alife():create(task_desc.target_npc[math.random(#task_desc.target_npc)], vector_position, vector, smart.m_game_vertex_id)
 --		npc:on_death()
 
-		local pda = alife():create(task_desc.target, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id)
+		-- Адаптация под SRP Freeplay: Eon: КПК в инвентаре только что созданного трупа пропадал (задание сразу
+		-- проваливалось), поэтому предмет создаётся на земле у тела.
+		local pda = alife():create(task_desc.target, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id)
 		task_desc.selected_target = pda.id
+		printf("[rt_manager] find_pda: corpse %s, pda id %s at %.1f,%.1f,%.1f", npc.id, pda.id, pda.position.x, pda.position.y, pda.position.z)
 	end
 end
 
@@ -746,6 +751,11 @@ function CRandomTask:task_reward(npc, actor)
 			end
 
 			task_desc.status = "rewarded"
+			-- Адаптация под SRP Freeplay: Eon: ранг и репутация за задание (во Freeplay от них зависит ассортимент торговцев)
+			local rank = task_desc.reward_rank or math.max(5, math.floor((task_desc.reward_money or 0) / 200))
+			local rep = task_desc.reward_reputation or 5
+			db.actor:set_character_rank(db.actor:character_rank() + rank)
+			db.actor:change_character_reputation(rep)
 
 			if task_desc.type == "bring_artefact" or task_desc.type == "bring_monster_part" then
 				dialogs.relocate_item_section(npc, task_desc.target, "out")
