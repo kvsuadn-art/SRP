@@ -22,6 +22,7 @@ local respawn_days = 3
 local min_dist = 150
 local mgr = nil
 local inited = false
+local pending = false
 
 function is_enabled()
 	return has_alife_info("srp_freeplay") or has_alife_info("fp_mutants")
@@ -71,30 +72,47 @@ local function create(board, sec)
 	return sq.squad_id
 end
 
+-- at most this many squads are created per call: creating all 22 in one tick took 105 ms in the log of b19
+-- не больше стольких отрядов за вызов: создание всех 22 за один тик заняло 105 мс в логе b19
+local MAX_CREATE = 2
+
+-- returns true when creations are left for the next call
 local function check()
-	if not is_enabled() then return end
+	if not is_enabled() then return false end
 	local board = sim_board.get_sim_board()
-	if board == nil or not board.simulation_started or board.players["monster"] == nil then return end
+	if board == nil or not board.simulation_started or board.players["monster"] == nil then return false end
 	init()
+	local created, more = 0, false
 	local now = game.get_game_time()
 	for _, sec in ipairs(names) do
 		local st = state[sec]
 		if is_alive(board, st.sid, sec) then
 			st.dead = nil
 		elseif st.sid == nil then
-			st.sid = create(board, sec)
+			if created >= MAX_CREATE then
+				more = true
+			else
+				st.sid = create(board, sec)
+				created = created + 1
+			end
 		else
 			if st.dead == nil then
 				st.dead = now
 			elseif now:diffSec(st.dead) >= respawn_days * 86400 then
 				local smart = board.smarts_by_names[smart_of[sec]]
 				if smart ~= nil and far_enough(smart) then
-					st.sid = create(board, sec)
-					st.dead = nil
+					if created >= MAX_CREATE then
+						more = true
+					else
+						st.sid = create(board, sec)
+						st.dead = nil
+						created = created + 1
+					end
 				end
 			end
 		end
 	end
+	return more
 end
 
 function attach(m)
@@ -105,8 +123,9 @@ function attach(m)
 end
 
 function fp_on_update(delta)
-	if mgr then mgr:reschedule(10000) end
-	check()
+	-- creations left: come back in a second, otherwise the usual 10 s
+	if mgr then mgr:reschedule(pending and 1000 or 10000) end
+	pending = check()
 end
 
 -- Format: u8 count, then per squad: string section, string squad id ("" = none), CTime of wipe-out

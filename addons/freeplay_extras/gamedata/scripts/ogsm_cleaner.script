@@ -74,12 +74,20 @@ function on_update(delta)
 	actor_level = gg:vertex(sim:actor().m_game_vertex_id):level_id()
 	local last = cursor + ini:r_u32("settings", "chunk") - 1
 	if last > 65535 then last = 65535 end
+	-- a tick has a time budget and a release limit (b19 log: 29 ms for 250 ids, releases are the expensive part)
+	-- у тика есть бюджет времени и предел освобождений (лог b19: 29 мс на 250 id, дорогие именно освобождения)
+	local t0, released, stop = time_global(), 0, nil
 	for i = cursor, last do
 		local obj = sim:object(i)
 		if obj and gg:vertex(obj.m_game_vertex_id):level_id() ~= actor_level and can_release(obj) then
+			local nm = obj:name()
 			sim:release(obj, true)
+			released = released + 1
+			fp_log.write("%s", "[ogsm_cleaner] released " .. tostring(nm))
 		end
+		if released >= 3 or time_global() - t0 >= 6 then stop = i break end
 	end
+	if stop then last = stop end
 	if last >= 65535 then
 		cursor = 1
 		resume_at = time_global() + ini:r_u32("settings", "pause_ms")
