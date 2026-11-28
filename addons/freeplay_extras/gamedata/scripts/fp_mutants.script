@@ -55,6 +55,9 @@ local function create(board, sec)
 		printf("[fp_mutants] smart '%s' not found for squad '%s'", tostring(smart_of[sec]), sec)
 		return nil
 	end
+	-- a smart already owned by another faction cannot take a monster squad (sim_board:enter_smart aborts): wait until it is free
+	local owner = smart.player_name
+	if owner ~= nil and owner ~= "none" and owner ~= "monster" then return nil end
 	local sq = board:create_squad("monster", sim_squad_scripted.sim_squad_scripted, smart, nil, sec)
 	sq:update()
 	return sq.squad_id
