@@ -13,6 +13,7 @@ local BUILD = "2026-11-28 b5"
 
 local tools = {
 	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
+	{ key = "mat",    name = "Точка матраса в лог",    descr = "Записать в лог строку для misc\\fp_sleep.ltx: позиция пола под ногами, вершины, угол. Встаньте там, где должен лежать матрас, лицом вдоль него." },
 	{ key = "h1",      name = "Время +1 час",           descr = "Сдвинуть игровое время на час вперёд." },
 	{ key = "h6",      name = "Время +6 часов",         descr = "Сдвинуть игровое время на 6 часов вперёд." },
 	{ key = "d1",      name = "Время +1 сутки",         descr = "Сдвинуть игровое время на сутки вперёд." },
@@ -251,13 +252,26 @@ local function log_pos()
 	tip("Координаты записаны в лог")
 end
 
+local mat_n = 0
+local function log_mat()
+	local act = db.actor
+	local lvid, gvid = act:level_vertex_id(), act:game_vertex_id()
+	local pos = level.vertex_position(lvid)
+	local dir = act:direction()
+	local ang = math.atan2(dir.x, dir.z)   -- radians, as the "angle" of a server object (rotation around Y)
+	mat_n = mat_n + 1
+	dbglog("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f", level.name(), mat_n, pos.x, pos.y, pos.z, lvid, gvid, ang))
+	tip("Точка матраса записана в лог (" .. mat_n .. ")")
+end
+
 -- Runs an entry. Returns true when the window must be closed (the action needs the game to continue).
 function run(tab, key)
 	if not (db.actor and db.actor:alive()) then return false end
 	if tab == "teleport" then
 		return teleport(key)
 	end
-	if key == "diag" then diag(); return false
+	if key == "mat" then log_mat(); return false
+	elseif key == "diag" then diag(); return false
 	elseif key == "pos" then log_pos(); return false
 	elseif key == "h1" then change_time(1, "Время +1 ч"); return true
 	elseif key == "h6" then change_time(6, "Время +6 ч"); return true
