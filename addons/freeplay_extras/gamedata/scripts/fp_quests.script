@@ -298,10 +298,10 @@ function mar_last_intensify_reward_available() return available("mar_last_intens
 -------------------------------------------------------------- signals
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_update", fun = fp_on_update })
-	m:subscribe({ signal = "on_item_take", fun = fp_on_item_take })
-	m:subscribe({ signal = "on_save", fun = fp_on_save })
-	m:subscribe({ signal = "on_load", fun = fp_on_load })
+	m:subscribe({ script_name = "fp_quests.fp_on_update", signal = "on_update", fun = fp_on_update })
+	m:subscribe({ script_name = "fp_quests.fp_on_item_take", signal = "on_item_take", fun = fp_on_item_take })
+	m:subscribe({ script_name = "fp_quests.fp_on_save", signal = "on_save", fun = fp_on_save })
+	m:subscribe({ script_name = "fp_quests.fp_on_load", signal = "on_load", fun = fp_on_load })
 end
 
 -- capture/kill quests: the list is read from the config, the state is in info portions (kill: target id in the save)

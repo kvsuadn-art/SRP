@@ -19,7 +19,7 @@ local function is_enabled()
 end
 
 function attach(m)
-	m:subscribe({ signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ script_name = "fp_deserves.on_item_use", signal = "on_item_use", fun = on_item_use })
 end
 
 function on_item_use(obj)

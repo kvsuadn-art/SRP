@@ -30,7 +30,7 @@ end
 
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_update", fun = on_update })
+	m:subscribe({ script_name = "fp_hud.on_update", signal = "on_update", fun = on_update })
 end
 
 local function num(sect, key)

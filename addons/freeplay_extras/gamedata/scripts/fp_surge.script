@@ -51,8 +51,8 @@ local condlists = {}           -- parsed condlists by level name
 
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_net_spawn", fun = on_net_spawn })
-	m:subscribe({ signal = "on_update", fun = on_update })
+	m:subscribe({ script_name = "fp_surge.on_net_spawn", signal = "on_net_spawn", fun = on_net_spawn })
+	m:subscribe({ script_name = "fp_surge.on_update", signal = "on_update", fun = on_update })
 end
 
 function on_net_spawn()

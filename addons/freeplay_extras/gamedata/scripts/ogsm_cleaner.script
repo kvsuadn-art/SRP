@@ -29,7 +29,7 @@ end
 
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_update", fun = on_update })
+	m:subscribe({ script_name = "ogsm_cleaner.on_update", signal = "on_update", fun = on_update })
 end
 
 local function load_lists()

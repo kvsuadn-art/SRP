@@ -1362,11 +1362,11 @@ local need_on_load = false
 
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_net_spawn", fun = fp_on_net_spawn })
-	m:subscribe({ signal = "on_task",      fun = fp_on_task })
-	m:subscribe({ signal = "on_save",      fun = fp_on_save })
-	m:subscribe({ signal = "on_load",      fun = fp_on_load })
-	m:subscribe({ signal = "on_update",    fun = fp_on_update })
+	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_net_spawn", signal = "on_net_spawn", fun = fp_on_net_spawn })
+	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_task", signal = "on_task",      fun = fp_on_task })
+	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_save", signal = "on_save",      fun = fp_on_save })
+	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_load", signal = "on_load",      fun = fp_on_load })
+	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_update", signal = "on_update",    fun = fp_on_update })
 end
 
 function fp_on_net_spawn()

@@ -22,7 +22,7 @@ end
 function attach(m)
 	mgr = m
 	fp_log.write("%s", "[fp_stash] attached, enabled=" .. tostring(is_enabled()))
-	m:subscribe({ signal = "on_update", fun = on_update })
+	m:subscribe({ script_name = "fp_stash.on_update", signal = "on_update", fun = on_update })
 end
 
 function on_update(delta)

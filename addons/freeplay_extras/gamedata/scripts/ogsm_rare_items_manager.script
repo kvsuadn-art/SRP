@@ -123,9 +123,9 @@ end
 
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_update", fun = fp_on_update })
-	m:subscribe({ signal = "on_save", fun = fp_on_save })
-	m:subscribe({ signal = "on_load", fun = fp_on_load })
+	m:subscribe({ script_name = "ogsm_rare_items_manager.fp_on_update", signal = "on_update", fun = fp_on_update })
+	m:subscribe({ script_name = "ogsm_rare_items_manager.fp_on_save", signal = "on_save", fun = fp_on_save })
+	m:subscribe({ script_name = "ogsm_rare_items_manager.fp_on_load", signal = "on_load", fun = fp_on_load })
 end
 
 function fp_on_update(delta)

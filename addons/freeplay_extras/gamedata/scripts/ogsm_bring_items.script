@@ -173,7 +173,7 @@ local BODY_SECTION = "sim_default_stalker_1"
 local task_level = { mar = "marsh", esc = "escape", gar = "garbage", val = "darkvalley", agr = "agroprom" }
 
 function attach(m)
-	m:subscribe({ signal = "on_net_spawn", fun = ensure_flashes })
+	m:subscribe({ script_name = "ogsm_bring_items.ensure_flashes", signal = "on_net_spawn", fun = ensure_flashes })
 end
 
 -- section -> level for every flash drive of the upgrade tasks (the level comes from the prefix of the task name)

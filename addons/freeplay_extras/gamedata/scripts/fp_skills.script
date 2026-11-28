@@ -66,8 +66,8 @@ end
 
 function attach(m)
 	mgr = m
-	m:subscribe({ signal = "on_item_use", fun = on_item_use })
-	m:subscribe({ signal = "on_update", fun = on_update })
+	m:subscribe({ script_name = "fp_skills.on_item_use", signal = "on_item_use", fun = on_item_use })
+	m:subscribe({ script_name = "fp_skills.on_update", signal = "on_update", fun = on_update })
 end
 
 function on_item_use(obj)
