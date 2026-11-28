@@ -1374,8 +1374,7 @@ function attach(m)
 	mgr = m
 	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_net_spawn", signal = "on_net_spawn", fun = fp_on_net_spawn })
 	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_task", signal = "on_task",      fun = fp_on_task })
-	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_save", signal = "on_save",      fun = fp_on_save })
-	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_load", signal = "on_load",      fun = fp_on_load })
+	fp_store.register({ name = "ogsm_rt_manager", version = 1, legacy = true, save = fp_on_save, load = fp_on_load })
 	m:subscribe({ script_name = "ogsm_rt_manager.fp_on_update", signal = "on_update",    fun = fp_on_update })
 end
 

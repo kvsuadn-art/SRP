@@ -2,7 +2,9 @@
 -- Freeplay base layer: list of modules attached to ogse_signals.
 -- ogse_signals.get_mgr() reads "addons" and calls <module>.attach(mgr) for each name.
 -- The module name is kept as in OGSE, ogse_signals expects it.
--- Adding a module = adding its script name here, nothing else changes.
+-- Adding a module = adding its script name here, nothing else changes. The order does not matter for savegames any more
+-- (fp_store keeps a named frame per module); it only fixes the order of the old, frameless saves, so do not re-order the six
+-- modules that were already there (fp_satiety, ogsm_rt_manager, fp_mutants, fp_quests, ogsm_rare_items_manager, fp_fatigue).
 -- Описание на русском:
 -- Базовый слой Freeplay: список модулей, подключённых к ogse_signals. ogse_signals.get_mgr() читает «addons» и вызывает
 -- <модуль>.attach(mgr) для каждого имени. Имя модуля сохранено как в OGSE, этого ожидает ogse_signals. Добавить модуль = добавить
@@ -25,5 +27,5 @@ addons = {
 	"fp_items",
 	"fp_stash", "ogsm_cleaner", "fp_hud",
 	"ogsm_rare_items_manager",
-	"fp_fatigue", -- must stay last: its save chunk is read only if present (older saves)
+	"fp_fatigue",
 }

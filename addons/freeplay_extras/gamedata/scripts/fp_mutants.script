@@ -118,8 +118,7 @@ end
 function attach(m)
 	mgr = m
 	m:subscribe({ script_name = "fp_mutants.fp_on_update", signal = "on_update", fun = fp_on_update })
-	m:subscribe({ script_name = "fp_mutants.fp_on_save", signal = "on_save",   fun = fp_on_save })
-	m:subscribe({ script_name = "fp_mutants.fp_on_load", signal = "on_load",   fun = fp_on_load })
+	fp_store.register({ name = "fp_mutants", version = 1, legacy = true, save = fp_on_save, load = fp_on_load })
 end
 
 function fp_on_update(delta)
@@ -128,32 +127,40 @@ function fp_on_update(delta)
 	pending = check()
 end
 
--- Format: u8 count, then per squad: string section, string squad id ("" = none), CTime of wipe-out
+-- Format v1: u8 count, then per squad: u16 h16(section), u32 squad id, CTime of wipe-out.
+-- Format v0 (old saves): u8 count, then per squad: string section, string squad id, CTime.
 function fp_on_save(packet)
 	init()
 	local list = {}
 	for _, sec in ipairs(names) do
 		local st = state[sec]
-		if st.sid ~= nil then list[#list + 1] = sec end
+		if st.sid ~= nil and tonumber(st.sid) ~= nil then list[#list + 1] = sec end
 	end
 	packet:w_u8(#list)
 	for _, sec in ipairs(list) do
 		local st = state[sec]
-		packet:w_stringZ(sec)
-		packet:w_stringZ(st.sid)
+		packet:w_u16(fp_store.h16(sec))
+		packet:w_u32(tonumber(st.sid))
 		utils.w_CTime(packet, st.dead)
 	end
 end
 
-function fp_on_load(reader)
+function fp_on_load(reader, version)
 	init()
+	local by_hash = (version or 0) >= 1 and fp_store.h16_map(names, "fp_mutants") or nil
 	local cnt = reader:r_u8()
 	for _ = 1, cnt do
-		local sec = reader:r_stringZ()
-		local sid = reader:r_stringZ()
+		local sec, sid
+		if by_hash then
+			sec = by_hash[reader:r_u16()]
+			sid = tostring(reader:r_u32())
+		else
+			sec = reader:r_stringZ()
+			sid = reader:r_stringZ()
+		end
 		local dead = utils.r_CTime(reader)
 		if dead == 0 then dead = game.CTime() end
-		if state[sec] ~= nil then
+		if sec ~= nil and state[sec] ~= nil then
 			state[sec].sid = sid
 			state[sec].dead = dead
 		end

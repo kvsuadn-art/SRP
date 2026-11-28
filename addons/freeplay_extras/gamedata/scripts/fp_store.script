@@ -1,0 +1,173 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- fp_store: the single place where the addon modules keep their state in the savegame.
+-- Описание на русском: единое хранилище состояния модулей в сохранении. Правила в docs/architecture.md.
+--
+-- WHY. Before this module every module wrote its bytes into the actor packet one after another, without a name or a length;
+-- the order of the list in ogse_signals_addons_list was part of the save format. Now every module gets its own frame:
+--   u32 MAGIC, u8 FORMAT, u8 count, then per module: stringZ name, u8 version, u16 length, <length bytes>
+-- A module is found by NAME, so adding, removing or re-ordering modules never breaks a savegame; a module that fails to
+-- read its frame cannot spoil the next ones (the reader is moved to the end of the frame in any case); a frame of a module
+-- that does not exist any more is skipped by its length.
+-- Savegames made before this module (no MAGIC at the start) are read the old way: every module with legacy = true gets
+-- its old load(reader, 0) in registration order, which is the old subscription order.
+--
+-- THREE PLACES FOR DATA (choose in this order):
+--   1. flags (yes/no): info portions, set_flag / get_flag. They live in a separate registry and cost nothing here.
+--      The id must be declared in configs\gameplay\info_portions.xml.
+--   2. module state (counters, lists, timers): register() a frame (save / load), pack it as compactly as you can
+--      (h16 for names from configs, u16 for ids, no strings that a config can give back).
+--   3. pstor, only for values that the core conditions (xr_logic, ltx) must read: pstor_set / pstor_get.
+-- Everything is counted: the log line "[fp_store] SAVE ..." lists the size of each frame at every save.
+--
+-- register{ name, version, save(packet), load(reader, version), legacy = bool, reset = function|nil }
+--   save(packet)           writes the module state with packet:w_*
+--   load(reader, version)  reads exactly what save wrote with that version (version 0 = the old raw format of legacy modules)
+--   reset()                optional: called when a loaded save has no frame of this module (new module in an old save)
+
+local TAG = "[fp_store] "
+local MAGIC = 1179865940   -- "FPST"
+local FORMAT = 1
+local MAX_FRAME = 65535
+
+local mods = {}
+local by_name = {}
+local last_sizes = nil
+
+function register(d)
+	if d == nil or d.name == nil or d.save == nil or d.load == nil then
+		fp_log.always("%s", TAG .. "register: bad descriptor")
+		return
+	end
+	if by_name[d.name] ~= nil then return end
+	d.version = d.version or 1
+	mods[#mods + 1] = d
+	by_name[d.name] = d
+end
+
+-- 16-bit hash of a name from a config (section, trader, squad): 2 bytes instead of a string
+function h16(s)
+	local h = 5381
+	for i = 1, string.len(s) do
+		h = (h * 33 + string.byte(s, i)) % 65536
+	end
+	return h
+end
+
+-- table hash -> name for a list of names; reports a collision (two names of one list with the same hash)
+function h16_map(names, what)
+	local map = {}
+	for _, n in ipairs(names) do
+		local h = h16(n)
+		if map[h] ~= nil and map[h] ~= n then
+			fp_log.always("%s", TAG .. "h16 collision in " .. tostring(what) .. ": " .. n .. " / " .. map[h])
+		end
+		map[h] = n
+	end
+	return map
+end
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- save / load (called by fp_binder)
+-- ---------------------------------------------------------------------------------------------------------------
+function save(packet)
+	local frames = {}
+	for _, m in ipairs(mods) do
+		local pk = net_packet()
+		local ok, err = pcall(m.save, pk)
+		if ok then
+			local n = pk:w_tell()
+			if n > MAX_FRAME then
+				fp_log.always("%s", TAG .. "frame of " .. m.name .. " is too big (" .. n .. "), skipped")
+			else
+				pk:r_seek(0)
+				frames[#frames + 1] = { m = m, pk = pk, n = n }
+			end
+		else
+			fp_log.always("%s", TAG .. "save of " .. m.name .. " failed: " .. tostring(err))
+		end
+	end
+	local start = packet:w_tell()
+	packet:w_u32(MAGIC)
+	packet:w_u8(FORMAT)
+	packet:w_u8(#frames)
+	local sizes = {}
+	for _, f in ipairs(frames) do
+		packet:w_stringZ(f.m.name)
+		packet:w_u8(f.m.version)
+		packet:w_u16(f.n)
+		for _ = 1, f.n do packet:w_u8(f.pk:r_u8()) end
+		sizes[#sizes + 1] = f.m.name .. "=" .. f.n
+	end
+	last_sizes = sizes
+	fp_log.always("%s", TAG .. string.format("SAVE %d frames, %d bytes: %s", #frames, packet:w_tell() - start, table.concat(sizes, " ")))
+end
+
+local function load_legacy(reader)
+	fp_log.always("%s", TAG .. "LOAD old savegame format (no frames): modules are read in the old order")
+	for _, m in ipairs(mods) do
+		if m.legacy then m.load(reader, 0) end
+	end
+end
+
+function load(reader)
+	local start = reader:r_tell()
+	local is_new = reader:r_elapsed() >= 6 and reader:r_u32() == MAGIC
+	if not is_new then
+		reader:r_seek(start)
+		load_legacy(reader)
+		return
+	end
+	local fmt = reader:r_u8()
+	local count = reader:r_u8()
+	local seen = {}
+	local names = {}
+	for _ = 1, count do
+		local name = reader:r_stringZ()
+		local ver = reader:r_u8()
+		local len = reader:r_u16()
+		local pos = reader:r_tell()
+		local m = by_name[name]
+		if m ~= nil then
+			seen[name] = true
+			local ok, err = pcall(m.load, reader, ver)
+			if not ok then
+				fp_log.always("%s", TAG .. "load of " .. name .. " failed, its state stays default: " .. tostring(err))
+			end
+			names[#names + 1] = name .. "=" .. len
+		else
+			fp_log.always("%s", TAG .. "frame of unknown module " .. name .. " skipped (" .. len .. " bytes)")
+		end
+		reader:r_seek(pos + len)
+	end
+	for _, m in ipairs(mods) do
+		if not seen[m.name] and m.reset ~= nil then m.reset() end
+	end
+	fp_log.always("%s", TAG .. string.format("LOAD format %d, %d frames: %s", fmt, count, table.concat(names, " ")))
+end
+
+function sizes() return last_sizes end
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- flags and pstor
+-- ---------------------------------------------------------------------------------------------------------------
+function get_flag(name) return has_alife_info(name) end
+
+function set_flag(name, value)
+	local act = db.actor
+	if act == nil then return end
+	if value then
+		if not has_alife_info(name) then act:give_info_portion(name) end
+	elseif has_alife_info(name) then
+		act:disable_info_portion(name)
+	end
+end
+
+function pstor_set(key, value)
+	if db.actor == nil then return end
+	xr_logic.pstor_store(db.actor, "fp_" .. key, value)
+end
+
+function pstor_get(key, default)
+	if db.actor == nil then return default end
+	return xr_logic.pstor_retrieve(db.actor, "fp_" .. key, default)
+end

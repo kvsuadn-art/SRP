@@ -95,8 +95,7 @@ function attach(m)
 	mgr = m
 	m:subscribe({ script_name = "fp_fatigue.on_update", signal = "on_update", fun = on_update })
 	m:subscribe({ script_name = "fp_fatigue.on_item_use", signal = "on_item_use", fun = on_item_use })
-	m:subscribe({ script_name = "fp_fatigue.on_save", signal = "on_save", fun = on_save })
-	m:subscribe({ script_name = "fp_fatigue.on_load", signal = "on_load", fun = on_load })
+	fp_store.register({ name = "fp_fatigue", version = 1, legacy = true, save = on_save, load = on_load })
 end
 
 function on_item_use(obj)

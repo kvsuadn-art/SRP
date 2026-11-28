@@ -300,8 +300,7 @@ function attach(m)
 	mgr = m
 	m:subscribe({ script_name = "fp_quests.fp_on_update", signal = "on_update", fun = fp_on_update })
 	m:subscribe({ script_name = "fp_quests.fp_on_item_take", signal = "on_item_take", fun = fp_on_item_take })
-	m:subscribe({ script_name = "fp_quests.fp_on_save", signal = "on_save", fun = fp_on_save })
-	m:subscribe({ script_name = "fp_quests.fp_on_load", signal = "on_load", fun = fp_on_load })
+	fp_store.register({ name = "fp_quests", version = 1, legacy = true, save = fp_on_save, load = fp_on_load })
 end
 
 -- capture/kill quests: the list is read from the config, the state is in info portions (kill: target id in the save)

@@ -124,8 +124,7 @@ end
 function attach(m)
 	mgr = m
 	m:subscribe({ script_name = "ogsm_rare_items_manager.fp_on_update", signal = "on_update", fun = fp_on_update })
-	m:subscribe({ script_name = "ogsm_rare_items_manager.fp_on_save", signal = "on_save", fun = fp_on_save })
-	m:subscribe({ script_name = "ogsm_rare_items_manager.fp_on_load", signal = "on_load", fun = fp_on_load })
+	fp_store.register({ name = "ogsm_rare_items_manager", version = 1, legacy = true, save = fp_on_save, load = fp_on_load })
 end
 
 function fp_on_update(delta)
@@ -133,6 +132,8 @@ function fp_on_update(delta)
 	check()
 end
 
+-- Format v1: u8 count, then per trader: u16 h16(trader), u8 items + u16 h16(section) each, CTime of the last roll, u8 days.
+-- Format v0 (old saves): the same with strings instead of hashes.
 function fp_on_save(packet)
 	init()
 	local list = {}
@@ -142,25 +143,38 @@ function fp_on_save(packet)
 	packet:w_u8(#list)
 	for _, name in ipairs(list) do
 		local st = state[name]
-		packet:w_stringZ(name)
+		packet:w_u16(fp_store.h16(name))
 		packet:w_u8(#st.items)
-		for i = 1, #st.items do packet:w_stringZ(st.items[i]) end
+		for i = 1, #st.items do packet:w_u16(fp_store.h16(st.items[i])) end
 		utils.w_CTime(packet, st.last)
 		packet:w_u8(st.days)
 	end
 end
 
-function fp_on_load(reader)
+function fp_on_load(reader, version)
 	init()
+	local v1 = (version or 0) >= 1
+	local by_trader = v1 and fp_store.h16_map(traders, "rare traders") or nil
 	local cnt = reader:r_u8()
 	for _ = 1, cnt do
-		local name = reader:r_stringZ()
-		local n = reader:r_u8()
-		local items = {}
-		for i = 1, n do items[i] = reader:r_stringZ() end
+		local name, items = nil, {}
+		local n
+		if v1 then
+			name = by_trader[reader:r_u16()]
+			n = reader:r_u8()
+			local by_item = name and fp_store.h16_map(lists[name], "rare items " .. name) or {}
+			for i = 1, n do
+				local sect = by_item[reader:r_u16()]
+				if sect ~= nil then items[#items + 1] = sect end
+			end
+		else
+			name = reader:r_stringZ()
+			n = reader:r_u8()
+			for i = 1, n do items[i] = reader:r_stringZ() end
+		end
 		local last = utils.r_CTime(reader)
 		local days = reader:r_u8()
-		local st = state[name]
+		local st = name and state[name] or nil
 		if st ~= nil then
 			st.items = items
 			st.last = last
