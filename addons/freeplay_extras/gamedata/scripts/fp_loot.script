@@ -5,123 +5,125 @@
 -- Freeplay extras, module 1: "finds in the world".
 --  * 15 secret documents are scattered over the Zone at the start of a Freeplay game and can be sold
 --    to the leaders of the bases;
---  * optional extra flash drives (misc\fp_loot.ltx [flashes], empty by default). Flash drives that the
---    original game gives only as story rewards are handled in the Freeplay core (treasure_freeplay.ltx).
--- Differences from OGSM: native SRP flash drives (no second flash set), items lie at the spots
--- (OGSM puts them on dead stalkers), state is kept in info portions only, nothing runs per update.
+--  * the mechanics' flash drives (flesh_up_*, the items of the "find_upgrade" tasks of misc\tm_upgrades.ltx) lie in
+--    the pockets of dead stalkers (spots below, the level of a flash is the one of its task: mar_/esc_/gar_/val_/agr_),
+--    so they do not depend on quests or on the reputation with a faction (as in OGSM). Placed once per game, also in
+--    old saves (info fp_loot_flashes); the list of skipped flashes and extra flashes: misc\fp_loot.ltx.
+-- Differences from OGSM: native SRP flash drives (no second flash set), documents and books lie at the spots,
+-- state is kept in info portions only, nothing runs per update.
 
 local INFO_SPAWNED = "fp_loot_spawned"
 
--- spots from OGSM: position, level vertex id, game vertex id
+-- spots from OGSM: position, level vertex id, game vertex id, level name
 local coords = {
 	-- marsh
-	{vector():set(299.953430,0.920961,403.877838), 332504, 88},
-	{vector():set(-160.362518,0.731151,80.010071), 64387, 72},
-	{vector():set(-228.197876,0.026894,369.070740), 28928, 80},
-	{vector():set(108.070709,4.200342,344.157715), 199586, 84},
-	{vector():set(97.160706,10.566160,528.666626), 193181, 229},
-	{vector():set(530.593994,11.328271,250.901474), 500103, 126},
-	{vector():set(-65.459953,0.828036,-31.107330), 104786, 20},
-	{vector():set(192.545776,5.892680,113.284691), 253402, 124},
+	{vector():set(299.953430,0.920961,403.877838), 332504, 88, "marsh"},
+	{vector():set(-160.362518,0.731151,80.010071), 64387, 72, "marsh"},
+	{vector():set(-228.197876,0.026894,369.070740), 28928, 80, "marsh"},
+	{vector():set(108.070709,4.200342,344.157715), 199586, 84, "marsh"},
+	{vector():set(97.160706,10.566160,528.666626), 193181, 229, "marsh"},
+	{vector():set(530.593994,11.328271,250.901474), 500103, 126, "marsh"},
+	{vector():set(-65.459953,0.828036,-31.107330), 104786, 20, "marsh"},
+	{vector():set(192.545776,5.892680,113.284691), 253402, 124, "marsh"},
 	-- escape
-	{vector():set(355.074890,17.865698,251.908295), 620323, 507},
-	{vector():set(-212.666901,27.792530,340.927856), 77351, 477},
-	{vector():set(143.385132,6.294361,341.143158), 474820, 657},
-	{vector():set(160.218719,14.460480,198.454559), 491765, 519},
-	{vector():set(-118.257263,-28.492680,-264.201050), 139765, 491},
-	{vector():set(-229.159729,-31.950064,-246.163300), 27184, 626},
-	{vector():set(-131.393387,5.755749,212.956787), 124241, 514},
-	{vector():set(-76.645966,9.604424,126.867920), 198980, 510},
-	{vector():set(0.849264,-0.077000,190.104065), 302694, 533},
-	{vector():set(260.231384,2.602376,333.034912), 565024, 729},
-	{vector():set(187.039429,10.512044,135.144760), 513537, 516},
-	{vector():set(165.645599,-7.639073,20.374184), 496526, 689},
+	{vector():set(355.074890,17.865698,251.908295), 620323, 507, "escape"},
+	{vector():set(-212.666901,27.792530,340.927856), 77351, 477, "escape"},
+	{vector():set(143.385132,6.294361,341.143158), 474820, 657, "escape"},
+	{vector():set(160.218719,14.460480,198.454559), 491765, 519, "escape"},
+	{vector():set(-118.257263,-28.492680,-264.201050), 139765, 491, "escape"},
+	{vector():set(-229.159729,-31.950064,-246.163300), 27184, 626, "escape"},
+	{vector():set(-131.393387,5.755749,212.956787), 124241, 514, "escape"},
+	{vector():set(-76.645966,9.604424,126.867920), 198980, 510, "escape"},
+	{vector():set(0.849264,-0.077000,190.104065), 302694, 533, "escape"},
+	{vector():set(260.231384,2.602376,333.034912), 565024, 729, "escape"},
+	{vector():set(187.039429,10.512044,135.144760), 513537, 516, "escape"},
+	{vector():set(165.645599,-7.639073,20.374184), 496526, 689, "escape"},
 	-- garbage
-	{vector():set(-194.688751,4.154451,210.313354), 26477, 406},
-	{vector():set(227.269958,-3.367711,-20.507463), 337447, 277},
-	{vector():set(-161.887482,-1.917768,133.569046), 48973, 315},
-	{vector():set(-67.294525,22.241379,-94.179199), 163391, 263},
-	{vector():set(134.497665,16.141811,24.716635), 218413, 397},
-	{vector():set(77.683441,-3.100640,-281.117157), 233781, 260},
-	{vector():set(57.043221,-2.142543,-242.412842), 216100, 450},
-	{vector():set(125.218643,0.085083,-123.008514), 270839, 447},
-	{vector():set(139.784866,3.570471,-57.111359), 282110, 253},
-	{vector():set(70.472755,16.665884,18.328178), 218413, 397},
-	{vector():set(167.575394,0.616078,202.596039), 302593, 287},
-	{vector():set(-29.254890,19.316395,113.595680), 143657, 290},
+	{vector():set(-194.688751,4.154451,210.313354), 26477, 406, "garbage"},
+	{vector():set(227.269958,-3.367711,-20.507463), 337447, 277, "garbage"},
+	{vector():set(-161.887482,-1.917768,133.569046), 48973, 315, "garbage"},
+	{vector():set(-67.294525,22.241379,-94.179199), 163391, 263, "garbage"},
+	{vector():set(134.497665,16.141811,24.716635), 218413, 397, "garbage"},
+	{vector():set(77.683441,-3.100640,-281.117157), 233781, 260, "garbage"},
+	{vector():set(57.043221,-2.142543,-242.412842), 216100, 450, "garbage"},
+	{vector():set(125.218643,0.085083,-123.008514), 270839, 447, "garbage"},
+	{vector():set(139.784866,3.570471,-57.111359), 282110, 253, "garbage"},
+	{vector():set(70.472755,16.665884,18.328178), 218413, 397, "garbage"},
+	{vector():set(167.575394,0.616078,202.596039), 302593, 287, "garbage"},
+	{vector():set(-29.254890,19.316395,113.595680), 143657, 290, "garbage"},
 	-- darkvalley
-	{vector():set(118.538368,3.407457,-500.195068), 287174, 841},
-	{vector():set(127.206673,4.242645,-443.814209), 296418, 840},
-	{vector():set(-113.610718,6.375462,-112.180481), 44885, 924},
-	{vector():set(178.104141,4.843267,-319.755890), 349705, 839},
-	{vector():set(-36.720699,2.619675,90.552193), 129833, 831},
-	{vector():set(-79.547478,-0.078242,60.964294), 80496, 830},
-	{vector():set(123.862961,-0.376968,95.418457), 293627, 833},
-	{vector():set(-7.798831,5.613304,-108.048378), 178873, 849},
-	{vector():set(42.768539,0.381266,-82.698502), 208228, 934},
-	{vector():set(19.991072,1.021548,-84.139854), 208226, 934},
-	{vector():set(48.663353,1.021641,-48.824390), 214435, 744},
-	{vector():set(48.662930,4.541215,-37.491428), 214452, 744},
-	{vector():set(129.473251,0.150954,-19.409735), 298896, 745},
-	{vector():set(92.067146,3.885956,-77.583878), 259905, 836},
-	{vector():set(110.507912,3.954935,-285.293365), 279309, 763},
-	{vector():set(153.621735,14.788640,-256.597992), 324680, 800},
-	{vector():set(95.327026,-2.692697,-398.023193), 262624, 768},
-	{vector():set(190.414627,5.167361,-128.538879), 359312, 960},
+	{vector():set(118.538368,3.407457,-500.195068), 287174, 841, "darkvalley"},
+	{vector():set(127.206673,4.242645,-443.814209), 296418, 840, "darkvalley"},
+	{vector():set(-113.610718,6.375462,-112.180481), 44885, 924, "darkvalley"},
+	{vector():set(178.104141,4.843267,-319.755890), 349705, 839, "darkvalley"},
+	{vector():set(-36.720699,2.619675,90.552193), 129833, 831, "darkvalley"},
+	{vector():set(-79.547478,-0.078242,60.964294), 80496, 830, "darkvalley"},
+	{vector():set(123.862961,-0.376968,95.418457), 293627, 833, "darkvalley"},
+	{vector():set(-7.798831,5.613304,-108.048378), 178873, 849, "darkvalley"},
+	{vector():set(42.768539,0.381266,-82.698502), 208228, 934, "darkvalley"},
+	{vector():set(19.991072,1.021548,-84.139854), 208226, 934, "darkvalley"},
+	{vector():set(48.663353,1.021641,-48.824390), 214435, 744, "darkvalley"},
+	{vector():set(48.662930,4.541215,-37.491428), 214452, 744, "darkvalley"},
+	{vector():set(129.473251,0.150954,-19.409735), 298896, 745, "darkvalley"},
+	{vector():set(92.067146,3.885956,-77.583878), 259905, 836, "darkvalley"},
+	{vector():set(110.507912,3.954935,-285.293365), 279309, 763, "darkvalley"},
+	{vector():set(153.621735,14.788640,-256.597992), 324680, 800, "darkvalley"},
+	{vector():set(95.327026,-2.692697,-398.023193), 262624, 768, "darkvalley"},
+	{vector():set(190.414627,5.167361,-128.538879), 359312, 960, "darkvalley"},
 	-- agroprom
-	{vector():set(6.592504,15.316924,149.938477), 157092, 1121},
-	{vector():set(-113.024094,8.676572,133.800446), 68359, 1081},
-	{vector():set(-98.129105,-0.094704,-224.579559), 77541, 1103},
-	{vector():set(36.042679,6.821398,-168.758484), 182141, 1140},
-	{vector():set(262.321716,22.239296,-182.823807), 365568, 1145},
-	{vector():set(275.476624,22.839056,-98.049820), 371457, 1193},
-	{vector():set(5.437461,1.866170,-54.215805), 155015, 1085},
-	{vector():set(-13.343618,17.427870,196.602463), 139824, 1189},
-	{vector():set(184.305771,8.085838,52.406334), 306152, 1115},
-	{vector():set(43.096558,9.256178,-35.040058), 188528, 1204},
-	{vector():set(3.725669,7.441158,112.088272), 158322, 1121},
+	{vector():set(6.592504,15.316924,149.938477), 157092, 1121, "agroprom"},
+	{vector():set(-113.024094,8.676572,133.800446), 68359, 1081, "agroprom"},
+	{vector():set(-98.129105,-0.094704,-224.579559), 77541, 1103, "agroprom"},
+	{vector():set(36.042679,6.821398,-168.758484), 182141, 1140, "agroprom"},
+	{vector():set(262.321716,22.239296,-182.823807), 365568, 1145, "agroprom"},
+	{vector():set(275.476624,22.839056,-98.049820), 371457, 1193, "agroprom"},
+	{vector():set(5.437461,1.866170,-54.215805), 155015, 1085, "agroprom"},
+	{vector():set(-13.343618,17.427870,196.602463), 139824, 1189, "agroprom"},
+	{vector():set(184.305771,8.085838,52.406334), 306152, 1115, "agroprom"},
+	{vector():set(43.096558,9.256178,-35.040058), 188528, 1204, "agroprom"},
+	{vector():set(3.725669,7.441158,112.088272), 158322, 1121, "agroprom"},
 	-- yantar
-	{vector():set(-55.725590,-12.016216,-258.067108), 38658, 1228},
-	{vector():set(-123.014183,26.662643,-355.441895), 10402, 1227},
-	{vector():set(-61.138550,1.243229,-148.255692), 36722, 1250},
-	{vector():set(31.729321,-1.349815,-71.341614), 74578, 1245},
-	{vector():set(174.972885,2.224498,89.738930), 141038, 1244},
-	{vector():set(69.870247,0.473782,-197.735931), 93948, 1234},
-	{vector():set(-89.070663,-3.372884,-206.206055), 29418, 1311},
-	{vector():set(-95.372589,-11.575161,-273.890656), 26418, 1225},
-	{vector():set(88.273186,0.102560,35.406059), 102328, 1243},
+	{vector():set(-55.725590,-12.016216,-258.067108), 38658, 1228, "yantar"},
+	{vector():set(-123.014183,26.662643,-355.441895), 10402, 1227, "yantar"},
+	{vector():set(-61.138550,1.243229,-148.255692), 36722, 1250, "yantar"},
+	{vector():set(31.729321,-1.349815,-71.341614), 74578, 1245, "yantar"},
+	{vector():set(174.972885,2.224498,89.738930), 141038, 1244, "yantar"},
+	{vector():set(69.870247,0.473782,-197.735931), 93948, 1234, "yantar"},
+	{vector():set(-89.070663,-3.372884,-206.206055), 29418, 1311, "yantar"},
+	{vector():set(-95.372589,-11.575161,-273.890656), 26418, 1225, "yantar"},
+	{vector():set(88.273186,0.102560,35.406059), 102328, 1243, "yantar"},
 	-- red_forest
-	{vector():set(230.182724,-1.591029,40.384689), 130025, 1050},
-	{vector():set(188.051880,1.417462,97.468185), 122844, 996},
-	{vector():set(259.168396,1.496782,-24.358925), 154520, 995},
-	{vector():set(20.006298,4.739876,-152.624283), 77155, 984},
-	{vector():set(-16.011286,0.771681,22.747992), 52554, 1033},
-	{vector():set(-91.907349,-0.817695,-201.448868), 11994, 1013},
-	{vector():set(-8.957288,2.713363,-324.572266), 58801, 1016},
-	{vector():set(150.275406,2.992400,-49.665436), 105769, 1055},
-	{vector():set(84.215263,5.537785,-265.431030), 97896, 998},
-	{vector():set(49.067841,-0.764199,-256.115601), 89195, 1005},
-	{vector():set(180.761749,1.715514,-213.422073), 119488, 1052},
+	{vector():set(230.182724,-1.591029,40.384689), 130025, 1050, "red_forest"},
+	{vector():set(188.051880,1.417462,97.468185), 122844, 996, "red_forest"},
+	{vector():set(259.168396,1.496782,-24.358925), 154520, 995, "red_forest"},
+	{vector():set(20.006298,4.739876,-152.624283), 77155, 984, "red_forest"},
+	{vector():set(-16.011286,0.771681,22.747992), 52554, 1033, "red_forest"},
+	{vector():set(-91.907349,-0.817695,-201.448868), 11994, 1013, "red_forest"},
+	{vector():set(-8.957288,2.713363,-324.572266), 58801, 1016, "red_forest"},
+	{vector():set(150.275406,2.992400,-49.665436), 105769, 1055, "red_forest"},
+	{vector():set(84.215263,5.537785,-265.431030), 97896, 998, "red_forest"},
+	{vector():set(49.067841,-0.764199,-256.115601), 89195, 1005, "red_forest"},
+	{vector():set(180.761749,1.715514,-213.422073), 119488, 1052, "red_forest"},
 	-- military
-	{vector():set(-272.739746,-16.869291,-19.908501), 62015, 1454},
-	{vector():set(-46.372086,-18.636663,349.580383), 248669, 1345},
-	{vector():set(122.979408,-11.447178,160.469284), 377866, 1368},
-	{vector():set(-187.376236,1.265639,438.070190), 127553, 1466},
-	{vector():set(83.672142,-9.251865,370.422821), 356447, 1417},
-	{vector():set(49.159931,-8.297716,405.759338), 330041, 1433},
-	{vector():set(106.406250,-1.757263,337.402893), 371485, 1481},
-	{vector():set(-19.244190,8.930922,72.065475), 272137, 1456},
-	{vector():set(-65.496017,-13.060302,56.052814), 232074, 1398},
-	{vector():set(-77.707764,-11.324912,38.641445), 222338, 1503},
-	{vector():set(81.056160,-12.568636,60.984230), 353972, 1394},
-	{vector():set(14.835235,-6.826424,-11.380480), 303074, 1422},
-	{vector():set(-95.659454,-12.634545,-41.262939), 206077, 1501},
-	{vector():set(-202.509064,-21.905161,214.256332), 115810, 1408},
-	{vector():set(-231.945313,-21.774946,202.542435), 93777, 1408},
-	{vector():set(-337.322937,-23.067369,251.670288), 15203, 1482},
-	{vector():set(-297.457642,-22.202660,293.259399), 43395, 1389},
-	{vector():set(15.772114,-7.252053,406.763489), 304197, 1384},
-	{vector():set(-25.686983,-8.671912,411.974731), 266114, 1330}
+	{vector():set(-272.739746,-16.869291,-19.908501), 62015, 1454, "military"},
+	{vector():set(-46.372086,-18.636663,349.580383), 248669, 1345, "military"},
+	{vector():set(122.979408,-11.447178,160.469284), 377866, 1368, "military"},
+	{vector():set(-187.376236,1.265639,438.070190), 127553, 1466, "military"},
+	{vector():set(83.672142,-9.251865,370.422821), 356447, 1417, "military"},
+	{vector():set(49.159931,-8.297716,405.759338), 330041, 1433, "military"},
+	{vector():set(106.406250,-1.757263,337.402893), 371485, 1481, "military"},
+	{vector():set(-19.244190,8.930922,72.065475), 272137, 1456, "military"},
+	{vector():set(-65.496017,-13.060302,56.052814), 232074, 1398, "military"},
+	{vector():set(-77.707764,-11.324912,38.641445), 222338, 1503, "military"},
+	{vector():set(81.056160,-12.568636,60.984230), 353972, 1394, "military"},
+	{vector():set(14.835235,-6.826424,-11.380480), 303074, 1422, "military"},
+	{vector():set(-95.659454,-12.634545,-41.262939), 206077, 1501, "military"},
+	{vector():set(-202.509064,-21.905161,214.256332), 115810, 1408, "military"},
+	{vector():set(-231.945313,-21.774946,202.542435), 93777, 1408, "military"},
+	{vector():set(-337.322937,-23.067369,251.670288), 15203, 1482, "military"},
+	{vector():set(-297.457642,-22.202660,293.259399), 43395, 1389, "military"},
+	{vector():set(15.772114,-7.252053,406.763489), 304197, 1384, "military"},
+	{vector():set(-25.686983,-8.671912,411.974731), 266114, 1330, "military"}
 }
 
 -- documents and what the buyers pay for one (original OGSM prices)
@@ -143,19 +145,6 @@ local doc_price = {
 	doc_15 = 3000
 }
 local doc_list = {"doc_1", "doc_2", "doc_3", "doc_4", "doc_5", "doc_6", "doc_7", "doc_8", "doc_9", "doc_10", "doc_11", "doc_12", "doc_13", "doc_14", "doc_15"}
-
--- flash drives are read from misc\fp_loot.ltx [flashes] so the list can be tuned without code changes
-local function read_flashes()
-	local list = {}
-	local ini = ini_file("misc\\fp_loot.ltx")
-	if ini:section_exist("flashes") then
-		for i = 0, ini:line_count("flashes") - 1 do
-			local result, section = ini:r_line("flashes", i, "", "")
-			table.insert(list, section)
-		end
-	end
-	return list
-end
 
 -- called once per game (see freeplay_mode.prepare_world)
 function startup_spawn()
@@ -184,9 +173,6 @@ function startup_spawn()
 		sim:create(section, c[1], c[2], c[3])
 	end
 
-	for _, section in ipairs(read_flashes()) do
-		place(section)
-	end
 	for _, section in ipairs(doc_list) do
 		place(section)
 	end
@@ -194,6 +180,101 @@ function startup_spawn()
 	for _, section in ipairs(fp_skills.book_list()) do
 		place(section)
 	end
+end
+
+-- ---------------------------------------------------------------------------------------------------------------
+-- Flash drives of the mechanics in the pockets of dead stalkers
+-- ---------------------------------------------------------------------------------------------------------------
+local INFO_FLASHES = "fp_loot_flashes"
+local BODY_SECTION = "sim_default_stalker_1"
+local task_level = { mar = "marsh", esc = "escape", gar = "garbage", val = "darkvalley", agr = "agroprom" }
+
+function attach(m)
+	m:subscribe({ signal = "on_net_spawn", fun = ensure_flashes })
+end
+
+-- section -> level for every flash drive of the upgrade tasks (the level comes from the prefix of the task name)
+function flash_levels()
+	local res, order = {}, {}
+	local ini = ini_file("misc\\tm_upgrades.ltx")
+	local skip = {}
+	local own = ini_file("misc\\fp_loot.ltx")
+	if own:section_exist("flash_skip") then
+		for i = 0, own:line_count("flash_skip") - 1 do
+			local _, s = own:r_line("flash_skip", i, "", "")
+			skip[s] = true
+		end
+	end
+	if ini:section_exist("list_tm_upgrades") then
+		for i = 0, ini:line_count("list_tm_upgrades") - 1 do
+			local _, task = ini:r_line("list_tm_upgrades", i, "", "")
+			if ini:section_exist(task) and ini:line_exist(task, "requested_item") then
+				local item = ini:r_string(task, "requested_item")
+				local lvl = task_level[string.match(task, "^(%a+)_")]
+				if lvl and not skip[item] and not res[item] then
+					res[item] = lvl
+					order[#order + 1] = item
+				end
+			end
+		end
+	end
+	if own:section_exist("flashes") then
+		for i = 0, own:line_count("flashes") - 1 do
+			local _, s = own:r_line("flashes", i, "", "")
+			if not res[s] then res[s] = "any" order[#order + 1] = s end
+		end
+	end
+	return res, order
+end
+
+-- once per game (also for saves made before the module): a dead stalker with the flash drive in the pocket per flash
+function ensure_flashes()
+	if not (has_alife_info("srp_freeplay") or has_alife_info("fp_loot")) then return end
+	if has_alife_info(INFO_FLASHES) then return end
+	local sim = alife()
+	if not sim or not db.actor then return end
+	db.actor:give_info_portion(INFO_FLASHES)
+	local level_of, order = flash_levels()
+	local free = {}
+	for i = 1, #coords do free[i] = i end
+	for _, section in ipairs(order) do
+		local cand = {}
+		for k, i in ipairs(free) do
+			if level_of[section] == "any" or coords[i][4] == level_of[section] then cand[#cand + 1] = k end
+		end
+		if #cand == 0 then
+			for k in ipairs(free) do cand[#cand + 1] = k end
+		end
+		if #cand > 0 then
+			local k = cand[math.random(#cand)]
+			local c = coords[free[k]]
+			table.remove(free, k)
+			local body = ogsm_packet.spawn_stalker(BODY_SECTION, c[1], c[2], c[3], "dead", "empty")
+			if body then
+				local item = sim:create(section, body.position, body.m_level_vertex_id, body.m_game_vertex_id, body.id)
+				printf("[fp_loot] flash %s: corpse %s on %s (%.1f, %.1f, %.1f), item %s", section, body.id, c[4], c[1].x, c[1].y, c[1].z, item and item.id or "nil")
+			end
+		end
+	end
+end
+
+-- list for the dev tools: { section, corpse id, level, position } for every flash that lies in a corpse
+function flash_holders()
+	local sim = alife()
+	local level_of = flash_levels()
+	local res = {}
+	for id = 1, 65534 do
+		local o = sim:object(id)
+		if o ~= nil and level_of[o:section_name()] and o.parent_id ~= 65535 then
+			local holder = sim:object(o.parent_id)
+			if holder ~= nil then
+				res[#res + 1] = { section = o:section_name(), id = holder.id, pos = holder.position,
+					lvl_id = game_graph():vertex(holder.m_game_vertex_id):level_id() }
+			end
+		end
+	end
+	table.sort(res, function(a, b) return a.section < b.section end)
+	return res
 end
 
 -- documents in the actor's inventory (dialog precondition)

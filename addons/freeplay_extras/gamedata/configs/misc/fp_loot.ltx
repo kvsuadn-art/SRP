@@ -1,5 +1,13 @@
 ; Freeplay extras: additional flash drives scattered over the Zone at the start of a Freeplay game.
-; Flash drives that the original game gives only as story rewards are fixed in the Freeplay core
-; (configs/misc/treasure_freeplay.ltx), so the list is empty by default.
-; Add section names (one per line) to scatter extra flash drives in the world.
+; The mechanics' flash drives (flesh_up_*: the requested items of misc\tm_upgrades.ltx) are put into the pockets of dead
+; stalkers by scripts\fp_loot.script, on the level of their upgrade task; the ones the Freeplay core already hands out
+; (configs/misc/treasure_freeplay.ltx) are skipped here.
+; [flash_skip]: flash drives that are NOT put into corpses.
+; [flashes]: extra flash drives (section names, one per line), put into corpses on any level.
+[flash_skip]
+flesh_up_bd_mp5
+flesh_up_a_novice_outfit
+flesh_up_abcd_svu
+flesh_up_abcd_pkm
+
 [flashes]

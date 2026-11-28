@@ -28,7 +28,7 @@
 
 При подготовке мира во Фриплее (`freeplay_mode.prepare_world`, один раз за игру) аддон раскладывает в точках OGSM (100 мест):
 
-- *(опционально)* дополнительные флешки `flesh_up_*` из списка `configs/misc/fp_loot.ltx` (`[flashes]`, по умолчанию пуст). Флешки, закрытые сюжетом, возвращаются в ядре тайниками (`configs/misc/treasure_freeplay.ltx`), а не этим модулем; второй набор флешек OGSM не используется;
+- флешки механиков (`flesh_up_*`, предметы заданий `find_upgrade` из `tm_upgrades.ltx`) лежат в карманах мёртвых сталкеров, в одном трупе одна флешка, на уровне своего задания (префикс `mar_/esc_/gar_/val_/agr_`). Как в OGSM, это снимает привязку к квестам и репутации фракций. Раскладываются один раз за игру, в том числе в старых сохранениях (info `fp_loot_flashes`). Пропуск уже выдаваемых ядром флешек и дополнительные флешки: `configs/misc/fp_loot.ltx` (`[flash_skip]`, `[flashes]`).
 - **15 секретных документов** (`doc_1…doc_15`): продаются лидерам баз (Сахаров, лидер Чистого Неба, Свобода, Долг, сталкеры, бандиты) по ценам OGSM, 3000–3300 за штуку.
 
 Состояние хранится одним info `fp_loot_spawned`; ничего не выполняется в `update`.
@@ -39,7 +39,8 @@
 |---|---|
 | `scripts/fp_loot.script` | новый (адаптация `ogsm_bring_items.script`) |
 | `scripts/freeplay_mode.script` | копия из Freeplay + вызов `fp_loot.startup_spawn()` в конце `prepare_world` |
-| `configs/misc/fp_loot.ltx` | новый, список дополнительных флешек (пуст) |
+| `configs/misc/fp_loot.ltx` | новый: `[flash_skip]` и `[flashes]` |
+| `scripts/fp_keep_items.script`, `configs/misc/fp_keep_items.ltx` | новые: предметы, которые ядро не должно удалять из карманов трупов (`death_manager.always_keep_item`: добавляются только данные) |
 | `configs/misc/quest_items.ltx` | копия из Freeplay + `[document]:device_pda` и секции `doc_1…doc_15` (родитель определён в этом же файле) |
 | `configs/gameplay/dialogs_fp_extras.xml` | новый, 6 диалогов продажи |
 | `configs/gameplay/character_desc_{marsh,escape,garbage,darkvalley,agroprom,yantar}.xml` | копии из Freeplay + строка `<actor_dialog>` у покупателя |
