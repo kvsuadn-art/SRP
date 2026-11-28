@@ -1,0 +1,37 @@
+-- fp_stash_box: binder of the Freeplay stash box (section fp_base_stash, script_binding = fp_stash_box.init).
+-- A subclass of the core generic_physics_binder (bind_physic_object): everything the core does with a box stays, and after the
+-- first update the physics shell is fixed in place. The decorative rucksack of all.spawn stood on the table as a fixed
+-- physic_object; a box created from a script is a free body and fell under the table. Адаптация под SRP Freeplay: Eon
+
+function init(obj)
+	obj:bind_object(fp_stash_binder(obj))
+end
+
+class "fp_stash_binder" (bind_physic_object.generic_physics_binder)
+
+function fp_stash_binder:__init(obj)
+	bind_physic_object.generic_physics_binder.__init(self, obj)
+	self.fp_fixed = false
+end
+
+local function fix_shell(obj)
+	local shell = obj:get_physics_shell()
+	if shell == nil then return false end
+	for i = 0, shell:get_elements_number() - 1 do
+		local el = shell:get_element_by_order(i)
+		if el ~= nil and not el:is_fixed() then el:fix() end
+	end
+	return true
+end
+
+function fp_stash_binder:update(delta)
+	bind_physic_object.generic_physics_binder.update(self, delta)
+	if self.fp_fixed or self.fp_tries == 0 then return end
+	self.fp_tries = (self.fp_tries or 30) - 1
+	local ok, done = pcall(fix_shell, self.object)
+	self.fp_fixed = ok and done
+	if self.fp_fixed or self.fp_tries == 0 then
+		local pos = self.object:position()
+		dbglog("%s", "[fp_stash_box] fixed in place: " .. tostring(self.fp_fixed) .. string.format(" at %.2f,%.2f,%.2f", pos.x, pos.y, pos.z))
+	end
+end
