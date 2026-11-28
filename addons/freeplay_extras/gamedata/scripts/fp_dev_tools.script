@@ -16,6 +16,14 @@ local tools = {
 	{ key = "mat",    name = "Точка матраса в лог",    descr = "Записать в лог строку для misc\\fp_sleep.ltx: позиция пола под ногами, вершины, угол. Встаньте там, где должен лежать матрас, лицом вдоль него." },
 	{ key = "ray1",   name = "Матрас по взгляду: луч 1",  descr = "Навести перекрестие на матрас (хоть на верхнем ярусе) и запомнить направление взгляда. Затем отойти на 2-3 метра в сторону, навести на ту же точку и нажать «луч 2»." },
 	{ key = "ray2",   name = "Матрас по взгляду: луч 2",  descr = "Второй взгляд на ту же точку матраса: по двум лучам считается точка в пространстве (с высотой) и пишется в лог строка для misc\\fp_sleep.ltx." },
+	{ key = "bed1",    name = "К матрасу 1",    descr = "Переместиться к точке 1 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed2",    name = "К матрасу 2",    descr = "Переместиться к точке 2 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed3",    name = "К матрасу 3",    descr = "Переместиться к точке 3 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed4",    name = "К матрасу 4",    descr = "Переместиться к точке 4 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed5",    name = "К матрасу 5",    descr = "Переместиться к точке 5 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed6",    name = "К матрасу 6",    descr = "Переместиться к точке 6 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed7",    name = "К матрасу 7",    descr = "Переместиться к точке 7 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
+	{ key = "bed8",    name = "К матрасу 8",    descr = "Переместиться к точке 8 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
 	{ key = "h1",      name = "Время +1 час",           descr = "Сдвинуть игровое время на час вперёд." },
 	{ key = "h6",      name = "Время +6 часов",         descr = "Сдвинуть игровое время на 6 часов вперёд." },
 	{ key = "d1",      name = "Время +1 сутки",         descr = "Сдвинуть игровое время на сутки вперёд." },
@@ -312,12 +320,31 @@ local function log_mat()
 	tip("Точка матраса записана в лог (" .. mat_n .. ")")
 end
 
+-- "To mattress N": point N of [mattress_<level>] of misc\fp_sleep.ltx (the same points fp_sleep turns into objects).
+local function goto_bed(n)
+	local sect = "mattress_" .. level.name()
+	local ini = ini_file("misc\\fp_sleep.ltx")
+	if not ini:section_exist(sect) or n > ini:line_count(sect) then
+		tip("Точки " .. n .. " нет на этом уровне (" .. level.name() .. ")")
+		return false
+	end
+	local _, name, v = ini:r_line(sect, n - 1, "", "")
+	local x, y, z = string.match(v, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)")
+	x, y, z = tonumber(x), tonumber(y), tonumber(z)
+	db.actor:set_actor_position(vector():set(x, y + 0.3, z))
+	dbglog("%s", TAG .. string.format("BEDCHECK %d %s = %.3f,%.3f,%.3f", n, name, x, y, z))
+	tip(string.format("Точка %d (%s): %.1f, %.1f, %.1f", n, name, x, y, z))
+	return true
+end
+
 -- Runs an entry. Returns true when the window must be closed (the action needs the game to continue).
 function run(tab, key)
 	if not (db.actor and db.actor:alive()) then return false end
 	if tab == "teleport" then
 		return teleport(key)
 	end
+	local bed = string.match(key, "^bed(%d+)$")
+	if bed then return goto_bed(tonumber(bed)) end
 	if key == "ray1" then log_ray(true); return true
 	elseif key == "ray2" then log_ray(false); return true
 	elseif key == "mat" then log_mat(); return false
