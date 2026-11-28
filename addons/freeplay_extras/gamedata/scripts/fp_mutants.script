@@ -60,7 +60,7 @@ end
 local function create(board, sec)
 	local smart = board.smarts_by_names[smart_of[sec]]
 	if smart == nil then
-		printf("[fp_mutants] smart '%s' not found for squad '%s'", tostring(smart_of[sec]), sec)
+		fp_log.always("[fp_mutants] smart '%s' not found for squad '%s'", tostring(smart_of[sec]), sec)
 		return nil
 	end
 	-- a smart already owned by another faction cannot take a monster squad (sim_board:enter_smart aborts): wait until it is free

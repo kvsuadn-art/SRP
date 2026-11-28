@@ -21,7 +21,7 @@ end
 
 function attach(m)
 	mgr = m
-	dbglog("%s", "[fp_stash] attached, enabled=" .. tostring(is_enabled()))
+	fp_log.write("%s", "[fp_stash] attached, enabled=" .. tostring(is_enabled()))
 	m:subscribe({ signal = "on_update", fun = on_update })
 end
 
@@ -38,11 +38,11 @@ function on_update(delta)
 			"([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*(%d+)%s*,%s*(%d+)")
 		if ini:line_exist(name, "replaces") then
 			local old = alife():object(ini:r_string(name, "replaces"))
-			dbglog("%s", "[fp_stash] " .. name .. ": decoration " .. ini:r_string(name, "replaces") .. (old and " found, removed" or " NOT found"))
+			fp_log.always("%s", "[fp_stash] " .. name .. ": decoration " .. ini:r_string(name, "replaces") .. (old and " found, removed" or " NOT found"))
 			if old then alife():release(old, true) end
 		end
 		local se = alife():create(ini:r_string(name, "section"), vector():set(tonumber(x), tonumber(y), tonumber(z)), tonumber(lv), tonumber(gv))
-		dbglog("%s", "[fp_stash] " .. name .. ": box " .. (se and ("created id " .. se.id) or "NOT created"))
+		fp_log.always("%s", "[fp_stash] " .. name .. ": box " .. (se and ("created id " .. se.id) or "NOT created"))
 		if se and ini:line_exist(name, "angle") then
 			pcall(function() se.angle = vector():set(0, ini:r_float(name, "angle"), 0) end)
 		end

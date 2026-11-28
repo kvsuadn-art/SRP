@@ -121,7 +121,7 @@ function on_update(delta)
 	if mgr then mgr:reschedule(30000) end
 	if not is_enabled() or db.actor == nil or not db.actor:alive() then return end
 	local ok, err = pcall(apply)
-	if not ok then dbglog("%s", TAG .. "error: " .. tostring(err)) end
+	if not ok then fp_log.always("%s", TAG .. "error: " .. tostring(err)) end
 end
 
 -- Format: u32 stamp, u8 drinks

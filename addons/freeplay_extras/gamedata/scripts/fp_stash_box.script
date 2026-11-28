@@ -41,6 +41,6 @@ function fp_stash_binder:update(delta)
 	self.fp_fixed = ok and done
 	if self.fp_fixed or self.fp_tries == 0 then
 		local pos = self.object:position()
-		dbglog("%s", "[fp_stash_box] fixed in place: " .. tostring(self.fp_fixed) .. " (" .. tostring(ok and info or done) .. ")" .. string.format(" at %.2f,%.2f,%.2f", pos.x, pos.y, pos.z))
+		fp_log.write("%s", "[fp_stash_box] fixed in place: " .. tostring(self.fp_fixed) .. " (" .. tostring(ok and info or done) .. ")" .. string.format(" at %.2f,%.2f,%.2f", pos.x, pos.y, pos.z))
 	end
 end

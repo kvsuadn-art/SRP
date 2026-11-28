@@ -149,7 +149,7 @@ end
 
 function on_net_spawn()
 	entry_time = time_global()
-	dbglog("%s", TAG .. "build " .. BUILD)
+	fp_log.always("%s", TAG .. "build " .. BUILD)
 	pending = get_pending()
 	if pending ~= "" then
 		local d = guiders_table.teleport_points[pending]
@@ -167,7 +167,7 @@ end
 local function begin_jump(point, look, cross)
 	if not level.patrol_path_exists(point) then
 		tip("Нет точки пути: " .. tostring(point))
-		dbglog("%s", TAG .. "patrol point missing: " .. tostring(point))
+		fp_log.always("%s", TAG .. "patrol point missing: " .. tostring(point))
 		return false
 	end
 	local act = db.actor
@@ -179,7 +179,7 @@ local function begin_jump(point, look, cross)
 	end
 	pcall(level.add_pp_effector, "peace_unfade.ppe", 160608, false)
 	if cross then started = time_global() end   -- waiting for the engine's level change
-	dbglog("%s", TAG .. "moved to " .. point .. (cross and " (level changer)" or ""))
+	fp_log.always("%s", TAG .. "moved to " .. point .. (cross and " (level changer)" or ""))
 	return true
 end
 
@@ -204,14 +204,14 @@ function on_update(delta)
 		set_pending("")
 		started = 0
 		jump_to(key)
-		dbglog("%s", TAG .. "arrived, second step to " .. key)
+		fp_log.always("%s", TAG .. "arrived, second step to " .. key)
 	elseif started > 0 and time_global() - started > FAIL_WAIT then
 		-- the level did not change (level changer closed): give the control back
 		set_pending("")
 		started = 0
 		give_back_control()
 		tip("Переход закрыт (уровень не сменился)")
-		dbglog("%s", TAG .. "level change failed for " .. key)
+		fp_log.always("%s", TAG .. "level change failed for " .. key)
 	end
 end
 
@@ -231,7 +231,7 @@ local function teleport(key)
 		started = 0
 		if not begin_jump(cross, nil, true) then set_pending(""); return false end
 	end
-	dbglog("%s", TAG .. "teleport to " .. key .. " (" .. tostring(d.level) .. ")")
+	fp_log.always("%s", TAG .. "teleport to " .. key .. " (" .. tostring(d.level) .. ")")
 	return true
 end
 
@@ -239,28 +239,28 @@ local function diag()
 	local act = db.actor
 	local p = act:position()
 	local function inf(s) return s .. "=" .. tostring(has_alife_info(s)) end
-	dbglog("%s", TAG .. "DIAG build " .. BUILD .. " level=" .. level.name() .. string.format(" pos=%.1f,%.1f,%.1f hour=%d", p.x, p.y, p.z, level.get_time_hours()))
-	dbglog("%s", TAG .. "DIAG infos: " .. inf("srp_freeplay") .. " " .. inf("fp_sleep") .. " " .. inf("fp_stash") .. " " .. inf("fp_stash_done") .. " " .. inf("fp_stash_done2"))
+	fp_log.always("%s", TAG .. "DIAG build " .. BUILD .. " level=" .. level.name() .. string.format(" pos=%.1f,%.1f,%.1f hour=%d", p.x, p.y, p.z, level.get_time_hours()))
+	fp_log.always("%s", TAG .. "DIAG infos: " .. inf("srp_freeplay") .. " " .. inf("fp_sleep") .. " " .. inf("fp_stash") .. " " .. inf("fp_stash_done") .. " " .. inf("fp_stash_done2"))
 	local zn = "mar_space_restrictor_csky_base_noweapon"
 	local z = db.zone_by_name[zn]
-	dbglog("%s", TAG .. "DIAG zone " .. zn .. " registered=" .. tostring(z ~= nil) .. " inside=" .. tostring(z ~= nil and z:inside(p)))
+	fp_log.always("%s", TAG .. "DIAG zone " .. zn .. " registered=" .. tostring(z ~= nil) .. " inside=" .. tostring(z ~= nil and z:inside(p)))
 	local ok, a, b = pcall(function() return fp_sleep.is_enabled(), fp_sleep.in_place() end)
-	dbglog("%s", TAG .. "DIAG sleep: " .. tostring(ok) .. " enabled=" .. tostring(a) .. " in_place=" .. tostring(b))
+	fp_log.always("%s", TAG .. "DIAG sleep: " .. tostring(ok) .. " enabled=" .. tostring(a) .. " in_place=" .. tostring(b))
 	local ok2, n = pcall(fp_sleep.mattress_count)
-	dbglog("%s", TAG .. "DIAG mattresses (fp_mattress objects found): " .. tostring(ok2) .. " " .. tostring(n))
-	dbglog("%s", TAG .. "DIAG sleeping_bag in inventory=" .. tostring(act:object("sleeping_bag") ~= nil))
+	fp_log.always("%s", TAG .. "DIAG mattresses (fp_mattress objects found): " .. tostring(ok2) .. " " .. tostring(n))
+	fp_log.always("%s", TAG .. "DIAG sleeping_bag in inventory=" .. tostring(act:object("sleeping_bag") ~= nil))
 	local old = alife():object("mar_physic_object_0039")
-	dbglog("%s", TAG .. "DIAG decorative rucksack mar_physic_object_0039 exists=" .. tostring(old ~= nil))
+	fp_log.always("%s", TAG .. "DIAG decorative rucksack mar_physic_object_0039 exists=" .. tostring(old ~= nil))
 	local n = 0
 	for i = 0, 65534 do
 		local se = alife():object(i, true)
 		if se and (se:section_name() == "fp_base_stash" or se:section_name() == "fp_mattress") then
 			n = n + 1
 			local o = level.object_by_id(se.id)
-			dbglog("%s", TAG .. "DIAG " .. se:section_name() .. " id=" .. se.id .. string.format(" pos=%.2f,%.2f,%.2f dist=%.1f lv=%s gv=%s", se.position.x, se.position.y, se.position.z, se.position:distance_to(p), tostring(se.m_level_vertex_id), tostring(se.m_game_vertex_id)) .. " online=" .. tostring(o ~= nil) .. (o and (" visual=" .. tostring(o:section())) or ""))
+			fp_log.always("%s", TAG .. "DIAG " .. se:section_name() .. " id=" .. se.id .. string.format(" pos=%.2f,%.2f,%.2f dist=%.1f lv=%s gv=%s", se.position.x, se.position.y, se.position.z, se.position:distance_to(p), tostring(se.m_level_vertex_id), tostring(se.m_game_vertex_id)) .. " online=" .. tostring(o ~= nil) .. (o and (" visual=" .. tostring(o:section())) or ""))
 		end
 	end
-	dbglog("%s", TAG .. "DIAG fp_base_stash+fp_mattress count=" .. n)
+	fp_log.always("%s", TAG .. "DIAG fp_base_stash+fp_mattress count=" .. n)
 	tip("Диагностика записана в лог")
 end
 
@@ -276,7 +276,7 @@ local function log_pos()
 	local dir = act:direction()
 	local msg = string.format("%s pos=vector():set(%.3f,%.3f,%.3f), lvid=%d, gvid=%d, dir=vector():set(%.3f,%.3f,%.3f)",
 		level.name(), pos.x, pos.y, pos.z, lvid, gvid, dir.x, dir.y, dir.z)
-	dbglog("%s", TAG .. msg)
+	fp_log.always("%s", TAG .. msg)
 	tip("Координаты записаны в лог")
 end
 
@@ -320,7 +320,7 @@ local function log_ray(first)
 	local gvid = act:game_vertex_id()
 	local dir = act:direction()
 	mat_n = mat_n + 1
-	dbglog("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f   ; rays gap %.2f m", level.name(), mat_n, pt[1], pt[2], pt[3], lvid, gvid, math.atan2(dir.x, dir.z), gap))
+	fp_log.always("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f   ; rays gap %.2f m", level.name(), mat_n, pt[1], pt[2], pt[3], lvid, gvid, math.atan2(dir.x, dir.z), gap))
 	tip(string.format("Точка записана (%d): y=%.2f, расхождение лучей %.2f м", mat_n, pt[2], gap))
 	ray1 = nil
 end
@@ -331,7 +331,7 @@ local function log_mat()
 	local dir = act:direction()
 	local ang = math.atan2(dir.x, dir.z)   -- radians, as the "angle" of a server object (rotation around Y)
 	mat_n = mat_n + 1
-	dbglog("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f", level.name(), mat_n, pos.x, pos.y, pos.z, lvid, gvid, ang))
+	fp_log.always("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f", level.name(), mat_n, pos.x, pos.y, pos.z, lvid, gvid, ang))
 	tip("Точка матраса записана в лог (" .. mat_n .. ")")
 end
 
@@ -347,7 +347,7 @@ local function goto_bed(n)
 	local x, y, z = string.match(v, "([%-%d%.]+)%s*,%s*([%-%d%.]+)%s*,%s*([%-%d%.]+)")
 	x, y, z = tonumber(x), tonumber(y), tonumber(z)
 	db.actor:set_actor_position(vector():set(x, y + 0.3, z))
-	dbglog("%s", TAG .. string.format("BEDCHECK %d %s = %.3f,%.3f,%.3f", n, name, x, y, z))
+	fp_log.always("%s", TAG .. string.format("BEDCHECK %d %s = %.3f,%.3f,%.3f", n, name, x, y, z))
 	tip(string.format("Точка %d (%s): %.1f, %.1f, %.1f", n, name, x, y, z))
 	return true
 end
@@ -366,7 +366,7 @@ local function goto_pda_corpse()
 			local ok, nm = pcall(alife().level_name, alife(), lid)
 			local lvl = same and level.name() or (ok and nm) or ("уровень №" .. lid)
 			local pda = td.selected_target and alife():object(td.selected_target)
-			dbglog("%s", TAG .. string.format("PDACORPSE %s: corpse %d on %s at %.1f,%.1f,%.1f, pda %s parent %s", id, corpse.id, lvl, corpse.position.x, corpse.position.y, corpse.position.z, tostring(td.selected_target), pda and tostring(pda.parent_id) or "NONE"))
+			fp_log.always("%s", TAG .. string.format("PDACORPSE %s: corpse %d on %s at %.1f,%.1f,%.1f, pda %s parent %s", id, corpse.id, lvl, corpse.position.x, corpse.position.y, corpse.position.z, tostring(td.selected_target), pda and tostring(pda.parent_id) or "NONE"))
 			if lvl == level.name() then
 				db.actor:set_actor_position(vector():set(corpse.position.x, corpse.position.y + 0.5, corpse.position.z))
 				tip("Труп КПК: " .. lvl .. ", КПК " .. (pda and ("в объекте " .. pda.parent_id) or "ОТСУТСТВУЕТ"))
@@ -392,7 +392,7 @@ local function flash_list()
 	for i, h in ipairs(list) do
 		local sobj = alife():object(h.id)
 		local lvl = sobj and where(sobj.m_game_vertex_id) or "?"
-		dbglog("%s", TAG .. string.format("FLASH %d %s: corpse %d on %s at %.1f,%.1f,%.1f", i, h.section, h.id, lvl, h.pos.x, h.pos.y, h.pos.z))
+		fp_log.always("%s", TAG .. string.format("FLASH %d %s: corpse %d on %s at %.1f,%.1f,%.1f", i, h.section, h.id, lvl, h.pos.x, h.pos.y, h.pos.z))
 	end
 	tip("Предметов в трупах: " .. #list .. " (подробности в логе, строки FLASH)")
 	return list
@@ -407,7 +407,7 @@ local function goto_flash(step)
 	local h = list[n]
 	local sobj = alife():object(h.id)
 	local lvl, same = where(sobj.m_game_vertex_id)
-	dbglog("%s", TAG .. string.format("FLASH %d %s: corpse %d on %s at %.1f,%.1f,%.1f", n, h.section, h.id, lvl, h.pos.x, h.pos.y, h.pos.z))
+	fp_log.always("%s", TAG .. string.format("FLASH %d %s: corpse %d on %s at %.1f,%.1f,%.1f", n, h.section, h.id, lvl, h.pos.x, h.pos.y, h.pos.z))
 	if not same then
 		tip(string.format("№%d из %d, %s: труп на уровне %s, вы на %s", n, #list, h.section, lvl, level.name()))
 		return false

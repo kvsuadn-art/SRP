@@ -215,7 +215,7 @@ local function put_in_corpse(section, c)
 	local body = ogsm_packet.spawn_stalker(BODY_SECTION, c[1], c[2], c[3], "dead", "empty")
 	if not body then return end
 	local item = alife():create(section, body.position, body.m_level_vertex_id, body.m_game_vertex_id, body.id)
-	printf("[fp_loot] %s: corpse %s on %s (%.1f, %.1f, %.1f), item %s", section, body.id, c[4], c[1].x, c[1].y, c[1].z, item and item.id or "nil")
+	fp_log.write("[fp_loot] %s: corpse %s on %s (%.1f, %.1f, %.1f), item %s", section, body.id, c[4], c[1].x, c[1].y, c[1].z, item and item.id or "nil")
 end
 
 -- spots that are not taken yet (a spot is taken by a corpse placed earlier in the same pass)

@@ -202,7 +202,7 @@ end
 function start(actor, npc, dialog_id, phrase_id)
 	local q = quest_of(dialog_id)
 	local c = cfg(q)
-	if c == nil then printf(TAG .. "no config for '%s'", tostring(q)) return end
+	if c == nil then fp_log.always(TAG .. "no config for '%s'", tostring(q)) return end
 	if (c.type == "fetch" or c.type == "kill" or c.type == "talk") and items[q] == nil then
 		items[q] = {}
 		for _ = 1, (c.count or 1) do

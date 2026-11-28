@@ -41,7 +41,7 @@ local function init()
 		if sini:section_exist(book) and sini:section_exist(wpn) then
 			weapon_info[wpn] = book
 		else
-			dbglog("%s", TAG .. "skipped: " .. tostring(book) .. " = " .. tostring(wpn) .. " (section does not exist)")
+			fp_log.always("%s", TAG .. "skipped: " .. tostring(book) .. " = " .. tostring(wpn) .. " (section does not exist)")
 		end
 	end
 	-- [aliases]: variant weapon section = base weapon section (the variant gets the bonus of the base weapon's book)
@@ -90,7 +90,7 @@ function on_update(delta)
 	if mgr then mgr:reschedule(CHECK_MS) end
 	if not is_enabled() then return end
 	local ok, err = pcall(update_wear)
-	if not ok then dbglog("%s", TAG .. "error: " .. tostring(err)) end
+	if not ok then fp_log.always("%s", TAG .. "error: " .. tostring(err)) end
 end
 
 function update_wear()

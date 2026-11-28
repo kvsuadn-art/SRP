@@ -113,11 +113,11 @@ function on_update(delta)
 		return
 	end
 	local ok, err = pcall(update_weapon, db.actor)
-	if not ok then dbglog("%s", TAG .. "weapon: " .. tostring(err)); remove_weapon_panel() end
+	if not ok then fp_log.always("%s", TAG .. "weapon: " .. tostring(err)); remove_weapon_panel() end
 	ticks = ticks + 1
 	if ticks >= SLEEP_CHECK_TICKS then
 		ticks = 0
 		local ok2, err2 = pcall(update_sleep, db.actor)
-		if not ok2 then dbglog("%s", TAG .. "sleep: " .. tostring(err2)) end
+		if not ok2 then fp_log.always("%s", TAG .. "sleep: " .. tostring(err2)) end
 	end
 end

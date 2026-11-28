@@ -51,7 +51,7 @@ end
 class "fp_actor_binder" (bind_stalker.actor_binder)
 
 function fp_actor_binder:__init(obj) super(obj)
-	dbglog("%s", TAG .. "init ok, subclass of bind_stalker.actor_binder")
+	fp_log.write("%s", TAG .. "init ok, subclass of bind_stalker.actor_binder")
 end
 
 function fp_actor_binder:reinit()

@@ -560,12 +560,12 @@ function CRandomTask:task_complete(task_id)
 			-- Адаптация под SRP Freeplay: Eon: предмет мог пропасть вместе с только что созданным трупом: один раз
 			-- создаём его заново в уже существующем трупе, иначе задание считается проваленным
 			local corpse = task_desc.selected_corpse and alife():object(task_desc.selected_corpse)
-			printf("[rt_manager] find_pda: pda %s not found, corpse %s exists: %s, retry done: %s", tostring(task_desc.selected_target), tostring(task_desc.selected_corpse), tostring(corpse ~= nil), tostring(task_desc.pda_retry))
+			fp_log.always("[rt_manager] find_pda: pda %s not found, corpse %s exists: %s, retry done: %s", tostring(task_desc.selected_target), tostring(task_desc.selected_corpse), tostring(corpse ~= nil), tostring(task_desc.pda_retry))
 			if corpse and not task_desc.pda_retry then
 				task_desc.pda_retry = true
 				pda = alife():create(task_desc.target, corpse.position, corpse.m_level_vertex_id, corpse.m_game_vertex_id, corpse.id)
 				task_desc.selected_target = pda.id
-				printf("[rt_manager] find_pda: pda re-created in corpse: id %s parent %s", pda.id, tostring(pda.parent_id))
+				fp_log.write("[rt_manager] find_pda: pda re-created in corpse: id %s parent %s", pda.id, tostring(pda.parent_id))
 				return
 			end
 			task_desc.status = "failed"
@@ -705,7 +705,7 @@ function CRandomTask:spawn_corpse_pda(task_id)
 		local pda = alife():create(task_desc.target, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id)
 		task_desc.selected_target = pda.id
 		task_desc.selected_corpse = npc.id
-		printf("[rt_manager] find_pda: corpse %s, pda id %s (parent %s) at %.1f,%.1f,%.1f", npc.id, pda.id, tostring(pda.parent_id), npc.position.x, npc.position.y, npc.position.z)
+		fp_log.write("[rt_manager] find_pda: corpse %s, pda id %s (parent %s) at %.1f,%.1f,%.1f", npc.id, pda.id, tostring(pda.parent_id), npc.position.x, npc.position.y, npc.position.z)
 	end
 end
 

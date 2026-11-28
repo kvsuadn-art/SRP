@@ -107,7 +107,7 @@ function on_item_use(obj)
 		slake = es * SLAKE_PER_EAT_SATIETY
 	end
 	set_hunger(hunger - slake)
-	dbglog("%s", TAG .. sect .. " eaten, hunger " .. string.format("%.1f", hunger))
+	fp_log.write("%s", TAG .. sect .. " eaten, hunger " .. string.format("%.1f", hunger))
 end
 
 local function hurt()

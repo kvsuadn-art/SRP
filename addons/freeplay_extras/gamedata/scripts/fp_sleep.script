@@ -46,7 +46,7 @@ end
 
 function attach(m)
 	mgr = m
-	dbglog("%s", "[fp_sleep] attached")
+	fp_log.write("%s", "[fp_sleep] attached")
 	m:subscribe({ signal = "on_item_use", fun = on_item_use })
 	m:subscribe({ signal = "on_update", fun = on_update })
 end
@@ -98,7 +98,7 @@ function on_item_use(obj)
 		local zn = ini:line_exist("zones", level.name()) and ini:r_string("zones", level.name()) or "-"
 		local z = db.zone_by_name[zn]
 		local p = db.actor:position()
-		dbglog("%s", string.format("[fp_sleep] no place: level=%s pos=%.2f,%.2f,%.2f zone=%s registered=%s inside=%s", level.name(), p.x, p.y, p.z, zn, tostring(z ~= nil), tostring(z ~= nil and z:inside(p))))
+		fp_log.write("%s", string.format("[fp_sleep] no place: level=%s pos=%.2f,%.2f,%.2f zone=%s registered=%s inside=%s", level.name(), p.x, p.y, p.z, zn, tostring(z ~= nil), tostring(z ~= nil and z:inside(p))))
 		tip("st_fp_sleep_no_place") return
 	end
 	if not is_night() then tip("st_fp_sleep_not_tired") return end
@@ -188,7 +188,7 @@ local function create_all()
 		local gv = n[5] or act:game_vertex_id()
 		local se = sim:create(MAT_SECTION, p, lv, gv)
 		mats_created = mats_created + 1
-		dbglog("%s", string.format("[fp_sleep] mattress %s: %s lv=%s gv=%s id=%s", sect .. "." .. name, tostring(se ~= nil), tostring(lv), tostring(gv), tostring(se and se.id)))
+		fp_log.write("%s", string.format("[fp_sleep] mattress %s: %s lv=%s gv=%s id=%s", sect .. "." .. name, tostring(se ~= nil), tostring(lv), tostring(gv), tostring(se and se.id)))
 	end
 	act:give_info_portion(flag(lname))
 end
@@ -205,7 +205,7 @@ function recreate_mattresses()
 	end
 	mats_created = 0
 	create_all()
-	dbglog("%s", "[fp_sleep] mattresses recreated: removed " .. n .. ", created " .. mats_created)
+	fp_log.write("%s", "[fp_sleep] mattresses recreated: removed " .. n .. ", created " .. mats_created)
 	return n, mats_created
 end
 

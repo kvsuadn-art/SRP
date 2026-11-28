@@ -1,0 +1,42 @@
+-- Copyright 2026 Eon (SRP Freeplay: Eon), Freeplay Extras 0.1.
+-- fp_log: one switch for the log output of the addon scripts.
+-- ≈диный выключатель вывода в лог дл€ скриптов аддона.
+--
+-- write(fmt, ...)   - diagnostic output; goes to the log only if it is on in misc\fp_log.ltx:
+--                     [settings] enabled (master switch), [modules] <tag> = on/off for one module. The tag is the "[name]" the message starts with.
+-- always(fmt, ...)  - errors and the explicit output of the dev tools; always goes to the log.
+-- The settings are read once per script load. Nothing is stored in the savegame.
+-- ќписание на русском: write(fmt, ...) Ч диагностика, попадает в лог только если включена в misc\fp_log.ltx:
+-- [settings] enabled Ч общий выключатель, [modules] <тег> Ч включить/выключить один модуль (тег Ч Ђ[им€]ї в начале сообщени€).
+-- always(fmt, ...) Ч ошибки и €вный вывод инструментов разработчика, пишетс€ в лог всегда. Ќастройки читаютс€ один раз при
+-- загрузке скрипта, в сохранение ничего не пишетс€.
+
+local ini = ini_file("misc\\fp_log.ltx")
+local master = nil
+local by_tag = {}
+
+local function is_on(msg)
+	if master == nil then
+		master = ini:section_exist("settings") and ini:line_exist("settings", "enabled") and ini:r_bool("settings", "enabled") or false
+	end
+	local tag = string.match(msg, "^%[([%w_]+)%]")
+	if tag ~= nil and ini:section_exist("modules") and ini:line_exist("modules", tag) then
+		if by_tag[tag] == nil then by_tag[tag] = ini:r_bool("modules", tag) end
+		return by_tag[tag]
+	end
+	return master
+end
+
+local function format(fmt, ...)
+	if select("#", ...) == 0 then return tostring(fmt) end
+	return string.format(fmt, ...)
+end
+
+function write(fmt, ...)
+	local msg = format(fmt, ...)
+	if is_on(msg) then error_log(msg) end
+end
+
+function always(fmt, ...)
+	error_log(format(fmt, ...))
+end

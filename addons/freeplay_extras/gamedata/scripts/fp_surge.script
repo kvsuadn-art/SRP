@@ -58,7 +58,7 @@ end
 function on_net_spawn()
 	entry_time = time_global()
 	clock_started = false
-	dbglog("%s", TAG .. "level entry: " .. level.name())
+	fp_log.write("%s", TAG .. "level entry: " .. level.name())
 end
 
 local function enabled(own_info)
@@ -100,7 +100,7 @@ local function try_clock()
 	clock_started = true
 	handled = true
 	local time = math.random(entry.surge_time - 10, entry.surge_time + 10)
-	dbglog("%s", TAG .. "clock surge on " .. level_name .. ", hide time " .. time)
+	fp_log.write("%s", TAG .. "clock surge on " .. level_name .. ", hide time " .. time)
 	xr_surge_hide.activate_surge(time)
 end
 
@@ -124,7 +124,7 @@ local function start_eclipse()
 		dropped = true
 		ok = request_fx(fx)
 	end
-	dbglog("%s", TAG .. "eclipse effect " .. fx .. ", weather " .. tostring(weather) .. ", surge phase " .. tostring(xr_surge_hide.phase) ..
+	fp_log.write("%s", TAG .. "eclipse effect " .. fx .. ", weather " .. tostring(weather) .. ", surge phase " .. tostring(xr_surge_hide.phase) ..
 		", running effect dropped: " .. tostring(dropped) .. ", accepted: " .. tostring(ok))
 	return ok
 end
@@ -132,7 +132,7 @@ end
 -- the surge is over: the eclipse effect would play on (it is long), so drop it and return to the normal weather
 local function end_eclipse()
 	level.set_weather("[default]", true)
-	dbglog("%s", TAG .. "eclipse ended")
+	fp_log.write("%s", TAG .. "eclipse ended")
 end
 
 -- SRP's own surge task disables the player's input before the end and enables it back only after a normal
@@ -143,7 +143,7 @@ local function restore_control()
 	level.remove_pp_effector(200211)
 	level.remove_pp_effector(200208)
 	level.remove_cam_effector(200209)
-	dbglog("%s", TAG .. "surge ended: player control restored")
+	fp_log.write("%s", TAG .. "surge ended: player control restored")
 end
 
 -- Dev tools (fp_dev_tools): start a surge or an eclipse right now. Returns a message for the player.
