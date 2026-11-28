@@ -48,7 +48,7 @@ local function init()
 				if system_ini():section_exist(sect) then
 					table.insert(lists[name], sect)
 				else
-					printf(TAG .. "section '%s' of trader '%s' does not exist", sect, name)
+					fp_log.always(TAG .. "section '%s' of trader '%s' does not exist", sect, name)
 				end
 			end
 		end
