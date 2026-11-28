@@ -1,0 +1,447 @@
+[
+ {
+  "name": "af_mica",
+  "src": "ogsm",
+  "from": [
+   6,
+   14,
+   1,
+   1
+  ],
+  "to": [
+   0,
+   38
+  ],
+  "sections": [
+   "af_mica"
+  ]
+ },
+ {
+  "name": "af_slug",
+  "src": "ogsm",
+  "from": [
+   7,
+   14,
+   1,
+   1
+  ],
+  "to": [
+   1,
+   38
+  ],
+  "sections": [
+   "af_slug"
+  ]
+ },
+ {
+  "name": "af_ball",
+  "src": "ogsm",
+  "from": [
+   8,
+   14,
+   1,
+   1
+  ],
+  "to": [
+   2,
+   38
+  ],
+  "sections": [
+   "af_ball"
+  ]
+ },
+ {
+  "name": "af_thorn",
+  "src": "ogsm",
+  "from": [
+   0,
+   15,
+   1,
+   1
+  ],
+  "to": [
+   3,
+   38
+  ],
+  "sections": [
+   "af_thorn"
+  ]
+ },
+ {
+  "name": "mutant_tushkano_head",
+  "src": "ogsm",
+  "from": [
+   4,
+   22,
+   1,
+   1
+  ],
+  "to": [
+   4,
+   38
+  ],
+  "sections": [
+   "mutant_tushkano_head"
+  ]
+ },
+ {
+  "name": "mutant_izlom_hand",
+  "src": "ogsm",
+  "from": [
+   4,
+   21,
+   1,
+   1
+  ],
+  "to": [
+   5,
+   38
+  ],
+  "sections": [
+   "mutant_izlom_hand"
+  ]
+ },
+ {
+  "name": "mutant_cat_tail",
+  "src": "ogsm",
+  "from": [
+   6,
+   21,
+   1,
+   1
+  ],
+  "to": [
+   6,
+   38
+  ],
+  "sections": [
+   "mutant_cat_tail"
+  ]
+ },
+ {
+  "name": "mutant_poltergeist_hand",
+  "src": "ogsm",
+  "from": [
+   8,
+   21,
+   1,
+   1
+  ],
+  "to": [
+   7,
+   38
+  ],
+  "sections": [
+   "mutant_poltergeist_hand"
+  ]
+ },
+ {
+  "name": "mutant_chimera_nail",
+  "src": "ogsm",
+  "from": [
+   1,
+   22,
+   1,
+   1
+  ],
+  "to": [
+   8,
+   38
+  ],
+  "sections": [
+   "mutant_chimera_nail"
+  ]
+ },
+ {
+  "name": "mutant_controller_hand",
+  "src": "ogsm",
+  "from": [
+   2,
+   22,
+   1,
+   1
+  ],
+  "to": [
+   3,
+   37
+  ],
+  "sections": [
+   "mutant_controller_hand"
+  ]
+ },
+ {
+  "name": "mutant_pseudogigant_nail",
+  "src": "ogsm",
+  "from": [
+   3,
+   22,
+   1,
+   1
+  ],
+  "to": [
+   4,
+   37
+  ],
+  "sections": [
+   "mutant_pseudogigant_nail"
+  ]
+ },
+ {
+  "name": "document",
+  "src": "ogsm",
+  "from": [
+   2,
+   25,
+   2,
+   1
+  ],
+  "to": [
+   5,
+   37
+  ],
+  "sections": [
+   "document",
+   "skill_book",
+   "fp_dev_console",
+   "fp_dev_tools"
+  ]
+ },
+ {
+  "name": "killer_outfit",
+  "src": "ogsm",
+  "from": [
+   11,
+   15,
+   2,
+   3
+  ],
+  "to": [
+   9,
+   30
+  ],
+  "sections": [
+   "killer_outfit"
+  ]
+ },
+ {
+  "name": "monolith_scientific_outfit",
+  "src": "ogsm",
+  "from": [
+   13,
+   18,
+   2,
+   3
+  ],
+  "to": [
+   11,
+   30
+  ],
+  "sections": [
+   "monolith_scientific_outfit"
+  ]
+ },
+ {
+  "name": "red_ecolog_outfit",
+  "src": "ogsm",
+  "from": [
+   11,
+   24,
+   2,
+   3
+  ],
+  "to": [
+   13,
+   30
+  ],
+  "sections": [
+   "red_ecolog_outfit"
+  ]
+ },
+ {
+  "name": "green_ecolog_outfit",
+  "src": "ogsm",
+  "from": [
+   13,
+   24,
+   2,
+   3
+  ],
+  "to": [
+   15,
+   30
+  ],
+  "sections": [
+   "green_ecolog_outfit"
+  ]
+ },
+ {
+  "name": "cs_standart_outfit",
+  "src": "ogsm",
+  "from": [
+   17,
+   1,
+   2,
+   3
+  ],
+  "to": [
+   17,
+   30
+  ],
+  "sections": [
+   "cs_standart_outfit"
+  ]
+ },
+ {
+  "name": "bandit_heavy_outfit",
+  "src": "ogsm",
+  "from": [
+   21,
+   7,
+   2,
+   3
+  ],
+  "to": [
+   9,
+   33
+  ],
+  "sections": [
+   "bandit_heavy_outfit"
+  ]
+ },
+ {
+  "name": "dolg_scientific_outfit",
+  "src": "ogsm",
+  "from": [
+   13,
+   9,
+   2,
+   3
+  ],
+  "to": [
+   11,
+   33
+  ],
+  "sections": [
+   "dolg_scientific_outfit"
+  ]
+ },
+ {
+  "name": "dolg_heavy_extra_outfit",
+  "src": "ogsm",
+  "from": [
+   15,
+   9,
+   2,
+   3
+  ],
+  "to": [
+   13,
+   33
+  ],
+  "sections": [
+   "dolg_heavy_extra_outfit"
+  ]
+ },
+ {
+  "name": "dolg_exo_outfit",
+  "src": "ogsm",
+  "from": [
+   19,
+   9,
+   2,
+   3
+  ],
+  "to": [
+   15,
+   33
+  ],
+  "sections": [
+   "dolg_exo_outfit"
+  ]
+ },
+ {
+  "name": "svoboda_light2_outfit",
+  "src": "ogsm",
+  "from": [
+   13,
+   12,
+   2,
+   3
+  ],
+  "to": [
+   17,
+   33
+  ],
+  "sections": [
+   "svoboda_light2_outfit"
+  ]
+ },
+ {
+  "name": "svoboda_scientific_outfit",
+  "src": "ogsm",
+  "from": [
+   15,
+   12,
+   2,
+   3
+  ],
+  "to": [
+   9,
+   36
+  ],
+  "sections": [
+   "svoboda_scientific_outfit"
+  ]
+ },
+ {
+  "name": "soldier_outfit_grey",
+  "src": "ogsm",
+  "from": [
+   11,
+   21,
+   2,
+   3
+  ],
+  "to": [
+   11,
+   36
+  ],
+  "sections": [
+   "soldier_outfit_grey"
+  ]
+ },
+ {
+  "name": "soldier_outfit_brown",
+  "src": "ogsm",
+  "from": [
+   13,
+   21,
+   2,
+   3
+  ],
+  "to": [
+   13,
+   36
+  ],
+  "sections": [
+   "soldier_outfit_brown"
+  ]
+ },
+ {
+  "name": "military_extra_outfit",
+  "src": "ogsm",
+  "from": [
+   19,
+   21,
+   2,
+   3
+  ],
+  "to": [
+   15,
+   36
+  ],
+  "sections": [
+   "military_extra_outfit"
+  ]
+ }
+]
