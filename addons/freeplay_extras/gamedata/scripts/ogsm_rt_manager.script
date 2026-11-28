@@ -557,6 +557,17 @@ function CRandomTask:task_complete(task_id)
 		local pda = alife():object(task_desc.selected_target)
 
 		if not pda then
+			-- Адаптация под SRP Freeplay: Eon: предмет мог пропасть вместе с только что созданным трупом: один раз
+			-- создаём его заново в уже существующем трупе, иначе задание считается проваленным
+			local corpse = task_desc.selected_corpse and alife():object(task_desc.selected_corpse)
+			printf("[rt_manager] find_pda: pda %s not found, corpse %s exists: %s, retry done: %s", tostring(task_desc.selected_target), tostring(task_desc.selected_corpse), tostring(corpse ~= nil), tostring(task_desc.pda_retry))
+			if corpse and not task_desc.pda_retry then
+				task_desc.pda_retry = true
+				pda = alife():create(task_desc.target, corpse.position, corpse.m_level_vertex_id, corpse.m_game_vertex_id, corpse.id)
+				task_desc.selected_target = pda.id
+				printf("[rt_manager] find_pda: pda re-created in corpse: id %s parent %s", pda.id, tostring(pda.parent_id))
+				return
+			end
 			task_desc.status = "failed"
 			return
 		end
@@ -649,6 +660,8 @@ function CRandomTask:task_callback(_task, _state)
 	if task_desc.type == "find_pda" then
 		task_desc.selected_target = nil
 		task_desc.selected_target_smart = nil
+		task_desc.selected_corpse = nil
+		task_desc.pda_retry = nil
 	end
 	if task_desc.community then --меняем отношение только если указано community
 		local relation = db.actor:community_goodwill(task_desc.community) + delta
@@ -688,11 +701,11 @@ function CRandomTask:spawn_corpse_pda(task_id)
 --		local npc = alife():create(task_desc.target_npc[math.random(#task_desc.target_npc)], vector_position, vector, smart.m_game_vertex_id)
 --		npc:on_death()
 
-		-- Адаптация под SRP Freeplay: Eon: КПК в инвентаре только что созданного трупа пропадал (задание сразу
-		-- проваливалось), поэтому предмет создаётся на земле у тела.
-		local pda = alife():create(task_desc.target, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id)
+		-- Адаптация под SRP Freeplay: Eon: КПК лежит в инвентаре трупа (на земле мелкий предмет проваливается под текстуру)
+		local pda = alife():create(task_desc.target, npc.position, npc.m_level_vertex_id, npc.m_game_vertex_id, npc.id)
 		task_desc.selected_target = pda.id
-		printf("[rt_manager] find_pda: corpse %s, pda id %s at %.1f,%.1f,%.1f", npc.id, pda.id, pda.position.x, pda.position.y, pda.position.z)
+		task_desc.selected_corpse = npc.id
+		printf("[rt_manager] find_pda: corpse %s, pda id %s (parent %s) at %.1f,%.1f,%.1f", npc.id, pda.id, tostring(pda.parent_id), npc.position.x, npc.position.y, npc.position.z)
 	end
 end
 

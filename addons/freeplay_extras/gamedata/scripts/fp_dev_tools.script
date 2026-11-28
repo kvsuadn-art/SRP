@@ -9,7 +9,7 @@
 
 local TAG = "[fp_dev_tools] "
 local tf_default = 10
-local BUILD = "2026-11-28 b8"
+local BUILD = "2026-11-28 b9"
 
 local tools = {
 	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
@@ -25,6 +25,7 @@ local tools = {
 	{ key = "bed7",    name = "К матрасу 7",    descr = "Переместиться к точке 7 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
 	{ key = "bed8",    name = "К матрасу 8",    descr = "Переместиться к точке 8 секции [mattress_<уровень>] из misc\\fp_sleep.ltx на этом уровне (Болото: база и окрестности). Посмотрите, где стоит подсказка «Спать», и сообщите, подходит ли точка." },
 	{ key = "mats",   name = "Матрасы: пересоздать",    descr = "Удалить все объекты fp_mattress (всех уровней) и создать заново из секций [mattress_<уровень>] misc\\fp_sleep.ltx на этом уровне. Нужно после правки точек. Полный перебор id, на секунду может подвиснуть." },
+	{ key = "pdacorpse", name = "К трупу с КПК",  descr = "Заказ Сидоровича «найти КПК»: переместиться к трупу с КПК (если труп на этом уровне) или показать, на каком он уровне. Сначала возьмите задание и дойдите до уровня, где труп создаётся. Данные пишутся в лог." },
 	{ key = "wpn",    name = "Оружие: достать",    descr = "Один вызов restore_weapon: если оружие осталось спрятанным после лечения или сна, нажмите; повторять только если всё ещё спрятано (счётчик движка)." },
 	{ key = "h1",      name = "Время +1 час",           descr = "Сдвинуть игровое время на час вперёд." },
 	{ key = "h6",      name = "Время +6 часов",         descr = "Сдвинуть игровое время на 6 часов вперёд." },
@@ -339,6 +340,33 @@ local function goto_bed(n)
 	return true
 end
 
+-- "To the PDA corpse": the corpse of the active find_pda task (ogsm_rt_manager) and what is lying inside it.
+local function goto_pda_corpse()
+	local mgr = ogsm_rt_manager.get_rt_manager()
+	local found = false
+	for _, id in pairs(mgr.task_id_by_type["find_pda"] or {}) do
+		local td = mgr.task_info[id]
+		local corpse = td.selected_corpse and alife():object(td.selected_corpse)
+		if corpse then
+			found = true
+			local lid = game_graph():vertex(corpse.m_game_vertex_id):level_id()
+			local same = lid == alife():level_id()
+			local ok, nm = pcall(alife().level_name, alife(), lid)
+			local lvl = same and level.name() or (ok and nm) or ("уровень №" .. lid)
+			local pda = td.selected_target and alife():object(td.selected_target)
+			dbglog("%s", TAG .. string.format("PDACORPSE %s: corpse %d on %s at %.1f,%.1f,%.1f, pda %s parent %s", id, corpse.id, lvl, corpse.position.x, corpse.position.y, corpse.position.z, tostring(td.selected_target), pda and tostring(pda.parent_id) or "NONE"))
+			if lvl == level.name() then
+				db.actor:set_actor_position(vector():set(corpse.position.x, corpse.position.y + 0.5, corpse.position.z))
+				tip("Труп КПК: " .. lvl .. ", КПК " .. (pda and ("в объекте " .. pda.parent_id) or "ОТСУТСТВУЕТ"))
+			else
+				tip("Труп КПК на уровне " .. lvl .. " (вы на " .. level.name() .. ")")
+			end
+		end
+	end
+	if not found then tip("Трупа КПК нет: возьмите задание и дойдите до его уровня") end
+	return found
+end
+
 -- Runs an entry. Returns true when the window must be closed (the action needs the game to continue).
 function run(tab, key)
 	if not (db.actor and db.actor:alive()) then return false end
@@ -347,6 +375,7 @@ function run(tab, key)
 	end
 	local bed = string.match(key, "^bed(%d+)$")
 	if bed then return goto_bed(tonumber(bed)) end
+	if key == "pdacorpse" then return goto_pda_corpse() end
 	if key == "wpn" then pcall(db.actor.restore_weapon, db.actor) tip("restore_weapon вызван") return true end
 	if key == "mats" then
 		local ok, a, b = pcall(fp_sleep.recreate_mattresses)
