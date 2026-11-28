@@ -1006,6 +1006,12 @@
 	<string id="st_fp_outpost_pda_descr">
 		<text>Личный КПК бойца южного форпоста Долга.</text>
 	</string>
+	<string id="st_pda_for_quests_name">
+		<text>КПК пропавшего сталкера</text>
+	</string>
+	<string id="st_pda_for_quests_descr">
+		<text>Доступ ко всей информации заблокирован паролем. Необходимо специализированное оборудование для взлома.</text>
+	</string>
 	<string id="yan_bring_sample_dnk">
 		<text>Образец ДНК кровососа</text>
 	</string>

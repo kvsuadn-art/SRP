@@ -986,11 +986,13 @@ function CRandomTask:scan_targets()
 	end
 end
 
--- Заменяет хук в xr_death: цель убита игроком, если death.killer в хранилище равен id актора.
+-- Заменяет хук в xr_death (ядро не пишет убийцу в хранилище): цель считается убитой игроком, если
+-- killer записан и это актёр, либо killer не записан, а труп находится онлайн рядом с игроком.
 function CRandomTask:check_killer(task_desc)
 	if task_desc.stalker_killer ~= nil or task_desc.selected_target == nil then return end
 	local st = db.storage[task_desc.selected_target]
-	if st and st.death and st.death.killer == db.actor:id() then
+	local killer = st and st.death and st.death.killer or nil
+	if killer == db.actor:id() or (killer == nil and level.object_by_id(task_desc.selected_target) ~= nil) then
 		task_desc.stalker_killer = "Scar"
 	end
 end
