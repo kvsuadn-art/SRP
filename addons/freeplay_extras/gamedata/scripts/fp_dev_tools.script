@@ -14,6 +14,8 @@ local BUILD = "2026-11-28 b5"
 local tools = {
 	{ key = "pos",     name = "Координаты в лог",       descr = "Записать в лог положение игрока: уровень, позицию, level/game vertex, направление." },
 	{ key = "mat",    name = "Точка матраса в лог",    descr = "Записать в лог строку для misc\\fp_sleep.ltx: позиция пола под ногами, вершины, угол. Встаньте там, где должен лежать матрас, лицом вдоль него." },
+	{ key = "ray1",   name = "Матрас по взгляду: луч 1",  descr = "Навести перекрестие на матрас (хоть на верхнем ярусе) и запомнить направление взгляда. Затем отойти на 2-3 метра в сторону, навести на ту же точку и нажать «луч 2»." },
+	{ key = "ray2",   name = "Матрас по взгляду: луч 2",  descr = "Второй взгляд на ту же точку матраса: по двум лучам считается точка в пространстве (с высотой) и пишется в лог строка для misc\\fp_sleep.ltx." },
 	{ key = "h1",      name = "Время +1 час",           descr = "Сдвинуть игровое время на час вперёд." },
 	{ key = "h6",      name = "Время +6 часов",         descr = "Сдвинуть игровое время на 6 часов вперёд." },
 	{ key = "d1",      name = "Время +1 сутки",         descr = "Сдвинуть игровое время на сутки вперёд." },
@@ -253,6 +255,49 @@ local function log_pos()
 end
 
 local mat_n = 0
+local ray1 = nil
+
+-- two camera rays at the same spot give its position in space (the engine export of this build has no ray cast)
+local function cam_ray()
+	local d = device()
+	local p, v = d.cam_pos, d.cam_dir
+	return { px = p.x, py = p.y, pz = p.z, dx = v.x, dy = v.y, dz = v.z }
+end
+
+local function ray_point(r1, r2)
+	local wx, wy, wz = r1.px - r2.px, r1.py - r2.py, r1.pz - r2.pz
+	local b = r1.dx * r2.dx + r1.dy * r2.dy + r1.dz * r2.dz
+	local d = r1.dx * wx + r1.dy * wy + r1.dz * wz
+	local e = r2.dx * wx + r2.dy * wy + r2.dz * wz
+	local den = 1 - b * b
+	if den < 0.02 then return nil, "лучи почти параллельны: отойдите в сторону на 2-3 м" end
+	local s = (b * e - d) / den
+	local u = (e - b * d) / den
+	local q1 = { r1.px + r1.dx * s, r1.py + r1.dy * s, r1.pz + r1.dz * s }
+	local q2 = { r2.px + r2.dx * u, r2.py + r2.dy * u, r2.pz + r2.dz * u }
+	local gap = math.sqrt((q1[1] - q2[1]) ^ 2 + (q1[2] - q2[2]) ^ 2 + (q1[3] - q2[3]) ^ 2)
+	if s < 0 or u < 0 then return nil, "точка позади камеры: наведите на одну и ту же точку" end
+	return { (q1[1] + q2[1]) / 2, (q1[2] + q2[2]) / 2, (q1[3] + q2[3]) / 2 }, gap
+end
+
+local function log_ray(first)
+	if first then
+		ray1 = cam_ray()
+		tip("Луч 1 запомнен. Отойдите в сторону и наведите на ту же точку")
+		return
+	end
+	if not ray1 then tip("Сначала «луч 1»"); return end
+	local pt, gap = ray_point(ray1, cam_ray())
+	if not pt then tip(gap); return end
+	local act = db.actor
+	local lvid = level.vertex_id(vector():set(pt[1], pt[2], pt[3]))
+	local gvid = act:game_vertex_id()
+	local dir = act:direction()
+	mat_n = mat_n + 1
+	dbglog("%s", TAG .. string.format("MATTRESS %s: m%d = %.3f,%.3f,%.3f,%d,%d,%.3f   ; rays gap %.2f m", level.name(), mat_n, pt[1], pt[2], pt[3], lvid, gvid, math.atan2(dir.x, dir.z), gap))
+	tip(string.format("Точка записана (%d): y=%.2f, расхождение лучей %.2f м", mat_n, pt[2], gap))
+	ray1 = nil
+end
 local function log_mat()
 	local act = db.actor
 	local lvid, gvid = act:level_vertex_id(), act:game_vertex_id()
@@ -270,7 +315,9 @@ function run(tab, key)
 	if tab == "teleport" then
 		return teleport(key)
 	end
-	if key == "mat" then log_mat(); return false
+	if key == "ray1" then log_ray(true); return true
+	elseif key == "ray2" then log_ray(false); return true
+	elseif key == "mat" then log_mat(); return false
 	elseif key == "diag" then diag(); return false
 	elseif key == "pos" then log_pos(); return false
 	elseif key == "h1" then change_time(1, "Время +1 ч"); return true
